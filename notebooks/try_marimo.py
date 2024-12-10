@@ -2,7 +2,9 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "marimo",
+#     "matplotlib==3.9.3",
 #     "ortools==9.11.4210",
+#     "pandas==2.2.3",
 # ]
 # ///
 
@@ -16,6 +18,12 @@ app = marimo.App(width="medium")
 def __():
     import marimo as mo
     return (mo,)
+
+
+@app.cell(hide_code=True)
+def __(mo):
+    mo.md(r"""# Marimo お試しノート""")
+    return
 
 
 @app.cell
@@ -58,6 +66,100 @@ def __(result, x, y):
     print("Objective value:", result.objective_value())
     print("x:", result.variable_values()[x])
     print("y:", result.variable_values()[y])
+    return
+
+
+@app.cell(hide_code=True)
+def __(mo):
+    mo.md(
+        r"""
+        ## LaTeX
+        You can embed LaTeX in Markdown.
+
+        For example,
+
+        ```python3
+        mo.md(r'$f : \mathbb{R} \to \mathbb{R}$')
+        ```
+
+        renders $f : \mathbb{R} \to \mathbb{R}$, while
+
+        ```python3
+        mo.md(
+            r'''
+            \[
+            f: \mathbb{R} \to \mathbb{R}
+            \]
+            '''
+        )
+        ```
+
+        renders the display math
+
+        \[
+        f: \mathbb{R} \to \mathbb{R}.
+        \]
+        """
+    )
+    return
+
+
+@app.cell
+def __(mo):
+    leaves = mo.ui.slider(1, 32, label="🍃: ")
+
+    mo.md(
+        f"""
+        ### UI elements
+
+        A `marimo.ui` object:
+
+        ```python3
+        leaves = mo.ui.slider(1, 16, label="🍃: ")
+        mo.md(f"{{leaves}}")
+        ```
+
+        yields
+
+        {leaves}
+        """
+    )
+    return (leaves,)
+
+
+@app.cell
+def __(leaves, mo):
+    mo.md(f"Your leaves: {'🍃' * leaves.value}")
+    return
+
+
+@app.cell
+def __():
+    import matplotlib.pyplot as plt
+    plt.plot([1, 2])
+    return (plt,)
+
+
+@app.cell
+def __():
+    import pandas as pd
+    pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})
+    return (pd,)
+
+
+@app.cell
+def __(pd):
+    df_web = pd.read_csv(
+        'https://raw.githubusercontent.com/nkmk/python-snippets/master/notebook/data/src/sample_header.csv'
+    )
+
+    print(df_web)
+    return (df_web,)
+
+
+@app.cell
+def __(df_web):
+    df_web
     return
 
 
