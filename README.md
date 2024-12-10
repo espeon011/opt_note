@@ -3,5 +3,5 @@
 ## Jupyter 起動
 
 ```
-$ rye run lab
+$ uv run jupyter lab --no-browser --ServerApp.ip="*" --ServerApp.custom_display_url="http://$(hostname):8888/lab"
 ```
