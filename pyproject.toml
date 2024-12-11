@@ -5,7 +5,7 @@ description = "Mathematical optimization study note"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "marimo>=0.9.33",
+    "marimo>=0.9.34",
     "matplotlib>=3.9.3",
     "nbformat>=5.10.4",
     "ortools>=9.11.4210",
