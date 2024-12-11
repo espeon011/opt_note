@@ -11,3 +11,9 @@ $ uv run jupyter lab --no-browser --ServerApp.ip="*" --ServerApp.custom_display_
 ```
 $ uv run marimo --development-mode edit --headless --sandbox --no-token
 ```
+
+## Marimo notebook から Jupyter notebook への変換
+
+```
+$ uv run marimo export ipynb --include-outputs <Marimo notebook name(.py file)> --output <Jupyter notebook name(.ipynb file)>
+```
