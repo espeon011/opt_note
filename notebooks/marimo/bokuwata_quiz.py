@@ -35,12 +35,12 @@ def _(mo):
 
         ## 証言
 
-        - A「AとDは食べてない」
-        - B「Eは食べてない」
-        - C「CとEは食べてない」
-        - D「AとCは食べてない」
-        - E「DとEは食べてない」
-        - 探偵「嘘つきは1人」「私は食べてない」
+        - A「A と D は食べてない」
+        - B「E は食べてない」
+        - C「C と B は食べてない」
+        - D「A と C は食べてない」
+        - E「D と E は食べてない」
+        - 探偵「嘘つきは 1 人」「私は食べてない」
         - 主人公「私は食べてない」「このチャンネルは面白い」
 
         ## 論理クイズのルール
@@ -93,7 +93,7 @@ def _(VarArraySolutionPrinter, cp_model):
                 self.culprits["A"] + self.culprits["D"] > 0
             ).only_enforce_if(self.liars["A"])
 
-            # B「Eは食べてない」
+            # B「E は食べてない」
             self.model.add(self.culprits["E"] == 0).only_enforce_if(
                 self.liars["B"].negated()
             )
@@ -101,15 +101,15 @@ def _(VarArraySolutionPrinter, cp_model):
                 self.liars["B"]
             )
 
-            # C「CとEは食べてない」
+            # C「C と B は食べてない」
             self.model.add(
-                self.culprits["C"] + self.culprits["E"] == 0
+                self.culprits["C"] + self.culprits["B"] == 0
             ).only_enforce_if(self.liars["C"].negated())
             self.model.add(
-                self.culprits["C"] + self.culprits["E"] > 0
+                self.culprits["C"] + self.culprits["B"] > 0
             ).only_enforce_if(self.liars["C"])
 
-            # D「AとCは食べてない」
+            # D「A と C は食べてない」
             self.model.add(
                 self.culprits["A"] + self.culprits["C"] == 0
             ).only_enforce_if(self.liars["D"].negated())
@@ -117,7 +117,7 @@ def _(VarArraySolutionPrinter, cp_model):
                 self.culprits["A"] + self.culprits["C"] > 0
             ).only_enforce_if(self.liars["D"])
 
-            # E「DとEは食べてない」
+            # E「D と E は食べてない」
             self.model.add(
                 self.culprits["D"] + self.culprits["E"] == 0
             ).only_enforce_if(self.liars["E"].negated())
@@ -125,7 +125,7 @@ def _(VarArraySolutionPrinter, cp_model):
                 self.culprits["D"] + self.culprits["E"] > 0
             ).only_enforce_if(self.liars["E"])
 
-            # 探偵「嘘つきは1人」「私は食べてない」
+            # 探偵「嘘つきは 1 人」「私は食べてない」
             self.model.add(self.culprits["探偵"] == 0).only_enforce_if(
                 self.liars["探偵"].negated()
             )
