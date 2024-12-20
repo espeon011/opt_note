@@ -70,8 +70,6 @@ def _(VarArraySolutionPrinter, cp_model):
             c_one: bool = False,
             ex_bokuwata: bool = False,
             not_ex_bokuwata: bool = False,
-            detective_is_not_liar: bool = False,
-            detective_is_liar: bool = False,
         ):
             self.model = cp_model.CpModel()
 
@@ -156,12 +154,6 @@ def _(VarArraySolutionPrinter, cp_model):
             # 追加: ぼくわたチャンネルは面白い
             if not_ex_bokuwata:
                 self.model.add(self.liars["主人公"] == 1)
-            # 追加: 探偵は正直者
-            if detective_is_not_liar:
-                self.model.add(self.liars["探偵"] == 0)
-            # 追加: 探偵は嘘つき
-            if detective_is_liar:
-                self.model.add(self.liars["探偵"] == 1)
 
         def solve(self):
             self.solver = cp_model.CpSolver()
@@ -189,12 +181,20 @@ def _(cp_model, pl):
             self.__solution_count = self.__solution_count + 1
             _add = {_s: [] for _s in self.__suspects}
             for _s in self.__suspects:
-                _result_string = ""
-                _result_string += f"{"正直者" if self.value(self.__liars[_s]) == 0 else "嘘つき"}"
-                _result_string += "/"
-                _result_string += (
-                    f"{"無罪" if self.value(self.__culprits[_s]) == 0 else "有罪"}"
-                )
+                _result_string = "-"
+                if (
+                    self.value(self.__liars[_s]) + self.value(self.__culprits[_s])
+                    > 0
+                ):
+                    _result_string = ""
+                    _result_string += (
+                        f"{"嘘つき" if self.value(self.__liars[_s]) == 1 else ""}"
+                    )
+                    _result_string += "/"
+                    _result_string += (
+                        f"{"有罪" if self.value(self.__culprits[_s]) == 1 else ""}"
+                    )
+                    _result_string = _result_string.strip("/")
                 _add[_s].append(_result_string)
                 # print(f"{_s}:{_result_string}", end=" ")
             # print()
@@ -245,15 +245,13 @@ def _(model):
 
 @app.cell(hide_code=True)
 def _(mo):
-    switch_c_one = mo.ui.switch(label="犯人は 1 人とする")
+    switch_c_one = mo.ui.switch(label="犯人は 1 人とする", value=True)
     switch_exciting_bokuwata = mo.ui.switch(
         label="ぼくわたチャンネルは面白い(=主人公は正直者)"
     )
     switch_not_exciting_bokuwata = mo.ui.switch(
         label="ぼくわたチャンネルは面白くない(=主人公は嘘つき)"
     )
-    switch_detective_is_not_liar = mo.ui.switch(label="探偵は正直者")
-    switch_detective_is_liar = mo.ui.switch(label="探偵は嘘つき")
 
     mo.vstack(
         [
@@ -261,14 +259,10 @@ def _(mo):
             switch_c_one,
             switch_exciting_bokuwata,
             switch_not_exciting_bokuwata,
-            switch_detective_is_not_liar,
-            switch_detective_is_liar,
         ]
     )
     return (
         switch_c_one,
-        switch_detective_is_liar,
-        switch_detective_is_not_liar,
         switch_exciting_bokuwata,
         switch_not_exciting_bokuwata,
     )
@@ -280,8 +274,6 @@ def _(
     mo,
     statuses,
     switch_c_one,
-    switch_detective_is_liar,
-    switch_detective_is_not_liar,
     switch_exciting_bokuwata,
     switch_not_exciting_bokuwata,
 ):
@@ -289,8 +281,6 @@ def _(
         switch_c_one.value,
         switch_exciting_bokuwata.value,
         switch_not_exciting_bokuwata.value,
-        switch_detective_is_not_liar.value,
-        switch_detective_is_liar.value,
     )
     status2 = model2.solve()
 
@@ -307,6 +297,83 @@ def _(
 @app.cell
 def _(model2):
     model2.solution_printer.dataframe
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ## 人力で解く方法
+
+        犯人は 1 人だけとする. 
+
+        B を嘘つきと仮定すると E はプリンを食べたことになる. 
+        E は自分は食べてないと主張しているので嘘つきになる. 
+        B も E も嘘つきであるため嘘つきは 1 人だけと主張する探偵も嘘つきになり, 探偵も犯人になる. 犯人は 1 人のため矛盾. 
+        よって B は正直者. E は犯人ではない. 
+
+        E を嘘つきとする. このとき D か E のどちらか一方はプリンを食べたことになる. 
+        上の結果より E は食べていないので D が犯人となる. 
+        A は A も D もプリンを食べていないと主張しているため嘘つきとなる. 
+        E も A も嘘つきとなり, 探偵も嘘つきとなることから探偵も犯人となるが, D と探偵が犯人となるため矛盾. 
+        よって E は正直者. 特に D は犯人ではない. 
+
+        A を嘘つきとする. このとき A と D のどちらか一方はプリンを食べたことになる. 
+        上の結果より D は食べていないので A が犯人となる. 
+        このとき A も C もプリンを食べていないと主張する D も嘘つきとなる. 
+        そして嘘つきが 1 人であると主張する探偵も嘘つきになり, 探偵も犯人となり矛盾する. 
+        よって A は正直者. 特に A は犯人ではない. 
+
+        D を嘘つきとする. このとき A と C のどちらか一方はプリンを食べたことになる. 
+        上の結果より A は犯人ではないので C が犯人である. 
+        C 自身も C が犯人でないと主張しているため, C も嘘つきとなる. 
+        嘘つきが 2 人以上いるので探偵も嘘つきとなり, 探偵も犯人となり, 矛盾する. 
+        よって D は正直者. 特に C は犯人ではない. 
+
+        探偵を嘘つきとする. 
+        このとき探偵が犯人であり, 嘘つきは 2 人以上存在する. 
+        主人公が嘘つきだとすると 2 人目の犯人になってしまうため, 2 人目の嘘つきは C となる. 
+        C が嘘つきのため C と B のどちらかは犯人であるが, 2 人目の犯人になってしまうため矛盾. 
+        よって探偵は正直者. 特に探偵は犯人ではない. 
+
+        ここまでで確定していないのは
+
+        - C が嘘つきか正直者か
+        - B が犯人かどうか
+        - 主人公が嘘つきかどうか
+        - 主人公が犯人かどうか
+
+        で C と主人公以外は全員正直者で確定しており, 
+        B と主人公以外は犯人でないことが確定している. 
+
+        残りの問題については
+
+        - 主人公が嘘つき ⇔ 主人公が犯人
+        - C が嘘つき ⇔ B が犯人
+
+        で, 探偵が正直者であり, 嘘つきが 1 人しかいないことから
+
+        | ケース | 主人公 | B | C |
+        | :--- | ---: | ---: | ---: |
+        | ケース 1 | 嘘つき/犯人| - | - |
+        | ケース 2 | - | 犯人 | 嘘つき |
+
+        の 2 通りしかない.
+
+        どちらになるかは, ぼくわたチャンネルが面白いかどうかに依存し, 
+
+        - ぼくわたチャンネルが面白い場合, 主人公は正直者で無実のケース 2
+        - ぼくわたチャンネルが面白くない場合, 主人公は嘘つきで犯人のケース 1
+
+        となる.
+        """
+    )
+    return
+
+
+@app.cell
+def _():
     return
 
 
