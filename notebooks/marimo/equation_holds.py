@@ -8,24 +8,24 @@
 
 import marimo
 
-__generated_with = "0.9.33"
-app = marimo.App()
+__generated_with = "0.11.0"
+app = marimo.App(layout_file="layouts/equation_holds.slides.json")
 
 
 @app.cell
-def __():
+def _():
     import marimo as mo
     return (mo,)
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""# 方程式が成立するかどうかを表す Bool 変数""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $x$ を 0-1 決定変数, $a, b$ を整数決定変数として
@@ -42,13 +42,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 不等式の場合""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $x$ を 0-1 決定変数, $a, b$ を整数決定変数として
@@ -69,13 +69,13 @@ def __(mo):
 
 
 @app.cell
-def __():
+def _():
     from ortools.sat.python import cp_model
     return (cp_model,)
 
 
 @app.cell
-def __(cp_model):
+def _(cp_model):
     class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
 
         def __init__(self, variables):
@@ -96,7 +96,7 @@ def __(cp_model):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     lb_a, ub_a = (1, 5)
     lb_b, ub_b = (1, 5)
     model = cp_model.CpModel()
@@ -128,7 +128,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell
-def __(cp_model, solution_printer, solver, status):
+def _(cp_model, solution_printer, solver, status):
     print(f'Number of solutions found: {solution_printer.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status]}')
@@ -138,13 +138,13 @@ def __(cp_model, solution_printer, solver, status):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 方程式の場合""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         big-M 法を用いれば方程式の場合も線形に表すことができる. 
@@ -168,7 +168,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     lb_a_1, ub_a_1 = (1, 5)
     lb_b_1, ub_b_1 = (1, 5)
     model_1 = cp_model.CpModel()
@@ -208,7 +208,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell
-def __(cp_model, solution_printer_1, solver_1, status_1):
+def _(cp_model, solution_printer_1, solver_1, status_1):
     print(f'Number of solutions found: {solution_printer_1.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status_1]}')
@@ -218,13 +218,13 @@ def __(cp_model, solution_printer_1, solver_1, status_1):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## `only_enforce_if()` の利用""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         Google OR-Tools には `only_enforce_if()` 関数があり, 
@@ -235,13 +235,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 同値でなくてもよい場合""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         下記を直接制約に加える. 
@@ -255,7 +255,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     lb_a_2, ub_a_2 = (1, 5)
     lb_b_2, ub_b_2 = (1, 5)
     model_2 = cp_model.CpModel()
@@ -285,7 +285,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell
-def __(cp_model, solution_printer_2, solver_2, status_2):
+def _(cp_model, solution_printer_2, solver_2, status_2):
     print(f'Number of solutions found: {solution_printer_2.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status_2]}')
@@ -295,13 +295,13 @@ def __(cp_model, solution_printer_2, solver_2, status_2):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 同値にしたい場合""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         上記の
@@ -321,7 +321,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     lb_a_3, ub_a_3 = (1, 5)
     lb_b_3, ub_b_3 = (1, 5)
     model_3 = cp_model.CpModel()
@@ -352,7 +352,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell
-def __(cp_model, solution_printer_3, solver_3, status_3):
+def _(cp_model, solution_printer_3, solver_3, status_3):
     print(f'Number of solutions found: {solution_printer_3.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status_3]}')
@@ -362,13 +362,13 @@ def __(cp_model, solution_printer_3, solver_3, status_3):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 応用: 誰が祠を""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         X のポスト([https://x.com/mrsolyu/status/1846512850879275074](https://x.com/mrsolyu/status/1846512850879275074))でこういった問題があったので定式化して犯人を求める. 
@@ -390,13 +390,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 定式化""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         #### 変数
@@ -439,13 +439,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 実装""")
     return
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     model_4 = cp_model.CpModel()
     suspects = ['A', 'B', 'C', 'D']
     liar = {s: model_4.new_bool_var(f'{s}_is_liar') for s in suspects}
@@ -480,7 +480,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell
-def __(cp_model, solution_printer_4, solver_4, status_4):
+def _(cp_model, solution_printer_4, solver_4, status_4):
     print(f'Number of solutions found: {solution_printer_4.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status_4]}')
@@ -490,20 +490,13 @@ def __(cp_model, solution_printer_4, solver_4, status_4):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 実装(線形版)""")
     return
 
 
 @app.cell
-def __(
-    VarArraySolutionPrinter,
-    cp_model,
-    culprit,
-    liar,
-    model_4,
-    suspects,
-):
+def _(VarArraySolutionPrinter, cp_model, culprit, liar, model_4, suspects):
     for _s in suspects:
         model_4.add(culprit[_s] <= liar[_s])
     model_4.add(1 - liar['A'] == culprit['A'])
@@ -535,7 +528,7 @@ def __(
 
 
 @app.cell
-def __(cp_model, solution_printer_5, solver_5, status_5):
+def _(cp_model, solution_printer_5, solver_5, status_5):
     print(f'Number of solutions found: {solution_printer_5.solution_count}\n')
     _statuses = {cp_model.OPTIMAL: 'OPTIMAL', cp_model.FEASIBLE: 'FEASIBLE', cp_model.INFEASIBLE: 'INFEASIBLE', cp_model.MODEL_INVALID: 'MODEL_INVALID', cp_model.UNKNOWN: 'UNKNOWN'}
     print(f'status = {_statuses[status_5]}')
@@ -545,7 +538,7 @@ def __(cp_model, solution_printer_5, solver_5, status_5):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 補足

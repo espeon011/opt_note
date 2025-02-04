@@ -8,24 +8,24 @@
 
 import marimo
 
-__generated_with = "0.9.33"
+__generated_with = "0.11.0"
 app = marimo.App()
 
 
 @app.cell
-def __():
+def _():
     import marimo as mo
     return (mo,)
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""# MIP における論理演算の扱い""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $a, b$ を 0-1 決定変数とする. 
@@ -43,19 +43,19 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 定式化と実装""")
     return
 
 
 @app.cell
-def __():
+def _():
     from ortools.sat.python import cp_model
     return (cp_model,)
 
 
 @app.cell
-def __(cp_model):
+def _(cp_model):
     class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
         def __init__(self, variables):
             cp_model.CpSolverSolutionCallback.__init__(self)
@@ -75,13 +75,13 @@ def __(cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### AND""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $a \land b \Rightarrow c$ と $c \Rightarrow a \land b$ を表現すればよい. 
@@ -95,7 +95,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")
@@ -110,13 +110,13 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### OR""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $a \lor b \Rightarrow c$ と $c \Rightarrow a \lor b$ を表現すればよい. 
@@ -129,7 +129,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")
@@ -144,13 +144,13 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### NAND""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         AND の定式化における $c$ を $1 - c$ に置き換えればよい. 
@@ -165,7 +165,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")
@@ -180,13 +180,13 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### NOR""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         OR の定式化における $c$ を $1 - c$ に置き換えれば良い. 
@@ -201,7 +201,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")
@@ -216,13 +216,13 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### XOR""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $(a = 0 \land b = 0) \Rightarrow c = 0$, $(a = 1 \land b = 1) \Rightarrow c = 0$, $(a = 1 \land b = 0) \Rightarrow c = 1$, $(a = 0 \land b = 1) \Rightarrow c = 1$ を全て表現する. 
@@ -237,7 +237,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")
@@ -254,13 +254,13 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### XNOR""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         XOR の定式化における $c$ を $1 - c$ に置き換えれば良い. 
@@ -277,7 +277,7 @@ def __(mo):
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _a = _model.new_bool_var("A")
     _b = _model.new_bool_var("B")

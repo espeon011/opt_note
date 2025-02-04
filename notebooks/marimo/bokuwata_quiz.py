@@ -3,13 +3,13 @@
 # dependencies = [
 #     "marimo",
 #     "ortools==9.11.4210",
-#     "polars==1.17.1",
+#     "polars==1.21.0",
 # ]
 # ///
 
 import marimo
 
-__generated_with = "0.10.5"
+__generated_with = "0.11.0"
 app = marimo.App(width="medium")
 
 

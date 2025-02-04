@@ -8,30 +8,30 @@
 
 import marimo
 
-__generated_with = "0.9.33"
+__generated_with = "0.11.0"
 app = marimo.App()
 
 
 @app.cell
-def __():
+def _():
     import marimo as mo
     return (mo,)
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""# 崩壊スターレイル 教育部の難問""")
     return
 
 
 @app.cell
-def __():
+def _():
     from ortools.sat.python import cp_model
     return (cp_model,)
 
 
 @app.cell
-def __(cp_model):
+def _(cp_model):
     class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
         def __init__(self, variables):
             cp_model.CpSolverSolutionCallback.__init__(self)
@@ -51,13 +51,13 @@ def __(cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## その 3""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 問題文
@@ -107,13 +107,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 実装""")
     return
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _suspects = ['jack', 'chris', 'eric']
     _liar = {s: _model.new_bool_var(f'{s}_is_liar') for s in _suspects}
@@ -131,7 +131,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 補足
@@ -143,13 +143,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## その 4""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 問題文
@@ -192,13 +192,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 実装""")
     return
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _members = ['howard', 'philip', 'joyce']
     _good_guys = {m: _model.new_bool_var(f'{m}_is_goodguy') for m in _members}
@@ -221,7 +221,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 補足
@@ -233,13 +233,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## その 7""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 問題文
@@ -316,13 +316,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""### 実装""")
     return
 
 
 @app.cell
-def __(VarArraySolutionPrinter, cp_model):
+def _(VarArraySolutionPrinter, cp_model):
     _model = cp_model.CpModel()
     _gates = ['gold', 'silver']
     _honests = {g: _model.new_bool_var(f'{g}_gate_is_honest') for g in _gates}
@@ -346,7 +346,7 @@ def __(VarArraySolutionPrinter, cp_model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ### 補足

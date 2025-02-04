@@ -8,30 +8,30 @@
 
 import marimo
 
-__generated_with = "0.9.33"
+__generated_with = "0.11.0"
 app = marimo.App()
 
 
 @app.cell
-def __():
+def _():
     import marimo as mo
     return (mo,)
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""# 極大ナップサック問題""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 問題""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         正整数の配列 $a = [ a_1, \dots, a_n]$ と整数 $\tau$ が与えられる. 
@@ -42,13 +42,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 定式化""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $x = [x_1, \dots, x_n]$ を 0-1 決定変数とする. 
@@ -71,13 +71,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 実装""")
     return
 
 
 @app.cell
-def __():
+def _():
     from ortools.sat.python import cp_model
     import math
     import time
@@ -85,7 +85,7 @@ def __():
 
 
 @app.cell
-def __(cp_model, time):
+def _(cp_model, time):
     class SolutionPrinter(cp_model.CpSolverSolutionCallback):
 
         def __init__(self, a, solution: list[cp_model.IntVar]):
@@ -124,7 +124,7 @@ def __(cp_model, time):
 
 
 @app.cell
-def __(SolutionPrinter, cp_model):
+def _(SolutionPrinter, cp_model):
     class Model:
         def __init__(self, a, tau):
             self.a = a
@@ -157,7 +157,7 @@ def __(SolutionPrinter, cp_model):
 
 
 @app.cell
-def __():
+def _():
     # a = list(range(1, 5+1))
     # tau = 10
 
@@ -176,20 +176,20 @@ def __():
 
 
 @app.cell
-def __(Model, a, tau):
+def _(Model, a, tau):
     model = Model(a, tau)
     model.solve()
     return (model,)
 
 
 @app.cell
-def __(model):
+def _(model):
     model.solution_printer.all_solutions
     return
 
 
 @app.cell
-def __(model):
+def _(model):
     print("Statistics")
     print(f"  conflicts      : {model.solver.num_conflicts}")
     print(f"  branches       : {model.solver.num_branches}")
@@ -199,7 +199,7 @@ def __(model):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         ## 結果
@@ -212,13 +212,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 定式化(MILP)""")
     return
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(
         r"""
         $x = [x_1, \dots, x_n]$ を 0-1 決定変数とする. 
@@ -241,13 +241,13 @@ def __(mo):
 
 
 @app.cell(hide_code=True)
-def __(mo):
+def _(mo):
     mo.md(r"""## 実装(MILP)""")
     return
 
 
 @app.cell
-def __(SolutionPrinter, cp_model, math):
+def _(SolutionPrinter, cp_model, math):
     class ModelLinear:
         def __init__(self, a, tau):
             self.a = a
@@ -275,27 +275,27 @@ def __(SolutionPrinter, cp_model, math):
 
 
 @app.cell
-def __(a, tau):
+def _(a, tau):
     print(f"a = {a}")
     print(f"tau = {tau}")
     return
 
 
 @app.cell
-def __(ModelLinear, a, tau):
+def _(ModelLinear, a, tau):
     model_1 = ModelLinear(a, tau)
     model_1.solve()
     return (model_1,)
 
 
 @app.cell
-def __(model_1):
+def _(model_1):
     model_1.solution_printer.all_solutions
     return
 
 
 @app.cell
-def __(model_1):
+def _(model_1):
     print('Statistics')
     print(f' conflicts : {model_1.solver.num_conflicts}')
     print(f' branches : {model_1.solver.num_branches}')

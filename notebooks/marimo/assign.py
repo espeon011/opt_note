@@ -2,9 +2,9 @@
 # requires-python = ">=3.12"
 # dependencies = [
 #     "marimo",
-#     "numpy==2.2.0",
+#     "numpy==2.2.2",
 #     "ortools==9.11.4210",
-#     "scipy==1.14.1",
+#     "scipy==1.15.1",
 # ]
 # ///
 
