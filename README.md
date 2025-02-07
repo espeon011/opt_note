@@ -8,14 +8,16 @@ uv run jupyter lab --no-browser --ServerApp.ip="*" --ServerApp.custom_display_ur
 
 ## Marimo 起動
 
-```
-uv run marimo --development-mode edit --headless --sandbox --no-token
-```
-
-Marimo をリモートマシンで起動している場合, ローカルマシンで下記コマンドを実行する. 
+### ローカルマシンの場合
 
 ```
-ssh -L {ポート番号}:localhost:{ポート番号} {リモートホスト名 or IP アドレス}
+uv run marimo --development-mode edit --sandbox --no-token
+```
+
+### リモートマシンで起動してローカルのブラウザからアクセスしたい場合
+
+```
+uv run marimo --development-mode edit --headless --host 0.0.0.0 --sandbox --no-token
 ```
 
 ## Marimo notebook から Jupyter notebook への変換
