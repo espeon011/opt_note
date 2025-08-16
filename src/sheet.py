@@ -2,6 +2,7 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "marimo",
+#     "nbformat==5.10.4",
 #     "ortools==9.14.6206",
 # ]
 # ///
