@@ -169,11 +169,11 @@ def _():
     # a = list(range(1, 10+1))
     # tau = 50
 
-    #a = list(range(1, 20+1))
-    #tau = 100
+    a = list(range(1, 20+1))
+    tau = 100
 
-    a = [2] * 16 # 少し時間かかる
-    tau = 2 ** 8
+    # a = [2] * 16 # 少し時間かかる
+    # tau = 2 ** 8
 
     print(f"a = {a}")
     print(f"tau = {tau}")
@@ -291,11 +291,6 @@ def _(model_linear):
     print(f' branches : {model_linear.solver.num_branches}')
     print(f' wall time : {model_linear.solver.wall_time} s')
     print(f' solutions found: {model_linear.solution_printer.solution_count}')
-    return
-
-
-@app.cell
-def _():
     return
 
 
