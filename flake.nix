@@ -25,7 +25,8 @@
         packages = [
           pkgs.python313
           pkgs.uv
-          pkgs.ruff
+          # pkgs.pyrefly
+          # pkgs.ruff
         ];
 
         # numpy 依存ライブラリへの PATH

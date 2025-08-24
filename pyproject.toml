@@ -5,7 +5,7 @@ description = "Mathematical optimization study note"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "marimo[docs,lsp]>=0.14.17",
+    "marimo[docs,lsp]>=0.15.0",
 ]
 
 [dependency-groups]
