@@ -9,7 +9,7 @@
 import marimo
 
 __generated_with = "0.15.0"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
     import pyscipopt
@@ -59,7 +59,7 @@ class Model:
         max_len = sum(len(s) for s in instance)
 
         scip: pyscipopt.Model = pyscipopt.Model()
-    
+
         seqs = [
             [
                 scip.addVar(vtype="I", lb=0, ub=max_len - 1)
@@ -72,12 +72,12 @@ class Model:
                 if idx == 0:
                     continue
                 scip.addCons(seq[idx - 1] + 1 <= seq[idx])
-    
+
         for idx1, (s1, seq1) in enumerate(zip(instance, seqs)):
             for idx2, (s2, seq2) in enumerate(zip(instance, seqs)):
                 if idx1 >= idx2:
                     continue
-    
+
                 for cidx1, (c1, cvar1) in enumerate(zip(s1, seq1)):
                     for cidx2, (c2, cvar2) in enumerate(zip(s2, seq2)):
                         if c1 != c2:
@@ -86,7 +86,7 @@ class Model:
                             scip.addCons(lt + gt == 1)
                             scip.addConsIndicator(cvar1 + 1 <= cvar2, binvar=lt)
                             scip.addConsIndicator(cvar1 >= cvar2 + 1, binvar=gt)
-                            
+
         obj = scip.addVar(vtype="C", lb=0, ub=max_len)
         for seq in seqs:
             scip.addCons(obj >= seq[-1])
@@ -122,7 +122,7 @@ class Model:
                     break
             if not found:
                 sol_char_idx += 1
-    
+
         return solution
 
 
@@ -226,6 +226,90 @@ def _(util):
 def _(instance_05, solution_05, util):
     _instance = instance_05
     _solution = solution_05
+
+    util.show(_instance)
+    if _solution is not None:
+        util.show(_instance, _solution)
+        print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    else:
+        print("--- Solution not found ---")
+    return
+
+
+@app.cell
+def _(util):
+    instance_06 = util.parse("nucleotide_n010k010.txt")
+    solution_06 = solve(instance_06)
+    return instance_06, solution_06
+
+
+@app.cell
+def _(instance_06, solution_06, util):
+    _instance = instance_06
+    _solution = solution_06
+
+    util.show(_instance)
+    if _solution is not None:
+        util.show(_instance, _solution)
+        print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    else:
+        print("--- Solution not found ---")
+    return
+
+
+@app.cell
+def _(util):
+    instance_07 = util.parse("nucleotide_n050k050.txt")
+    solution_07 = solve(instance_07)
+    return instance_07, solution_07
+
+
+@app.cell
+def _(instance_07, solution_07, util):
+    _instance = instance_07
+    _solution = solution_07
+
+    util.show(_instance)
+    if _solution is not None:
+        util.show(_instance, _solution)
+        print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    else:
+        print("--- Solution not found ---")
+    return
+
+
+@app.cell
+def _(util):
+    instance_08 = util.parse("protein_n010k010.txt")
+    solution_08 = solve(instance_08)
+    return instance_08, solution_08
+
+
+@app.cell
+def _(instance_08, solution_08, util):
+    _instance = instance_08
+    _solution = solution_08
+
+    util.show(_instance)
+    if _solution is not None:
+        util.show(_instance, _solution)
+        print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    else:
+        print("--- Solution not found ---")
+    return
+
+
+@app.cell
+def _(util):
+    instance_09 = util.parse("protein_n050k050.txt")
+    solution_09 = solve(instance_09)
+    return instance_09, solution_09
+
+
+@app.cell
+def _(instance_09, solution_09, util):
+    _instance = instance_09
+    _solution = solution_09
 
     util.show(_instance)
     if _solution is not None:

@@ -8,7 +8,7 @@
 import marimo
 
 __generated_with = "0.15.0"
-app = marimo.App(width="medium", auto_download=["ipynb"])
+app = marimo.App(width="medium")
 
 
 @app.cell
@@ -117,6 +117,46 @@ def _(util):
 @app.cell
 def _(util):
     _instance = util.parse("uniform_q05n050k010-010.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("nucleotide_n010k010.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("nucleotide_n050k050.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("protein_n010k010.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("protein_n050k050.txt")
     util.show(_instance)
     _solution = solve(_instance)
     util.show(_instance, _solution)

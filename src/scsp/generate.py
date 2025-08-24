@@ -13,6 +13,8 @@ app = marimo.App(width="medium")
 with app.setup:
     import random
     import string
+    import pathlib
+    import functools
     import util
 
 
@@ -105,6 +107,199 @@ def _():
     write_uniform_instance(q=5, n=50, k_min=20, k_max=20)
     write_uniform_instance(q=5, n=100, k_min=20, k_max=20)
     write_uniform_instance(q=5, n=500, k_min=20, k_max=20)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""## ヌクレオチド配列""")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+    実際の DNA 配列のデータから適当に切り出して作成する. 
+
+    [NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Nucleotide を選択して Download All Results をクリックし, 
+    ランダムサンプル 1000 件をダウンロードしたデータセットに対して文字列長と文字列数を指定して配列の後ろをカットし, 
+    サンプル数を制限する.
+
+    また, NCBI ではデータセットのフィルターで下記を指定した. 
+
+    - Sequence Length: Min 500
+    - Nucleotide Completeness: complete
+    - Ambiguous Characters: Max 0
+
+    ---
+    上記検索条件を保存した URL: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide&Completeness_s=complete&QualNum_i=0&SLen_i=500%20TO%203000000
+
+    アクセス日付: 2025-08-25
+    """
+    )
+    return
+
+
+@app.function
+@functools.cache
+def read_nucleotide_festa() -> list[str]:
+    data_dir = pathlib.Path(__file__).parent / "file" / "ncbi"
+    file_path = data_dir / "nucleotide_sequences_20250824_7758219.fasta"
+
+    instance = []
+    with open(file_path, mode="r", encoding="UTF-8") as file:
+        lines = file.readlines()
+
+    started = False
+    instance = []
+    seq = ""
+    for line in lines:
+        if line[0] == "\n":
+            started = False
+            instance.append(seq)
+            seq = ""
+            continue
+        elif line[0] == ">":
+            started = True
+            continue
+
+        if started:
+            seq += line.strip()
+
+    return instance
+
+
+@app.function
+def gen_nucleotide_instance(n: int, k: int) -> list[str]:
+    assert n >= 1 and n <= 1000
+    assert k >= 1
+
+    all_instance = read_nucleotide_festa()
+    instance = []
+    for seq in all_instance[:n]:
+        instance.append(seq.replace("N", "")[:k])
+
+    return instance
+
+
+@app.function
+def write_nucleotide_instance(n: int, k: int) -> None:
+    instance = gen_nucleotide_instance(n, k)
+    filename = f"nucleotide_n{n:0>3}k{k:0>3}.txt"
+    util.save(instance, filename)
+
+
+@app.cell
+def _():
+    write_nucleotide_instance(n=5, k=10)
+    write_nucleotide_instance(n=10, k=10)
+    write_nucleotide_instance(n=50, k=10)
+    write_nucleotide_instance(n=10, k=50)
+    write_nucleotide_instance(n=50, k=50)
+    write_nucleotide_instance(n=100, k=50)
+    write_nucleotide_instance(n=50, k=100)
+    write_nucleotide_instance(n=100, k=100)
+    write_nucleotide_instance(n=500, k=100)
+    write_nucleotide_instance(n=100, k=500)
+    write_nucleotide_instance(n=500, k=500)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""## プロテイン配列""")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+    実際のプロテイン配列からデータを適当に切り出して作成する. 
+
+    [NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Nucleotide を選択して Download All Results をクリックし, 
+    ランダムサンプル 1000 件をダウンロードしたデータセットに対して文字列長と文字列数を指定して配列の後ろをカットし, 
+    サンプル数を制限する.
+
+    また, NCBI ではデータセットのフィルターで下記を指定した. 
+
+    - Sequence Length: Min 500
+    - Nucleotide Completeness: complete
+    - Ambiguous Characters: Max 0
+
+    ---
+
+    上記検索条件を保存した URL: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Protein&SLen_i=500%20TO%203000000&Completeness_s=complete&QualNum_i=0
+
+    アクセス日付: 2025-08-25
+    """
+    )
+    return
+
+
+@app.function
+@functools.cache
+def read_protein_festa() -> list[str]:
+    data_dir = pathlib.Path(__file__).parent / "file" / "ncbi"
+    file_path = data_dir / "protein_sequences_20250824_5673972.fasta"
+
+    instance = []
+    with open(file_path, mode="r", encoding="UTF-8") as file:
+        lines = file.readlines()
+
+    started = False
+    instance = []
+    seq = ""
+    for line in lines:
+        if line[0] == "\n":
+            started = False
+            instance.append(seq)
+            seq = ""
+            continue
+        elif line[0] == ">":
+            started = True
+            continue
+
+        if started:
+            seq += line.strip()
+
+    return instance
+
+
+@app.function
+def gen_protein_instance(n: int, k: int) -> list[str]:
+    assert n >= 1 and n <= 1000
+    assert k >= 1
+
+    all_instance = read_protein_festa()
+    instance = []
+    for seq in all_instance[:n]:
+        instance.append(seq.replace("X", "")[:k])
+
+    return instance
+
+
+@app.function
+def write_protein_instance(n: int, k: int) -> None:
+    instance = gen_protein_instance(n, k)
+    filename = f"protein_n{n:0>3}k{k:0>3}.txt"
+    util.save(instance, filename)
+
+
+@app.cell
+def _():
+    write_protein_instance(n=5, k=10)
+    write_protein_instance(n=10, k=10)
+    write_protein_instance(n=50, k=10)
+    write_protein_instance(n=10, k=50)
+    write_protein_instance(n=50, k=50)
+    write_protein_instance(n=100, k=50)
+    write_protein_instance(n=50, k=100)
+    write_protein_instance(n=100, k=100)
+    write_protein_instance(n=500, k=100)
+    write_protein_instance(n=100, k=500)
+    write_protein_instance(n=500, k=500)
     return
 
 

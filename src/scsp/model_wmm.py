@@ -130,5 +130,45 @@ def _(util):
     return
 
 
+@app.cell
+def _(util):
+    _instance = util.parse("nucleotide_n010k010.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("nucleotide_n050k050.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("protein_n010k010.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
+@app.cell
+def _(util):
+    _instance = util.parse("protein_n050k050.txt")
+    util.show(_instance)
+    _solution = solve(_instance)
+    util.show(_instance, _solution)
+    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
+    return
+
+
 if __name__ == "__main__":
     app.run()
