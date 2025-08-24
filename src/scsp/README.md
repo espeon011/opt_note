@@ -6,7 +6,7 @@ Shortest Common Supersequence Problem (SPSP) は与えられた複数の配列�
 ## 記号
 
 - $\Sigma$: アルファベットの集合
-- $S = \{s_1, \dots, s_n\}$: 文字列の集合
+- $S = \\{ s_1, \dots, s_n \\}$: 文字列の集合
 - $q = |\Sigma|$: アルファベットの数
 - $k = \max_{s \in S} |s|$: 最大文字列長
 - $n = |S|$: 文字列の数
