@@ -8,7 +8,7 @@
 import marimo
 
 __generated_with = "0.15.0"
-app = marimo.App(width="medium")
+app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
     import random
@@ -46,6 +46,8 @@ def _(mo):
     - $q$: 使用文字種類数. 
     - $n$: 文字列数. 
     - $k_{\min}, k_{\max}$: 文字列超上下限. 実際の文字列超はこの範囲から一様ランダムに決める.
+
+    低確率で全く同じ文字列が生成される可能性があることに注意. 
     """
     )
     return
@@ -175,7 +177,9 @@ def gen_nucleotide_instance(n: int, k: int) -> list[str]:
     assert n >= 1 and n <= 1000
     assert k >= 1
 
-    all_instance = read_nucleotide_festa()
+    all_instance = list({s[:k] for s in read_nucleotide_festa()})
+    assert n <= len(all_instance)
+
     instance = []
     for seq in all_instance[:n]:
         instance.append(seq.replace("N", "")[:k])
@@ -190,6 +194,29 @@ def write_nucleotide_instance(n: int, k: int) -> None:
     util.save(instance, filename)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""### データの重複チェック""")
+    return
+
+
+@app.cell
+def _():
+    _all_instance = list(set(read_nucleotide_festa()))
+
+    print(f"number of unique nucleotide instance: {len(_all_instance)}")
+    for _k in [10, 50, 100, 500]:
+        _instance = list(set([_s[:_k] for _s in _all_instance]))
+        print(f"number of unique ncleotide instance (cut to length {_k}): {len(_instance)}")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""### 生成""")
+    return
+
+
 @app.cell
 def _():
     write_nucleotide_instance(n=5, k=10)
@@ -200,9 +227,9 @@ def _():
     write_nucleotide_instance(n=100, k=50)
     write_nucleotide_instance(n=50, k=100)
     write_nucleotide_instance(n=100, k=100)
-    write_nucleotide_instance(n=500, k=100)
+    #write_nucleotide_instance(n=500, k=100)
     write_nucleotide_instance(n=100, k=500)
-    write_nucleotide_instance(n=500, k=500)
+    #write_nucleotide_instance(n=500, k=500)
     return
 
 
@@ -272,7 +299,9 @@ def gen_protein_instance(n: int, k: int) -> list[str]:
     assert n >= 1 and n <= 1000
     assert k >= 1
 
-    all_instance = read_protein_festa()
+    all_instance = list({s[:k] for s in read_protein_festa()})
+    assert n <= len(all_instance)
+
     instance = []
     for seq in all_instance[:n]:
         instance.append(seq.replace("X", "")[:k])
@@ -287,6 +316,29 @@ def write_protein_instance(n: int, k: int) -> None:
     util.save(instance, filename)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""### データの重複チェック""")
+    return
+
+
+@app.cell
+def _():
+    _all_instance = list(set(read_protein_festa()))
+
+    print(f"number of unique protein instance: {len(_all_instance)}")
+    for k in [10, 50, 100, 500]:
+        _instance = list(set([s[:k] for s in _all_instance]))
+        print(f"number of unique protein instance (cut to length {k}): {len(_instance)}")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""### 生成""")
+    return
+
+
 @app.cell
 def _():
     write_protein_instance(n=5, k=10)
@@ -297,9 +349,9 @@ def _():
     write_protein_instance(n=100, k=50)
     write_protein_instance(n=50, k=100)
     write_protein_instance(n=100, k=100)
-    write_protein_instance(n=500, k=100)
+    #write_protein_instance(n=500, k=100)
     write_protein_instance(n=100, k=500)
-    write_protein_instance(n=500, k=500)
+    #write_protein_instance(n=500, k=500)
     return
 
 
