@@ -22,6 +22,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - Weighted Majority Merge アルゴリズム ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
 - IBS_SCS アルゴリズム[^2] ([model_ibs_scs.ipynb](./__marimo__/model_ibs_scs.ipynb))
 - 線形計画問題(SCIP) ([model_linear_scip.ipynb](./__marimo__/model_linear_scip.ipynb))
+- 線形計画問題(HiGHS) ([model_linear_highs.ipynb](./__marimo__/model_linear_highs.ipynb))
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
