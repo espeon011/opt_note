@@ -9,7 +9,7 @@
 import marimo
 
 __generated_with = "0.15.0"
-app = marimo.App(width="medium", auto_download=["ipynb"])
+app = marimo.App(width="medium")
 
 with app.setup:
     import pyscipopt
@@ -96,9 +96,11 @@ class Model:
         self.scip = scip
         self.seqs = seqs
 
-    def solve(self, time_limit: int | None = 60) -> "Model":
+    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
         if time_limit is not None:
             self.scip.setParam("limits/time", time_limit)
+        if not log:
+            self.scip.hideOutput()
         self.scip.optimize()
 
         return self
@@ -127,8 +129,8 @@ class Model:
 
 
 @app.function
-def solve(instance: list[str], time_limit: int | None = 60) -> str | None:
-    return Model(instance).solve(time_limit).to_solution()
+def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -> str | None:
+    return Model(instance).solve(time_limit, log).to_solution()
 
 
 @app.cell

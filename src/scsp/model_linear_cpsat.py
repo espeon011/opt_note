@@ -34,7 +34,7 @@ def _(mo):
     mo.md(
         r"""
     数理最適化モデルを用いて SCSP を解く. 
-    定式化については SCIP 版を参照. 
+    定式化については SCIP 版を参照.
     """
     )
     return
@@ -80,8 +80,8 @@ class Model:
         self.seqs = seqs
         self.status = None
 
-    def solve(self, time_limit: int | None = 60) -> "Model":
-        self.cpsolver.parameters.log_search_progress = True
+    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
+        self.cpsolver.parameters.log_search_progress = log
         if time_limit is not None:
             self.cpsolver.parameters.max_time_in_seconds = time_limit
         self.status = self.cpsolver.solve(self.cpmodel)
@@ -112,8 +112,8 @@ class Model:
 
 
 @app.function
-def solve(instance: list[str], time_limit: int | None = 60) -> str | None:
-    return Model(instance).solve(time_limit).to_solution()
+def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -> str | None:
+    return Model(instance).solve(time_limit, log).to_solution()
 
 
 @app.cell
