@@ -17,10 +17,10 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 ## モデル
 
 - アルファベットアルゴリズム[^3] ([model_alphabet.ipynb](./__marimo__/model_alphabet.ipynb))
-- 長い方から 2 個ずつマージする方法([model_descending.ipynb](./__marimo__/model_descending.ipynb))
 - Majority Merge アルゴリズム[^1] ([model_mm.ipynb](./__marimo__/model_mm.ipynb))
 - Weighted Majority Merge アルゴリズム ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
 - IBS_SCS アルゴリズム[^2] ([model_ibs_scs.ipynb](./__marimo__/model_ibs_scs.ipynb))
+- 長い方から 2 個ずつマージする方法([model_descending.ipynb](./__marimo__/model_descending.ipynb))
 - 整数線形計画モデル(SCIP) ([model_linear_scip.ipynb](./__marimo__/model_linear_scip.ipynb))
 - 整数線形計画モデル(HiGHS) ([model_linear_highs.ipynb](./__marimo__/model_linear_highs.ipynb))
 - 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.ipynb](./__marimo__/model_linear_cpsat.ipynb))
