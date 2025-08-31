@@ -18,7 +18,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - アルファベットアルゴリズム[^3] ([model_alphabet.ipynb](./__marimo__/model_alphabet.ipynb))
 - Majority Merge アルゴリズム[^1] ([model_mm.ipynb](./__marimo__/model_mm.ipynb))
-- Weighted Majority Merge アルゴリズム ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
+- Weighted Majority Merge アルゴリズム[^4] ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
 - IBS_SCS アルゴリズム[^2] ([model_ibs_scs.ipynb](./__marimo__/model_ibs_scs.ipynb))
 - 長い方から 2 個ずつマージする方法([model_descending.ipynb](./__marimo__/model_descending.ipynb))
 - 整数線形計画モデル(SCIP) ([model_linear_scip.ipynb](./__marimo__/model_linear_scip.ipynb))
@@ -48,3 +48,4 @@ TODO: ベンチマーク用インスタンスを増やしてカテゴリ分け�
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
 [^3]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
+[^4]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
