@@ -58,7 +58,7 @@ def _(mo):
 
     - 最終的に求めたい SCS 長は right transversal $T = (|s_1|, \dots, |s_n|)$ に対する $\lambda(T)$. 
     - Base Case として left transversal $o = (0, \dots, 0)$ に対する $\lambda(o) = 0$ がある. 
-    - 次の漸化式が成り立つ: $\lambda(t) = \min \{ \lambda(t_K) \ | \ K \in E_t \} + 1$. ただし $t \ne o$. 
+    - 次の漸化式が成り立つ: $\lambda(t) = \min \{ \lambda(t_K) \ | \ K \in E_t \} + 1$. ただし $t \ne o$.
     """
     )
     return
