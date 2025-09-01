@@ -14,7 +14,7 @@ __generated_with = "0.15.2"
 app = marimo.App(width="medium")
 
 with app.setup:
-    import hexaly.optimizer
+    import model_wmm_hexaly
     import util
 
 
@@ -27,7 +27,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# Hexaly を使ったヒューリスティック""")
+    mo.md(r"""# Hexaly を用いたヒューリスティックに初期重みを追加""")
     return
 
 
@@ -35,130 +35,23 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-    Hexaly の外部関数最適化機能を用いた定式化を紹介する. 
-    Weighted Majority Merge アルゴリズムにおいて次の文字を選択する基準は各文字列に対する残長の和であった. 
-    その残長の部分を Hexaly の決定変数で置き換える. 
+    `WMM_HEXALY` モデルにおいて重み決定変数の初期値を `WMM` と等しくなるように設定する. 
 
-    **決定変数**
-
-    - $w_{ij} \in \mathbb{N}$: 文字列 $s_i$ の $j$ 文字目の重み. $(i \in \{ 1, \dots, n \}, \ j \in \{ 1, \dots, |s_i| \})$
-        - $w_i = \{ w_{i,1} \dots, w_{i,|s_i|} \}$ とおく. 
-
-
-    **目的関数**
-
-    下記のアルゴリズムに従って構築した共通超配列の長さを目的関数とする. 
-
-    - 解 $\mathrm{sol}$ を空文字列で初期化する. 
-    - 各文字 $c$ に対して重み $\sum_{i=1, \ s_i[0] = c}^n w_{i,1}$ を計算し, 重みが最大である $c$ を求める.
-    - $\mathrm{sol}$ の後ろに $c$ を追加する. 
-    - 各文字列 $s_i \ (i \in \{ 1, \dots, n \})$ に対し, 先頭の文字が $c$ である場合は
-        - $s_i$ の先頭の文字を削除する.
-        - $w_i$ の先頭の重みを削除し, インデックスを前に詰める. 
-    - $s_1, \dots, s_n$ 全てが空文字列になれば終了. $\mathrm{sol}$ が解. 
+    巨大なインスタンスにおいて常に `WMM` 以上の質の解が出る反面, 小さ目のインスタンスでは `WMM_HEXALY` と比較して悪化することがある.
     """
     )
     return
 
 
-@app.class_definition
-class Model:
-    def __init__(self, instance):
-        chars = sorted(list(set("".join(instance))))
-
-        hxoptimizer = hexaly.optimizer.HexalyOptimizer()
-        hxmodel = hxoptimizer.model
-
-        priorities1d = [
-            hxmodel.int(1, len(chars)) for s in instance for _ in s
-        ]
-
-        func = hxmodel.create_int_external_function(self.objective)
-        func.external_context.lower_bound = 0
-        func.external_context.upper_bound = sum(len(s) for s in instance)
-
-        self.instance = instance
-        self.chars = chars
-        self.hxoptimizer = hxoptimizer
-        self.hxmodel = hxmodel
-        self.priorities1d = priorities1d
-
-        # これらが実行される時点で self.* が必要になるため初期化の最後に移動
-        hxmodel.minimize(func(*priorities1d))
-        hxmodel.close()
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        if time_limit is not None:
-            self.hxoptimizer.param.time_limit = time_limit
-        self.hxoptimizer.param.verbosity = 1 if log else 0
-        self.hxoptimizer.solve()
-        return self
-
-    def to_solution(self) -> str | None:
-        status = self.hxoptimizer.solution.status
-        if status not in {
-            hexaly.optimizer.HxSolutionStatus.OPTIMAL,
-            hexaly.optimizer.HxSolutionStatus.FEASIBLE,
-        }:
-            return None
-
-        priorities1d_value = [priority.value for priority in self.priorities1d]
-        priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
-        return self.make_csp(priorities2d_value)
-
-    def make_csp(self, priorities2d: list[list[int]]) -> str:
-        indices = [0] * len(self.instance)
-        solution = ""
-
-        # while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
-        for _ in range(
-            len(self.instance) * max(len(s) for s in self.instance)
-        ):
-            if all(idx == len(s) for idx, s in zip(indices, self.instance)):
-                break
-
-            counts = [
-                sum(
-                    priorities2d[sidx][idx]
-                    for sidx, (idx, s) in enumerate(
-                        zip(indices, self.instance)
-                    )
-                    if idx < len(s) and s[idx] == c
-                )
-                for c in self.chars
-            ]
-            next_char = self.chars[counts.index(max(counts))]
-
-            solution += next_char
-            for sidx, s in enumerate(self.instance):
-                idx = indices[sidx]
-                if idx < len(s) and s[idx] == next_char:
-                    indices[sidx] += 1
-
-        return solution
-
-    def priorities_1d_to_2d(self, priorities1d: list[int]) -> list[list[int]]:
-        counter = 0
-        priorities2d = []
-        for s in self.instance:
-            priorities2d.append([])
-            for _ in s:
-                priorities2d[-1].append(priorities1d[counter])
-                counter += 1
-
-        return priorities2d
-
-    def objective(self, priorities1d: list[int]):
-        priorities2d = self.priorities_1d_to_2d(priorities1d)
-        solution = self.make_csp(priorities2d)
-        return len(solution)
-
-
 @app.function
 def solve(
     instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str | None:
-    return Model(instance).solve(time_limit, log).to_solution()
+) -> str:
+    return (
+        model_wmm_hexaly.Model(instance, initial=True)
+        .solve(time_limit, log)
+        .to_solution()
+    )
 
 
 @app.cell
