@@ -27,6 +27,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.ipynb](./__marimo__/model_linear_cpsat.ipynb))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.ipynb](./__marimo__/model_automaton_cpsat.ipynb))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.ipynb](./__marimo__/model_wmm_hexaly.ipynb))
+- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.ipynb](./__marimo__/model_wmm_hexaly_init.ipynb))
 
 ## ベンチマーク
 
@@ -39,12 +40,13 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `MM`              | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
 | `WMM`             | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
 | `IBS_SCS`         | 73 | 117 | 163 | 28 | **34** 🥇 | **24** 🥇 | 141 | 51 | 893 |
-| `DESCENDING`      | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | **458** 🥇 |
+| `DESCENDING`      | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | 458 |
 | `LINEAR_SCIP`     | 70 | 175 | - | 45 | - | 42 | - | 70 | - |
 | `LINEAR_HIGHS`    | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
 | `LINEAR_CPSAT`    | 66 | 128 | 304 | 28 | 463 | **24** 🥇 | - | 49 | - |
 | `AUTOMATON_CPSAT` | 65 | 138 | 245 | 30 | 42 | 25 | - | 45 | - |
-| `WMM_HEXALY`          | **62** 🥇 | **102** 🥇 | **156** 🥇 | **27** 🥇 | **34** 🥇 | **24** 🥇 | **136** 🥇 | **44** 🥇 | 498 |
+| `WMM_HEXALY`      | **62** 🥇 | **102** 🥇 | 155 | **27** 🥇 | **34** 🥇 | **24** 🥇 | **136** 🥇 | **44** 🥇 | 498 |
+| `WMM_HEXALY_INIT` | 64 | 105 | **150** 🥇 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | **454** 🥇 |
 | | | | | | | | | | |
 
 TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
