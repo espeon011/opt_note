@@ -26,7 +26,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.ipynb](./__marimo__/model_linear_highs.ipynb))
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.ipynb](./__marimo__/model_linear_cpsat.ipynb))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.ipynb](./__marimo__/model_automaton_cpsat.ipynb))
-- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_hexaly.ipynb](./__marimo__/model_hexaly.ipynb))
+- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.ipynb](./__marimo__/model_wmm_hexaly.ipynb))
 
 ## ベンチマーク
 
