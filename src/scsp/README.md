@@ -28,6 +28,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.ipynb](./__marimo__/model_automaton_cpsat.ipynb))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.ipynb](./__marimo__/model_wmm_hexaly.ipynb))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.ipynb](./__marimo__/model_wmm_hexaly_init.ipynb))
+- `DIDP` DIDP ソルバーを用いた定式化[^6] ([model_didp.ipynb](./__marimo__/model_didp.ipynb))
 
 ## ベンチマーク
 
@@ -35,7 +36,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `DP`              | **62** 🥇 | - | - | - | - | - | - | - | - |
+| `DP`              | **62*** 🥇 | - | - | - | - | - | - | - | - |
 | `ALPHABET`        | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
 | `MM`              | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
 | `WMM`             | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
@@ -45,14 +46,17 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `LINEAR_HIGHS`    | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
 | `LINEAR_CPSAT`    | 66 | 128 | 304 | 28 | 463 | **24** 🥇 | - | 49 | - |
 | `AUTOMATON_CPSAT` | 65 | 138 | 245 | 30 | 42 | 25 | - | 45 | - |
-| `WMM_HEXALY`      | **62** 🥇 | **102** 🥇 | 155 | **27** 🥇 | **34** 🥇 | **24** 🥇 | **136** 🥇 | **44** 🥇 | 498 |
-| `WMM_HEXALY_INIT` | 64 | 105 | **150** 🥇 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | **454** 🥇 |
+| `WMM_HEXALY`      | **62** 🥇 | 102 | 155 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
+| `WMM_HEXALY_INIT` | 64 | 105 | 150 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | **454** 🥇 |
+| `DIDP`            | **62*** 🥇 | **99** 🥇 | **149** 🥇 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 500 |
 | | | | | | | | | | |
 
-TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
+- 「*」 マークがついているものは最適性の証明ができたもの. 
+- TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
 [^3]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
 [^4]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
 [^5]: Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). https://doi.org/10.1007/BF01075212
+[^6]: https://github.com/okaduki/opt100
