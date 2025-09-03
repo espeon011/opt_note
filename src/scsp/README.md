@@ -51,8 +51,30 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `DIDP`            | **62*** 🥇 | **99** 🥇 | **149** 🥇 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 500 |
 | | | | | | | | | | |
 
+- Hexaly を使ったものはライセンスされた別の PC で実行. 
 - 「*」 マークがついているものは最適性の証明ができたもの. 
 - TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
+
+## 解法の分類
+
+### 解の構成法
+
+- 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `IBS_SCS`, Hexaly 系, `DIDP`
+- その他 ... `ALPHABET`, `DESCENDING`, 数理計画ソルバー系
+
+## 探索法
+
+- 貪欲 ... `ALPHABET`, `MM`, `WMM`, `DESCENDING`
+- ビームサーチ ... `IBS_SCS`, `DIDP`
+- 全探探索 ... `DP`, `DIDP`, 数理計画ソルバー系
+- アニーリング? ... Hexaly 系
+
+| 探索法\解の構築法 | 前から1文字ずつ取ってくる | その他 |
+| --- | --- | --- |
+| 貪欲 | `MM`, `WMM` | `ALPHABET`, `DESCENDING` |
+| ビームサーチ | `IBS_SCS`, `DIDP` | |
+| 全探索 | `DP`, `DIDP` | 数理計画ソルバー系 |
+| アニーリング? | Hexaly 系 | |
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
