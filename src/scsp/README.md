@@ -20,6 +20,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `ALPHABET` アルファベットアルゴリズム[^3] ([model_alphabet.ipynb](./__marimo__/model_alphabet.ipynb))
 - `MM` Majority Merge アルゴリズム[^1] ([model_mm.ipynb](./__marimo__/model_mm.ipynb))
 - `WMM` Weighted Majority Merge アルゴリズム[^4] ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
+- `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([model_la_sh.ipynb](./__marimo__/model_la_sh.ipynb))
 - `IBS_SCS` IBS_SCS アルゴリズム[^2] ([model_ibs_scs.ipynb](./__marimo__/model_ibs_scs.ipynb))
 - `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([model_descending.ipynb](./__marimo__/model_descending.ipynb))
 - `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([model_linear_scip.ipynb](./__marimo__/model_linear_scip.ipynb))
@@ -40,6 +41,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `ALPHABET`        | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
 | `MM`              | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
 | `WMM`             | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
+| `LA_SH` | 70 | 132 | 170 | 31 | 38 | 28 | 144 | 51 | 497|
 | `IBS_SCS`         | 73 | 119 | 163 | 28 | **34** 🥇 | **24** 🥇 | 135 | 49 | 876 |
 | `DESCENDING`      | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | 458 |
 | `LINEAR_SCIP`     | 70 | 175 | - | 45 | - | 42 | - | 70 | - |
@@ -52,7 +54,10 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | | | | | | | | | | |
 
 - Hexaly を使ったものはライセンスされた別の PC で実行. 
-- 「*」 マークがついているものは最適性の証明ができたもの. 
+- 「*」 マークがついているものは最適性の証明ができたもの.
+- パラメータを持つアルゴリズムについては下記の設定で実行
+  - `IBS_SCS` $\beta = 100$, $\kappa = 7$. 
+  - `LA_SH` $m = 3$, $l = 1$. 
 - TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
 
 ## 解法の分類
@@ -82,3 +87,4 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 [^4]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
 [^5]: Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). https://doi.org/10.1007/BF01075212
 [^6]: https://github.com/okaduki/opt100
+[^7]: Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
