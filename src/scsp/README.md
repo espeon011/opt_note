@@ -66,7 +66,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - 貪欲 ... `ALPHABET`, `MM`, `WMM`, `DESCENDING`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探探索 ... `DP`, `DIDP`, 数理計画ソルバー系
+- 全探索 ... `DP`, `DIDP`, 数理計画ソルバー系
 - アニーリング? ... Hexaly 系
 
 | 探索法\解の構築法 | 前から1文字ずつ取ってくる | その他 |
