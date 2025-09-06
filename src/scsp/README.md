@@ -27,6 +27,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.ipynb](./__marimo__/model_linear_highs.ipynb))
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.ipynb](./__marimo__/model_linear_cpsat.ipynb))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.ipynb](./__marimo__/model_automaton_cpsat.ipynb))
+- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定して解くのを繰り返し, 二分探索を行う ([model_automaton_sat.ipynb](./__marimo__/model_automaton_cpsat_sat.ipynb))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.ipynb](./__marimo__/model_wmm_hexaly.ipynb))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.ipynb](./__marimo__/model_wmm_hexaly_init.ipynb))
 - `DIDP` DIDP ソルバーを用いた定式化[^6] ([model_didp.ipynb](./__marimo__/model_didp.ipynb))
@@ -37,7 +38,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `DP`              | **62*** 🥇 | - | - | - | - | - | - | - | - |
 | `ALPHABET`        | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
 | `MM`              | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
 | `WMM`             | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
@@ -57,7 +57,10 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - 「*」 マークがついているものは最適性の証明ができたもの.
 - パラメータを持つアルゴリズムについては下記の設定で実行
   - `IBS_SCS` $\beta = 100$, $\kappa = 7$. 
-  - `LA_SH` $m = 3$, $l = 1$. 
+  - `LA_SH` $m = 3$, $l = 1$.
+- 下記モデルは性能の問題により表から除外.
+  - `DP`
+  - `AUTOMATON_CPSAT_SAT`
 - TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
 
 ## 解法の分類
