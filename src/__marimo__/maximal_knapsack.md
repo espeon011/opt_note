@@ -3,7 +3,6 @@ In [ ]:
 import marimo as mo
 ```
 
-
 In [ ]:
 ```python
 from ortools.sat.python import cp_model
@@ -11,7 +10,6 @@ import math
 import time
 import pprint
 ```
-
 
 # 極大ナップサック問題
 
@@ -77,7 +75,6 @@ class SolutionPrinter(cp_model.CpSolverSolutionCallback):
         self.__all_solutions.append(solution)
 ```
 
-
 In [ ]:
 ```python
 class Model:
@@ -110,7 +107,6 @@ class Model:
         self.solver.solve(self.model, self.solution_printer)
 ```
 
-
 In [ ]:
 ```python
 # a = list(range(1, 5+1))
@@ -129,21 +125,16 @@ print(f"a = {a}")
 print(f"tau = {tau}")
 ```
 
-
 > ```
 > a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 > tau = 100
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 model = Model(a, tau)
 model.solve()
 ```
-
 
 > ```
 > Solution 1, time = 0.0054683685302734375 s
@@ -233,10 +224,6 @@ model.solve()
 > Solution 29, time = 0.015590429306030273 s
 >   [ 1 1 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 2 3 11 ]
-> 
-> ```
-
-> ```
 > Solution 30, time = 0.01592564582824707 s
 >   [ 1 1 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 2 3 10 ]
@@ -348,10 +335,6 @@ model.solve()
 > Solution 66, time = 0.026014089584350586 s
 >   [ 1 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 ]
 >   [ 1 7 14 ]
-> 
-> ```
-
-> ```
 > Solution 67, time = 0.02630472183227539 s
 >   [ 1 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 ]
 >   [ 1 5 14 ]
@@ -394,16 +377,12 @@ model.solve()
 > Solution 80, time = 0.029846668243408203 s
 >   [ 1 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 9 11 ]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 pprint.pprint(model.solution_printer.all_solutions, indent=4)
 ```
-
 
 > ```
 > [   [1, 2, 20],
@@ -486,10 +465,7 @@ pprint.pprint(model.solution_printer.all_solutions, indent=4)
 >     [1, 7, 11],
 >     [1, 5, 11],
 >     [1, 9, 11]]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -500,17 +476,13 @@ print(f"  wall time      : {model.solver.wall_time} s")
 print(f"  solutions found: {model.solution_printer.solution_count}")
 ```
 
-
 > ```
 > Statistics
 >   conflicts      : 21
 >   branches       : 950
 >   wall time      : 0.030006351 s
 >   solutions found: 80
-> 
 > ```
-
-
 
 ## 定式化(MILP)
 
@@ -556,28 +528,22 @@ class ModelLinear:
         self.solver.solve(self.model, self.solution_printer)
 ```
 
-
 In [ ]:
 ```python
 print(f"a = {a}")
 print(f"tau = {tau}")
 ```
 
-
 > ```
 > a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 > tau = 100
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 model_linear = ModelLinear(a, tau)
 model_linear.solve()
 ```
-
 
 > ```
 > Solution 1, time = 0.001855611801147461 s
@@ -592,10 +558,6 @@ model_linear.solve()
 > Solution 4, time = 0.0026917457580566406 s
 >   [ 1 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 3 4 7 ]
-> 
-> ```
-
-> ```
 > Solution 5, time = 0.002989053726196289 s
 >   [ 1 0 1 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 3 4 8 ]
@@ -722,10 +684,6 @@ model_linear.solve()
 > Solution 46, time = 0.013532400131225586 s
 >   [ 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 ]
 >   [ 1 3 20 ]
-> 
-> ```
-
-> ```
 > Solution 47, time = 0.013833999633789062 s
 >   [ 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 ]
 >   [ 1 4 20 ]
@@ -828,16 +786,12 @@ model_linear.solve()
 > Solution 80, time = 0.02201104164123535 s
 >   [ 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
 >   [ 1 2 3 4 ]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 pprint.pprint(model_linear.solution_printer.all_solutions, indent=4)
 ```
-
 
 > ```
 > [   [1, 3, 4, 5],
@@ -920,10 +874,7 @@ pprint.pprint(model_linear.solution_printer.all_solutions, indent=4)
 >     [1, 2, 3, 15],
 >     [1, 2, 3, 16],
 >     [1, 2, 3, 4]]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -934,14 +885,10 @@ print(f' wall time : {model_linear.solver.wall_time} s')
 print(f' solutions found: {model_linear.solution_printer.solution_count}')
 ```
 
-
 > ```
 > Statistics
 >  conflicts : 14
 >  branches : 1104
 >  wall time : 0.022203242 s
 >  solutions found: 80
-> 
 > ```
-
-

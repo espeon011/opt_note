@@ -3,14 +3,12 @@ In [ ]:
 import pyscipopt
 ```
 
-
 In [ ]:
 ```python
 import marimo as mo
 import nbformat
 import util
 ```
-
 
 # MILP 定式化 (SCIP)
 
@@ -106,20 +104,17 @@ class Model:
         return solution
 ```
 
-
 In [ ]:
 ```python
 def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -> str | None:
     return Model(instance).solve(time_limit, log).to_solution()
 ```
 
-
 In [ ]:
 ```python
 instance_01 = util.parse("uniform_q26n004k015-025.txt")
 solution_01 = solve(instance_01)
 ```
-
 
 In [ ]:
 ```python
@@ -133,7 +128,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 25 chars) ---
@@ -150,17 +144,13 @@ else:
 > str4: i--g------e----va----zg--b--r-d-----d------bc-s---v----rv--n-n-g-----f
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_02 = util.parse("uniform_q26n008k015-025.txt")
 solution_02 = solve(instance_02)
 ```
-
 
 In [ ]:
 ```python
@@ -174,7 +164,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 26 chars) ---
@@ -199,17 +188,13 @@ else:
 > str8: rxwxqkrdrlctodtmprpxwd---------------------------------------------------------------------------------------------------------------------------------------------------------
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_03 = util.parse("uniform_q26n016k015-025.txt")
 solution_03 = solve(instance_03)
 ```
-
 
 In [ ]:
 ```python
@@ -223,7 +208,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 26 chars) ---
@@ -245,17 +229,13 @@ else:
 > str16: xusfcfzpeecvwantfmgqzu
 > 
 > --- Solution not found ---
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_04 = util.parse("uniform_q05n010k010-010.txt")
 solution_04 = solve(instance_04)
 ```
-
 
 In [ ]:
 ```python
@@ -269,7 +249,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 5 chars) ---
@@ -298,17 +277,13 @@ else:
 > str10: ---b-------d---ab-d-b-ea--------a---d--------
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_05 = util.parse("uniform_q05n050k010-010.txt")
 solution_05 = solve(instance_05)
 ```
-
 
 In [ ]:
 ```python
@@ -322,7 +297,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 5 chars) ---
@@ -378,17 +352,13 @@ else:
 > str50: dbdabcecbb
 > 
 > --- Solution not found ---
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_06 = util.parse("nucleotide_n010k010.txt")
 solution_06 = solve(instance_06)
 ```
-
 
 In [ ]:
 ```python
@@ -402,7 +372,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 4 chars) ---
@@ -431,17 +400,13 @@ else:
 > str10: T-CTA-A---A-C-G--A----A-------------------
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_07 = util.parse("nucleotide_n050k050.txt")
 solution_07 = solve(instance_07)
 ```
-
 
 In [ ]:
 ```python
@@ -455,7 +420,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 5 chars) ---
@@ -511,17 +475,13 @@ else:
 > str50: ATGAGCACTAAGCGAAGAACCAAAAAGCAGACAATACAACCCGCTATTAC
 > 
 > --- Solution not found ---
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_08 = util.parse("protein_n010k010.txt")
 solution_08 = solve(instance_08)
 ```
-
 
 In [ ]:
 ```python
@@ -535,7 +495,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 19 chars) ---
@@ -564,17 +523,13 @@ else:
 > str10: M-E------S---LVPG----F-----N---E--------------------------------------
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 instance_09 = util.parse("protein_n050k050.txt")
 solution_09 = solve(instance_09)
 ```
-
 
 In [ ]:
 ```python
@@ -588,7 +543,6 @@ if _solution is not None:
 else:
     print("--- Solution not found ---")
 ```
-
 
 > ```
 > --- Condition (with 20 chars) ---
@@ -644,7 +598,4 @@ else:
 > str50: MANYSKPFLLDIVFNKDIKCINDSCSHSDCRYQSNSYVELRRNQALNKNL
 > 
 > --- Solution not found ---
-> 
 > ```
-
-

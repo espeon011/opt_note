@@ -7,13 +7,11 @@ import functools
 import util
 ```
 
-
 In [ ]:
 ```python
 import marimo as mo
 import nbformat
 ```
-
 
 # データ生成用
 
@@ -53,7 +51,6 @@ def gen_uniform_instance(
     return instance
 ```
 
-
 In [ ]:
 ```python
 def write_uniform_instance(
@@ -67,7 +64,6 @@ def write_uniform_instance(
     filename = f"uniform_q{q:0>2}n{n:0>3}k{k_min:0>3}-{k_max:0>3}.txt"
     util.save(instance, filename)
 ```
-
 
 In [ ]:
 ```python
@@ -88,7 +84,6 @@ write_uniform_instance(q=5, n=50, k_min=20, k_max=20)
 write_uniform_instance(q=5, n=100, k_min=20, k_max=20)
 write_uniform_instance(q=5, n=500, k_min=20, k_max=20)
 ```
-
 
 ## ヌクレオチド配列
 
@@ -139,7 +134,6 @@ def read_nucleotide_festa() -> list[str]:
     return instance
 ```
 
-
 In [ ]:
 ```python
 def gen_nucleotide_instance(n: int, k: int) -> list[str]:
@@ -156,7 +150,6 @@ def gen_nucleotide_instance(n: int, k: int) -> list[str]:
     return instance
 ```
 
-
 In [ ]:
 ```python
 def write_nucleotide_instance(n: int, k: int) -> None:
@@ -164,7 +157,6 @@ def write_nucleotide_instance(n: int, k: int) -> None:
     filename = f"nucleotide_n{n:0>3}k{k:0>3}.txt"
     util.save(instance, filename)
 ```
-
 
 ### データの重複チェック
 
@@ -178,17 +170,13 @@ for _k in [10, 50, 100, 500]:
     print(f"number of unique ncleotide instance (cut to length {_k}): {len(_instance)}")
 ```
 
-
 > ```
 > number of unique nucleotide instance: 995
 > number of unique ncleotide instance (cut to length 10): 239
 > number of unique ncleotide instance (cut to length 50): 278
 > number of unique ncleotide instance (cut to length 100): 292
 > number of unique ncleotide instance (cut to length 500): 401
-> 
 > ```
-
-
 
 ### 生成
 
@@ -206,7 +194,6 @@ write_nucleotide_instance(n=100, k=100)
 write_nucleotide_instance(n=100, k=500)
 #write_nucleotide_instance(n=500, k=500)
 ```
-
 
 ## プロテイン配列
 
@@ -258,7 +245,6 @@ def read_protein_festa() -> list[str]:
     return instance
 ```
 
-
 In [ ]:
 ```python
 def gen_protein_instance(n: int, k: int) -> list[str]:
@@ -275,7 +261,6 @@ def gen_protein_instance(n: int, k: int) -> list[str]:
     return instance
 ```
 
-
 In [ ]:
 ```python
 def write_protein_instance(n: int, k: int) -> None:
@@ -283,7 +268,6 @@ def write_protein_instance(n: int, k: int) -> None:
     filename = f"protein_n{n:0>3}k{k:0>3}.txt"
     util.save(instance, filename)
 ```
-
 
 ### データの重複チェック
 
@@ -297,17 +281,13 @@ for k in [10, 50, 100, 500]:
     print(f"number of unique protein instance (cut to length {k}): {len(_instance)}")
 ```
 
-
 > ```
 > number of unique protein instance: 701
 > number of unique protein instance (cut to length 10): 140
 > number of unique protein instance (cut to length 50): 167
 > number of unique protein instance (cut to length 100): 198
 > number of unique protein instance (cut to length 500): 327
-> 
 > ```
-
-
 
 ### 生成
 
@@ -325,4 +305,3 @@ write_protein_instance(n=100, k=100)
 write_protein_instance(n=100, k=500)
 #write_protein_instance(n=500, k=500)
 ```
-

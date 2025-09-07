@@ -3,12 +3,10 @@ In [ ]:
 import marimo as mo
 ```
 
-
 In [ ]:
 ```python
 from ortools.sat.python import cp_model
 ```
-
 
 # MIP における論理演算の扱い
 
@@ -42,7 +40,6 @@ class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
     def solution_count(self):
         return self.__solution_count
 ```
-
 
 ### AND
 
@@ -80,16 +77,12 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=0 B=0 AandB=0 
 > A=0 B=1 AandB=0 
 > A=1 B=1 AandB=1 
-> A=1 B=0 AandB=0 
-> 
+> A=1 B=0 AandB=0
 > ```
-
-
 
 ### OR
 
@@ -127,16 +120,12 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=0 B=0 AorB=0 
 > A=0 B=1 AorB=1 
 > A=1 B=1 AorB=1 
-> A=1 B=0 AorB=1 
-> 
+> A=1 B=0 AorB=1
 > ```
-
-
 
 ### NAND
 
@@ -161,16 +150,12 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=1 B=1 AnandB=0 
 > A=1 B=0 AnandB=1 
 > A=0 B=0 AnandB=1 
-> A=0 B=1 AnandB=1 
-> 
+> A=0 B=1 AnandB=1
 > ```
-
-
 
 ### NOR
 
@@ -195,16 +180,12 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=0 B=1 AnorB=0 
 > A=0 B=0 AnorB=1 
 > A=1 B=0 AnorB=0 
-> A=1 B=1 AnorB=0 
-> 
+> A=1 B=1 AnorB=0
 > ```
-
-
 
 ### XOR
 
@@ -231,16 +212,12 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=0 B=0 AxorB=0 
 > A=0 B=1 AxorB=1 
 > A=1 B=1 AxorB=0 
-> A=1 B=0 AxorB=1 
-> 
+> A=1 B=0 AxorB=1
 > ```
-
-
 
 ### XNOR
 
@@ -269,13 +246,9 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A=0 B=1 AxorB=0 
 > A=0 B=0 AxorB=1 
 > A=1 B=0 AxorB=0 
-> A=1 B=1 AxorB=1 
-> 
+> A=1 B=1 AxorB=1
 > ```
-
-

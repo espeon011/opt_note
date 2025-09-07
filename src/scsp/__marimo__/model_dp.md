@@ -4,13 +4,11 @@ import itertools
 import util
 ```
 
-
 In [ ]:
 ```python
 import marimo as mo
 import nbformat
 ```
-
 
 # 動的計画法
 
@@ -82,7 +80,6 @@ def solve(instance: list[str]) -> str:
     return solution[::-1]
 ```
 
-
 **現実的な時間内に解を求められないため,
 小さいインスタンスに対してのみ実行する.**
 
@@ -95,7 +92,6 @@ util.show(_instance, _solution)
 print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 ```
 
-
 > ```
 > --- Condition (with 25 chars) ---
 > str1: tkgnkuhmpxnhtqgxzvxis
@@ -103,10 +99,6 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str3: ulcinycosovozpplp
 > str4: igevazgbrddbcsvrvnngf
 > 
-> 
-> ```
-
-> ```
 > --- Solution (of length 62) ---
 >  Sol: ulcitkgnycojisoevqfoazkuhmpplxnhtqgbrxzddbxcvsuqpvxirvsnnsbgxf
 > str1: ----tkgn--------------kuhmp--xnhtqg--xz-----v-----xi--s-------
@@ -115,10 +107,7 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str4: ---i--g--------ev---az------------gbr--ddb-c-s---v--rv-nn--g-f
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -129,7 +118,6 @@ util.show(_instance, _solution)
 print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 ```
 
-
 > ```
 > --- Condition (with 4 chars) ---
 > str1: ATGGGATACG
@@ -138,10 +126,6 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str4: TAAAATCTGT
 > str5: AGGTAACAAA
 > 
-> 
-> ```
-
-> ```
 > --- Solution (of length 21) ---
 >  Sol: ATGGTACACGATATCTGTACC
 > str1: ATGG-----GATA-C-G----
@@ -151,10 +135,7 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str5: A-GGTA-AC-A-A-----A--
 > 
 > solution is feasible: True
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -165,7 +146,6 @@ util.show(_instance, _solution)
 print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 ```
 
-
 > ```
 > --- Condition (with 19 chars) ---
 > str1: MALSYCPKGT
@@ -174,10 +154,6 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str4: MEEHVNELHD
 > str5: MSNFDAIRAL
 > 
-> 
-> ```
-
-> ```
 > --- Solution (of length 31) ---
 >  Sol: MAPLSYQEEHSSVLNFELHDAICRPKGTVAL
 > str1: MA-LSY----------------C-PKGT---
@@ -187,7 +163,4 @@ print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
 > str5: M---S---------NF---DAI-R-----AL
 > 
 > solution is feasible: True
-> 
 > ```
-
-

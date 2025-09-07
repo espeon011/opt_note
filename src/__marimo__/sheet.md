@@ -3,7 +3,6 @@ In [ ]:
 import marimo as mo
 ```
 
-
 In [ ]:
 ```python
 from ortools.sat.python import cp_model
@@ -11,7 +10,6 @@ from ortools.math_opt.python import mathopt
 import random
 import datetime
 ```
-
 
 # 忘年会席決め計算
 
@@ -78,7 +76,6 @@ class Employee:
         age.members.append(self.id)
 ```
 
-
 In [ ]:
 ```python
 class Project:
@@ -87,7 +84,6 @@ class Project:
         self.members = []
         self.name = name
 ```
-
 
 In [ ]:
 ```python
@@ -98,7 +94,6 @@ class Group:
         self.name = name
 ```
 
-
 In [ ]:
 ```python
 class Age:
@@ -107,7 +102,6 @@ class Age:
         self.members = []
         self.name = name
 ```
-
 
 In [ ]:
 ```python
@@ -118,7 +112,6 @@ class Sheet:
         self.name = name
         table.sheets.append(self.id)
 ```
-
 
 In [ ]:
 ```python
@@ -132,7 +125,6 @@ class Table:
     def capacity(self):
         return len(self.sheets)
 ```
-
 
 In [ ]:
 ```python
@@ -170,7 +162,6 @@ for e_id in range(n_all):
     employees.append(Employee(e_id, e_projects, e_group, e_age))
 ```
 
-
 In [ ]:
 ```python
 for _e in employees:
@@ -179,7 +170,6 @@ for _e in employees:
     print(f"projects={_e.projects}", end=" ")
     print(f"age={_e.age}({ages[_e.age].name})")
 ```
-
 
 > ```
 > Employee 0: group=3 projects=[0, 2] age=2(60 代以上)
@@ -247,10 +237,7 @@ for _e in employees:
 > Employee 62: group=2 projects=[2, 0] age=2(60 代以上)
 > Employee 63: group=3 projects=[3, 2] age=2(60 代以上)
 > Employee 64: group=1 projects=[3] age=2(60 代以上)
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -258,17 +245,13 @@ for _p in projects:
     print(f"Project {_p.id}: members={_p.members}")
 ```
 
-
 > ```
 > Project 0: members=[0, 11, 14, 17, 18, 27, 29, 31, 32, 33, 43, 46, 49, 51, 52, 54, 56, 58, 61, 62]
 > Project 1: members=[3, 8, 9, 10, 15, 16, 19, 24, 25, 30, 31, 34, 37, 44, 45, 47, 49, 50, 53, 57, 60]
 > Project 2: members=[0, 1, 2, 4, 5, 6, 8, 12, 21, 22, 23, 24, 36, 38, 41, 43, 45, 54, 57, 59, 62, 63]
 > Project 3: members=[1, 5, 6, 7, 14, 20, 28, 34, 40, 41, 46, 48, 50, 52, 63, 64]
 > Project 4: members=[3, 13, 15, 17, 19, 20, 22, 26, 32, 35, 39, 42, 44, 47, 48, 55, 58]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -276,16 +259,12 @@ for _g in groups:
     print(f"Group {_g.id}: members={_g.members}")
 ```
 
-
 > ```
 > Group 0: members=[3, 4, 5, 7, 8, 22, 25, 27, 30, 31, 32, 33, 43, 44, 50, 55, 56, 61]
 > Group 1: members=[2, 6, 10, 14, 16, 18, 23, 24, 26, 28, 38, 40, 47, 53, 57, 64]
 > Group 2: members=[9, 13, 17, 21, 29, 34, 39, 42, 45, 46, 52, 60, 62]
 > Group 3: members=[0, 1, 11, 12, 15, 19, 20, 35, 36, 37, 41, 48, 49, 51, 54, 58, 59, 63]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -293,22 +272,17 @@ for _a in ages:
     print(f"Age {_a.id}: members={_a.members}")
 ```
 
-
 > ```
 > Age 0: members=[2, 6, 16, 18, 19, 22, 23, 28, 34, 35, 37, 46, 47, 48, 53, 54, 57, 59, 61]
 > Age 1: members=[1, 3, 4, 11, 13, 15, 24, 32, 36, 39, 44, 49, 51, 52, 58, 60]
 > Age 2: members=[0, 5, 7, 8, 9, 10, 12, 14, 17, 20, 21, 25, 26, 27, 29, 30, 31, 33, 38, 40, 41, 42, 43, 45, 50, 55, 56, 62, 63, 64]
-> 
 > ```
-
-
 
 In [ ]:
 ```python
 for _t in tables:
     print(f"Table {_t.id}: sheets={_t.sheets}")
 ```
-
 
 > ```
 > Table 0: sheets=[0, 1, 2, 3, 4]
@@ -324,10 +298,7 @@ for _t in tables:
 > Table 10: sheets=[50, 51, 52, 53, 54]
 > Table 11: sheets=[55, 56, 57, 58, 59]
 > Table 12: sheets=[60, 61, 62, 63, 64]
-> 
 > ```
-
-
 
 ### モデル化(CP-SAT)
 
@@ -379,7 +350,6 @@ for _t in tables:
 model.minimize(_obj_p + _obj_g + _obj_a)
 ```
 
-
 In [ ]:
 ```python
 solver = cp_model.CpSolver()
@@ -398,15 +368,11 @@ print(f"time = {solver.wall_time}")
 print(f"objective value = {solver.objective_value}")
 ```
 
-
 > ```
 > status = OPTIMAL
 > time = 0.92982794
 > objective value = 374.0
-> 
 > ```
-
-
 
 In [ ]:
 ```python
@@ -420,7 +386,6 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
                 f"  employee {_e.id}: projects={_e.projects} group={_e.group} age={_e.age}"
             )
 ```
-
 
 > ```
 > Table 0:
@@ -501,10 +466,7 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
 >   employee 31: projects=[1, 0] group=0 age=2
 >   employee 34: projects=[3, 1] group=2 age=0
 >   employee 63: projects=[3, 2] group=3 age=2
-> 
 > ```
-
-
 
 ### モデル化(SCIP)
 
@@ -514,12 +476,9 @@ run_button_scip_quad = mo.ui.run_button(full_width=True)
 run_button_scip_quad
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -578,12 +537,9 @@ for _t in tables:
 model_scip.minimize(_obj_p + _obj_g + _obj_a)
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -591,21 +547,9 @@ _params = mathopt.SolveParameters(enable_output=True)
 result = mathopt.solve(model_scip, mathopt.SolverType.GSCIP, params=_params)
 ```
 
-
 > ```
-> <span class="codehilite"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
->   File <span class="nb">&quot;/home/psiana011/.cache/uv/archive-v0/YMp08aL_pYs8qyFWhAaHv/lib/python3.13/site-packages/marimo/_runtime/executor.py&quot;</span>, line <span class="m">138</span>, in <span class="n">execute_cell</span>
-> <span class="w">    </span><span class="n">exec</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">glbls</span><span class="p">)</span>
-> <span class="w">    </span><span class="pm">~~~~^^^^^^^^^^^^^^^^^^</span>
->   File <span class="nb">&quot;/tmp/nix-shell.NLazOA/marimo_1619940/__marimo__cell_wlCL_.py&quot;</span>, line <span class="m">2</span>, in <span class="n">&lt;module&gt;</span>
-> <span class="w">    </span><span class="n">result</span> <span class="o">=</span> <span class="n">mathopt</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">model_scip</span><span class="p">,</span> <span class="n">mathopt</span><span class="o">.</span><span class="n">SolverType</span><span class="o">.</span><span class="n">GSCIP</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">_params</span><span class="p">)</span>
-> <span class="w">                           </span><span class="pm">^^^^^^^^^^</span>
-> <span class="gr">NameError</span>: <span class="n">name &#39;model_scip&#39; is not defined</span>
-> </pre></div>
-> </span>
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -622,7 +566,6 @@ if (
                 f"  employee {_e.id}: projects={_e.projects} group={_e.group} age={_e.age}"
             )
 ```
-
 
 ## 線形計画モデルとてしての定式化
 
@@ -711,7 +654,6 @@ for _t in tables:
 model_linear.minimize(_obj_p + _obj_g + _obj_a)
 ```
 
-
 ### ソルバー比較
 
 どのソルバーも現実的な時間で終わらなかったのでタイムリミットを 5 分に設定
@@ -724,12 +666,9 @@ run_button_cpsat = mo.ui.run_button(full_width=True)
 run_button_cpsat
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -743,12 +682,9 @@ _result = mathopt.solve(
 )
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 #### 実行: SCIP
 
@@ -758,12 +694,9 @@ run_button_scip = mo.ui.run_button(full_width=True)
 run_button_scip
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -775,12 +708,9 @@ _params = mathopt.SolveParameters(
 _result = mathopt.solve(model_linear, mathopt.SolverType.GSCIP, params=_params)
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 #### 実行: Highs
 
@@ -790,12 +720,9 @@ run_button_highs = mo.ui.run_button(full_width=True)
 run_button_highs
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 In [ ]:
 ```python
@@ -807,12 +734,9 @@ _params = mathopt.SolveParameters(
 _result = mathopt.solve(model_linear, mathopt.SolverType.HIGHS, params=_params)
 ```
 
-
 > ```
-
+>
 > ```
-
-
 
 ### 結果
 

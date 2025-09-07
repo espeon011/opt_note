@@ -3,12 +3,10 @@ In [ ]:
 import marimo as mo
 ```
 
-
 In [ ]:
 ```python
 from ortools.sat.python import cp_model
 ```
-
 
 # 方程式が成立するかどうかを表す Bool 変数
 
@@ -55,7 +53,6 @@ class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
         return self.__solution_count
 ```
 
-
 In [ ]:
 ```python
 _lb_a, _ub_a = (1, 5)
@@ -73,7 +70,6 @@ _solution_printer = VarArraySolutionPrinter([x, a, b])
 _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
-
 
 > ```
 > (a<=b)=0 a=2 b=1 
@@ -100,11 +96,8 @@ _status = _solver.solve(_model, _solution_printer)
 > (a<=b)=1 a=2 b=3 
 > (a<=b)=1 a=2 b=4 
 > (a<=b)=1 a=2 b=5 
-> (a<=b)=1 a=1 b=1 
-> 
+> (a<=b)=1 a=1 b=1
 > ```
-
-
 
 ## 方程式の場合
 
@@ -148,7 +141,6 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > (a==b)=0 (a<=b)=1 (a>=b)=0 a=1 b=2 
 > (a==b)=1 (a<=b)=1 (a>=b)=1 a=1 b=1 
@@ -174,11 +166,8 @@ _status = _solver.solve(_model, _solution_printer)
 > (a==b)=0 (a<=b)=0 (a>=b)=1 a=4 b=1 
 > (a==b)=0 (a<=b)=0 (a>=b)=1 a=3 b=1 
 > (a==b)=0 (a<=b)=0 (a>=b)=1 a=3 b=2 
-> (a==b)=0 (a<=b)=0 (a>=b)=1 a=2 b=1 
-> 
+> (a==b)=0 (a<=b)=0 (a>=b)=1 a=2 b=1
 > ```
-
-
 
 ## `only_enforce_if()` の利用
 
@@ -208,7 +197,6 @@ _solution_printer = VarArraySolutionPrinter([_x, _a, _b])
 _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
-
 
 > ```
 > (a==b)=0 a=1 b=1 
@@ -240,11 +228,8 @@ _status = _solver.solve(_model, _solution_printer)
 > (a==b)=1 a=2 b=2 
 > (a==b)=1 a=3 b=3 
 > (a==b)=1 a=4 b=4 
-> (a==b)=1 a=5 b=5 
-> 
+> (a==b)=1 a=5 b=5
 > ```
-
-
 
 ### 同値にしたい場合
 
@@ -277,7 +262,6 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > (a==b)=0 a=1 b=2 
 > (a==b)=0 a=2 b=1 
@@ -303,11 +287,8 @@ _status = _solver.solve(_model, _solution_printer)
 > (a==b)=1 a=3 b=3 
 > (a==b)=1 a=5 b=5 
 > (a==b)=1 a=2 b=2 
-> (a==b)=1 a=1 b=1 
-> 
+> (a==b)=1 a=1 b=1
 > ```
-
-
 
 ## 応用
 
@@ -372,7 +353,6 @@ In [ ]:
 suspects = ['A', 'B', 'C', 'D']
 ```
 
-
 In [ ]:
 ```python
 _model = cp_model.CpModel()
@@ -397,14 +377,10 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=0 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0 
-> A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=1 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0 
-> 
+> A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=1 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0
 > ```
-
-
 
 ### 実装(線形版)
 
@@ -441,14 +417,10 @@ _solver.parameters.enumerate_all_solutions = True
 _status = _solver.solve(_model, _solution_printer)
 ```
 
-
 > ```
 > A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=0 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0 
-> A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=1 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0 
-> 
+> A_is_liar=1 B_is_liar=1 C_is_liar=1 D_is_liar=1 A_is_culprit=0 B_is_culprit=1 C_is_culprit=0 D_is_culprit=0
 > ```
-
-
 
 ### 補足
 

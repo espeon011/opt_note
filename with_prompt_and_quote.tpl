@@ -2,18 +2,22 @@
 
 {% block codecell %}
 In [{{ cell.execution_count if cell.execution_count else " " }}]:
-```python
-{{ cell.source | ipython2python }}
-```
-{% if cell.outputs %}
-{% for out in cell.outputs %}
-{{ "> ```\n" }}
-{%- if out.text is defined -%}
-> {{ out.text | replace("\n", "\n> ") }}
+{{ "```python" }}
+{{ cell.source }}
+{{ "```\n" }}
+
+{%- if cell.outputs -%}
+{%- set cell_out_texts = ["> "] -%}
+{%- for output in cell.outputs if output.output_type == 'stream' and output.name == 'stdout' -%}
+{%- if output.text is defined -%}
+{%- set _ = cell_out_texts.append(output.text | join('')) -%}
 {%- elif 'text/plain' in out.data -%}
-> {{ out.data['text/plain'] | replace("\n", "\n> ") }}
-{%- endif %}
-> ```
-{% endfor %}
-{% endif %}
+{%- set _ = cell_out_texts.append(out.data['text/plain'] | join('')) -%}
+{%- endif -%}
+{%- endfor -%}
+{{ "\n> ```" }}
+{{ cell_out_texts | join('') | trim | replace("\n", "\n> ") }}
+{{ "> ```\n" }}
+{%- endif -%}
+
 {% endblock codecell %}
