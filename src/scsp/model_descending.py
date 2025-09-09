@@ -7,16 +7,18 @@
 
 import marimo
 
-__generated_with = "0.15.0"
+__generated_with = "0.15.2"
 app = marimo.App(width="medium")
+
+with app.setup:
+    import util
 
 
 @app.cell
 def _():
     import marimo as mo
     import nbformat
-    import util
-    return mo, util
+    return (mo,)
 
 
 @app.cell(hide_code=True)
@@ -44,13 +46,13 @@ def _(mo):
     ここでは与えられた文字列を長さが長い順にソートし, 
     最初の 2 つを shortest common supersequence で置き換える操作を文字列が 1 つになるまで繰り返す. 
 
-    文字列の集合 $S = \{ s_1, s_2, \dots, s_n \}$ はソート済みで $|s_1| \geq |s_2| \geq \dots \geq |s_n|$ を満たしているとする. 
+    文字列の集合 $S = \lbrace s_1, s_2, \dots, s_n \rbrace$ はソート済みで $|s_1| \geq |s_2| \geq \dots \geq |s_n|$ を満たしているとする. 
 
     - $n_0 = n$ とする.
-    - $l$ ステップ目において文字列集合が $\{ s_1, s_2, \dots, s_{n_l} \}$ であるとする.
+    - $l$ ステップ目において文字列集合が $\lbrace s_1, s_2, \dots, s_{n_l} \rbrace$ であるとする.
     - $s_1$ と $s_2$ の shortest common supersequence を求め, $s_1$ をそれで置き換える.
-      $s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $\{ s_1, s_2, \dots, s_{n_l - 1}\}$ とする. 
-    - 文字列集合が 1 元集合 $\{ s_1 \}$ になったら終了.
+      $s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $\lbrace s_1, s_2, \dots, s_{n_l - 1}\rbrace$ とする. 
+    - 文字列集合が 1 元集合 $\lbrace s_1 \rbrace$ になったら終了.
     """
     )
     return
@@ -111,7 +113,7 @@ def solve(instance: list[str]) -> str:
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n004k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -121,7 +123,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n008k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -131,7 +133,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n016k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -141,7 +143,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q05n010k010-010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -151,7 +153,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q05n050k010-010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -161,7 +163,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("nucleotide_n010k010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -171,7 +173,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("nucleotide_n050k050.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -181,7 +183,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("protein_n010k010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -191,7 +193,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("protein_n050k050.txt")
     util.show(_instance)
     _solution = solve(_instance)

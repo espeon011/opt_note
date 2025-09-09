@@ -1,8 +1,12 @@
 In [ ]:
 ```python
+import util
+```
+
+In [ ]:
+```python
 import marimo as mo
 import nbformat
-import util
 ```
 
 # Descending モデル
@@ -14,13 +18,13 @@ import util
 ここでは与えられた文字列を長さが長い順にソートし,
 最初の 2 つを shortest common supersequence で置き換える操作を文字列が 1 つになるまで繰り返す.
 
-文字列の集合 $S = \{ s_1, s_2, \dots, s_n \}$ はソート済みで $|s_1| \geq |s_2| \geq \dots \geq |s_n|$ を満たしているとする.
+文字列の集合 $S = \lbrace s_1, s_2, \dots, s_n \rbrace$ はソート済みで $|s_1| \geq |s_2| \geq \dots \geq |s_n|$ を満たしているとする.
 
 - $n_0 = n$ とする.
-- $l$ ステップ目において文字列集合が $\{ s_1, s_2, \dots, s_{n_l} \}$ であるとする.
+- $l$ ステップ目において文字列集合が $\lbrace s_1, s_2, \dots, s_{n_l} \rbrace$ であるとする.
 - $s_1$ と $s_2$ の shortest common supersequence を求め, $s_1$ をそれで置き換える.
-  $s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $\{ s_1, s_2, \dots, s_{n_l - 1}\}$ とする.
-- 文字列集合が 1 元集合 $\{ s_1 \}$ になったら終了.
+  $s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $\lbrace s_1, s_2, \dots, s_{n_l - 1}\rbrace$ とする.
+- 文字列集合が 1 元集合 $\lbrace s_1 \rbrace$ になったら終了.
 
 この方法が common supersequence を与えるのは $s'$ が $s$ の supersequence であるという 2 項関係 $s \preceq s'$ が推移的 (さらにいえば半順序) であることからいえる.
 一方でこの順序関係によって順序集合となった文字配列全体の集合には圏論的な余積 (最小上界) は存在しない.

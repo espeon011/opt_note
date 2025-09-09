@@ -7,16 +7,18 @@
 
 import marimo
 
-__generated_with = "0.15.0"
+__generated_with = "0.15.2"
 app = marimo.App(width="medium")
+
+with app.setup:
+    import util
 
 
 @app.cell
 def _():
     import marimo as mo
     import nbformat
-    import util
-    return mo, util
+    return (mo,)
 
 
 @app.cell(hide_code=True)
@@ -40,7 +42,7 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-    文字種全体を $\Sigma = \{ c_1, \dots, c_q \}$ とする. 
+    文字種全体を $\Sigma = \lbrace c_1, \dots, c_q \rbrace$ とする. 
     与えられた文字列の中で最大の長さ $k$ に対して下記は与えられた文字列全ての supersequence になる: 
 
     $$
@@ -50,7 +52,7 @@ def _(mo):
     これを解とすることで長さ $qk$ の common supersequence を出力する. 
     この長さは文字列の数に直接は依存しない. 
 
-    各文字列 $s_i$ の $j$ 番目の文字は上記 $(c_1 c_2 \dots c_q)^k$ の中の $j$ 番目のブロックに必ず含まれているが, 
+    各文字列 $s_i$ の $j$ 番目の文字は上記 $(c_1 c_2 \dots c_q)^k$ の中の $j$ 番目のブロックに対応するが, 
     $j$ 番目のブロックの中にはどの文字列でも使用しない文字があるかもしれない. 
     そのような文字は捨てることで解を少し改善する. 
     これによって解が少し改善するが, 文字列の数が増えると削れる文字が少なくなり, 長さ $qk$ に近づく.
@@ -79,7 +81,7 @@ def solve(instance: list[str]) -> str:
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n004k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -89,7 +91,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n008k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -99,7 +101,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q26n016k015-025.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -109,7 +111,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q05n010k010-010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -119,7 +121,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("uniform_q05n050k010-010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -129,7 +131,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("nucleotide_n010k010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -139,7 +141,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("nucleotide_n050k050.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -149,7 +151,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("protein_n010k010.txt")
     util.show(_instance)
     _solution = solve(_instance)
@@ -159,7 +161,7 @@ def _(util):
 
 
 @app.cell
-def _(util):
+def _():
     _instance = util.parse("protein_n050k050.txt")
     util.show(_instance)
     _solution = solve(_instance)
