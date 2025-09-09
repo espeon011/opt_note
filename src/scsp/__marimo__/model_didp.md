@@ -13,12 +13,7 @@ import nbformat
 
 # DIDP を用いたモデル
 
-`DP` モデルの定式化を DIDP[^1] 用に書き直したもの.
-基本的な遷移規則は `DP` と同様.
-
-探索効率のため dual bound を何種類か用意した.
-
-[^1]: https://didp.ai/
+考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)
 
 In [ ]:
 ```python

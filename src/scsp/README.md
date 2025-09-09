@@ -16,21 +16,21 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 ## モデル
 
-- `DP` 動的計画法[^5] ([model_dp.ipynb](./__marimo__/model_dp.ipynb))
-- `ALPHABET` アルファベットアルゴリズム[^3] ([model_alphabet.ipynb](./__marimo__/model_alphabet.ipynb))
-- `MM` Majority Merge アルゴリズム[^1] ([model_mm.ipynb](./__marimo__/model_mm.ipynb))
-- `WMM` Weighted Majority Merge アルゴリズム[^4] ([model_wmm.ipynb](./__marimo__/model_wmm.ipynb))
-- `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([model_la_sh.ipynb](./__marimo__/model_la_sh.ipynb))
-- `IBS_SCS` IBS_SCS アルゴリズム[^2] ([model_ibs_scs.ipynb](./__marimo__/model_ibs_scs.ipynb))
-- `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([model_descending.ipynb](./__marimo__/model_descending.ipynb))
-- `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([model_linear_scip.ipynb](./__marimo__/model_linear_scip.ipynb))
-- `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.ipynb](./__marimo__/model_linear_highs.ipynb))
-- `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.ipynb](./__marimo__/model_linear_cpsat.ipynb))
-- `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.ipynb](./__marimo__/model_automaton_cpsat.ipynb))
-- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定して解くのを繰り返し, 二分探索を行う ([model_automaton_sat.ipynb](./__marimo__/model_automaton_cpsat_sat.ipynb))
-- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.ipynb](./__marimo__/model_wmm_hexaly.ipynb))
-- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.ipynb](./__marimo__/model_wmm_hexaly_init.ipynb))
-- `DIDP` DIDP ソルバーを用いた定式化[^6] ([model_didp.ipynb](./__marimo__/model_didp.ipynb))
+- `DP` 動的計画法[^5] ([model_dp.md](./__marimo__/model_dp.md))
+- `ALPHABET` アルファベットアルゴリズム[^3] ([model_alphabet.md](./__marimo__/model_alphabet.md))
+- `MM` Majority Merge アルゴリズム[^1] ([model_mm.md](./__marimo__/model_mm.md))
+- `WMM` Weighted Majority Merge アルゴリズム[^4] ([model_wmm.md](./__marimo__/model_wmm.md))
+- `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([model_la_sh.md](./__marimo__/model_la_sh.md))
+- `IBS_SCS` IBS_SCS アルゴリズム[^2] ([model_ibs_scs.md](./__marimo__/model_ibs_scs.md))
+- `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([model_descending.md](./__marimo__/model_descending.md))
+- `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([model_linear_scip.md](./__marimo__/model_linear_scip.md))
+- `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.md](./__marimo__/model_linear_highs.md))
+- `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.md](./__marimo__/model_linear_cpsat.md))
+- `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.md](./__marimo__/model_automaton_cpsat.md))
+- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([model_automaton_cpsat_sat.md](./__marimo__/model_automaton_cpsat_sat.md))
+- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.md](./__marimo__/model_wmm_hexaly.md))
+- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.md](./__marimo__/model_wmm_hexaly_init.md))
+- `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([model_didp.md](./__marimo__/model_didp.md))
 
 ## ベンチマーク
 
@@ -91,5 +91,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 [^3]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
 [^4]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
 [^5]: Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). https://doi.org/10.1007/BF01075212
-[^6]: https://github.com/okaduki/opt100
+[^6]: https://github.com/okaduki/opt100, 2025-09-09 アクセス. 
 [^7]: Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
+[^8]: https://zenn.dev/okaduki/articles/7f9a3f3c54bc98, 2025-09-09 アクセス. 
