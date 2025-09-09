@@ -12,13 +12,14 @@
 
 import marimo
 
-__generated_with = "0.14.17"
+__generated_with = "0.15.2"
 app = marimo.App(width="medium")
 
 
 @app.cell
 def _():
     import marimo as mo
+    import nbformat
     return (mo,)
 
 
@@ -33,7 +34,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# 極大ナップサック問題""")
+    mo.md(r"""# 極大ナップサック問題(積)""")
     return
 
 

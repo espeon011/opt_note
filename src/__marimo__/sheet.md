@@ -1,6 +1,7 @@
 In [ ]:
 ```python
 import marimo as mo
+import nbformat
 ```
 
 In [ ]:
@@ -370,7 +371,7 @@ print(f"objective value = {solver.objective_value}")
 
 > ```
 > status = OPTIMAL
-> time = 0.92982794
+> time = 0.8570429380000001
 > objective value = 374.0
 > ```
 
@@ -472,18 +473,6 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
 
 In [ ]:
 ```python
-run_button_scip_quad = mo.ui.run_button(full_width=True)
-run_button_scip_quad
-```
-
-> ```
->
-> ```
-
-In [ ]:
-```python
-mo.stop(not run_button_scip_quad.value, mo.md("Click 👆 to run this cell"))
-
 model_scip = mathopt.Model(name="sheet")
 x_1 = [
     [
@@ -537,10 +526,6 @@ for _t in tables:
 model_scip.minimize(_obj_p + _obj_g + _obj_a)
 ```
 
-> ```
->
-> ```
-
 In [ ]:
 ```python
 _params = mathopt.SolveParameters(enable_output=True)
@@ -548,7 +533,52 @@ result = mathopt.solve(model_scip, mathopt.SolverType.GSCIP, params=_params)
 ```
 
 > ```
->
+> presolving:
+> (round 1, exhaustive) 0 del vars, 0 del conss, 0 add conss, 1 chg bounds, 0 chg sides, 0 chg coeffs, 78 upgd conss, 0 impls, 65 clqs
+>    (0.2s) probing cycle finished: starting next cycle
+>    Deactivated symmetry handling methods, since SCIP was built without symmetry detector (SYM=none).
+>    Deactivated symmetry handling methods, since SCIP was built without symmetry detector (SYM=none).
+> presolving (2 rounds: 2 fast, 2 medium, 2 exhaustive):
+>  0 deleted vars, 0 deleted constraints, 0 added constraints, 1 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
+>  3783 implications, 65 cliques
+> presolved problem has 1002 variables (845 bin, 156 int, 0 impl, 1 cont) and 235 constraints
+>      13 constraints of type <knapsack>
+>      65 constraints of type <setppc>
+>     156 constraints of type <linear>
+>       1 constraints of type <nonlinear>
+> Presolving Time: 0.15
+> 
+>  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+> p 0.2s|     1 |     0 |     0 |     - |  clique|   0 |1159 | 235 | 703 |   0 |  0 |   0 |   0 |-1.000000e-09 | 4.860000e+02 |    Inf | unknown
+> p 0.2s|     1 |     0 |     0 |     - |   locks|   0 |1159 | 235 | 703 |   0 |  0 |   0 |   0 |-1.000000e-09 | 4.700000e+02 |    Inf | unknown
+>   0.6s|     1 |     0 | 10564 |     - |    12M |   0 |1159 | 246 | 703 |   0 |  0 |  13 |   0 | 2.860000e+02 | 4.700000e+02 |  64.34%| unknown
+>   0.6s|     1 |     0 | 10564 |     - |    12M |   0 |1159 | 249 | 703 |   0 |  0 |  16 |   0 | 2.860000e+02 | 4.700000e+02 |  64.34%| unknown
+>   1.1s|     1 |     0 | 19794 |     - |    22M |   0 |1159 | 249 | 823 | 120 |  1 |  16 |   0 | 3.550000e+02 | 4.700000e+02 |  32.39%| unknown
+>   1.1s|     1 |     0 | 19794 |     - |    22M |   0 |1159 | 251 | 823 | 120 |  1 |  18 |   0 | 3.550000e+02 | 4.700000e+02 |  32.39%| unknown
+>   1.5s|     1 |     0 | 25781 |     - |    43M |   0 |1159 | 251 | 851 | 148 |  2 |  18 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   1.5s|     1 |     0 | 25781 |     - |    43M |   0 |1159 | 253 | 851 | 148 |  2 |  20 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   1.6s|     1 |     0 | 26343 |     - |    65M |   0 |1159 | 253 | 855 | 152 |  3 |  20 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   1.7s|     1 |     0 | 26391 |     - |    85M |   0 |1159 | 255 | 860 | 157 |  4 |  22 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   1.8s|     1 |     0 | 26590 |     - |   112M |   0 |1159 | 255 | 862 | 159 |  5 |  22 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   2.0s|     1 |     0 | 26831 |     - |   136M |   0 |1159 | 255 | 868 | 165 |  6 |  22 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   2.1s|     1 |     0 | 26957 |     - |   159M |   0 |1159 | 255 | 873 | 170 |  7 |  22 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   2.4s|     1 |     0 | 27251 |     - |   178M |   0 |1159 | 256 | 878 | 175 |  8 |  23 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   2.6s|     1 |     0 | 27370 |     - |   190M |   0 |1159 | 257 | 883 | 180 |  9 |  24 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
+>   2.8s|     1 |     0 | 27506 |     - |   216M |   0 |1159 | 258 | 888 | 185 | 10 |  25 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   3.0s|     1 |     0 | 27546 |     - |   216M |   0 |1159 | 259 | 618 | 188 | 11 |  26 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+>   3.2s|     1 |     0 | 27546 |     - |   216M |   0 |1159 | 260 | 618 | 188 | 12 |  27 |   0 | 3.740000e+02 | 4.700000e+02 |  25.67%| unknown
+> o 3.5s|     1 |     0 | 29103 |     - |feaspump|   0 |1159 | 260 | 618 | 188 | 13 |  27 |   0 | 3.740000e+02 | 3.880000e+02 |   3.74%| unknown
+>   4.1s|     1 |     0 | 41477 |     - |   216M |   0 |1159 | 260 | 618 | 188 | 13 |  30 |   0 | 3.740000e+02 | 3.880000e+02 |   3.74%| unknown
+>   4.6s|     1 |     2 | 41477 |     - |   216M |   0 |1159 | 260 | 618 | 188 | 14 |  30 |  23 | 3.740000e+02 | 3.880000e+02 |   3.74%| unknown
+> d 5.9s|     8 |     0 | 72647 |6443.0 |pscostdi|   7 |1159 | 260 | 597 |   0 |  2 |  30 |  23 | 3.740000e+02 | 3.740000e+02 |   0.00%| 100.00%
+> 
+> SCIP Status        : problem is solved [optimal solution found]
+> Solving Time (sec) : 5.91
+> Solving Nodes      : 8
+> Primal Bound       : +3.74000000000000e+02 (5 solutions)
+> Dual Bound         : +3.74000000000000e+02
+> Gap                : 0.00 %
 > ```
 
 In [ ]:
@@ -566,6 +596,87 @@ if (
                 f"  employee {_e.id}: projects={_e.projects} group={_e.group} age={_e.age}"
             )
 ```
+
+> ```
+> Table 0:
+>   employee 34: projects=[3, 1] group=2 age=0
+>   employee 51: projects=[0] group=3 age=1
+>   employee 55: projects=[4] group=0 age=2
+>   employee 56: projects=[0] group=0 age=2
+>   employee 57: projects=[2, 1] group=1 age=0
+> Table 1:
+>   employee 12: projects=[2] group=3 age=2
+>   employee 18: projects=[0] group=1 age=0
+>   employee 25: projects=[1] group=0 age=2
+>   employee 39: projects=[4] group=2 age=1
+>   employee 40: projects=[3] group=1 age=2
+> Table 2:
+>   employee 14: projects=[3, 0] group=1 age=2
+>   employee 15: projects=[4, 1] group=3 age=1
+>   employee 21: projects=[2] group=2 age=2
+>   employee 22: projects=[4, 2] group=0 age=0
+>   employee 53: projects=[1] group=1 age=0
+> Table 3:
+>   employee 6: projects=[3, 2] group=1 age=0
+>   employee 9: projects=[1] group=2 age=2
+>   employee 30: projects=[1] group=0 age=2
+>   employee 32: projects=[4, 0] group=0 age=1
+>   employee 54: projects=[2, 0] group=3 age=0
+> Table 4:
+>   employee 10: projects=[1] group=1 age=2
+>   employee 26: projects=[4] group=1 age=2
+>   employee 44: projects=[1, 4] group=0 age=1
+>   employee 52: projects=[3, 0] group=2 age=1
+>   employee 59: projects=[2] group=3 age=0
+> Table 5:
+>   employee 20: projects=[3, 4] group=3 age=2
+>   employee 24: projects=[1, 2] group=1 age=1
+>   employee 37: projects=[1] group=3 age=0
+>   employee 61: projects=[0] group=0 age=0
+>   employee 62: projects=[2, 0] group=2 age=2
+> Table 6:
+>   employee 1: projects=[2, 3] group=3 age=1
+>   employee 17: projects=[0, 4] group=2 age=2
+>   employee 23: projects=[2] group=1 age=0
+>   employee 31: projects=[1, 0] group=0 age=2
+>   employee 35: projects=[4] group=3 age=0
+> Table 7:
+>   employee 27: projects=[0] group=0 age=2
+>   employee 43: projects=[0, 2] group=0 age=2
+>   employee 47: projects=[1, 4] group=1 age=0
+>   employee 60: projects=[1] group=2 age=1
+>   employee 63: projects=[3, 2] group=3 age=2
+> Table 8:
+>   employee 0: projects=[0, 2] group=3 age=2
+>   employee 2: projects=[2] group=1 age=0
+>   employee 11: projects=[0] group=3 age=1
+>   employee 42: projects=[4] group=2 age=2
+>   employee 50: projects=[1, 3] group=0 age=2
+> Table 9:
+>   employee 4: projects=[2] group=0 age=1
+>   employee 19: projects=[4, 1] group=3 age=0
+>   employee 28: projects=[3] group=1 age=0
+>   employee 29: projects=[0] group=2 age=2
+>   employee 41: projects=[2, 3] group=3 age=2
+> Table 10:
+>   employee 7: projects=[3] group=0 age=2
+>   employee 38: projects=[2] group=1 age=2
+>   employee 45: projects=[2, 1] group=2 age=2
+>   employee 48: projects=[4, 3] group=3 age=0
+>   employee 49: projects=[0, 1] group=3 age=1
+> Table 11:
+>   employee 5: projects=[3, 2] group=0 age=2
+>   employee 13: projects=[4] group=2 age=1
+>   employee 16: projects=[1] group=1 age=0
+>   employee 33: projects=[0] group=0 age=2
+>   employee 36: projects=[2] group=3 age=1
+> Table 12:
+>   employee 3: projects=[4, 1] group=0 age=1
+>   employee 8: projects=[2, 1] group=0 age=2
+>   employee 46: projects=[3, 0] group=2 age=0
+>   employee 58: projects=[0, 4] group=3 age=1
+>   employee 64: projects=[3] group=1 age=2
+> ```
 
 ## 線形計画モデルとてしての定式化
 
@@ -604,6 +715,9 @@ if (
       - $x_{i t} + x_{j t} \leq y_{i j t}^{(a)} + 1$
 
 ## テスト実装(線形)
+
+Google OR-Tools の MathOpt を用いてモデリングし,
+計算時に呼び出すソルバーを切り替えて比較する.
 
 In [ ]:
 ```python
@@ -656,90 +770,64 @@ model_linear.minimize(_obj_p + _obj_g + _obj_a)
 
 ### ソルバー比較
 
-どのソルバーも現実的な時間で終わらなかったのでタイムリミットを 5 分に設定
+どのソルバーも終わりそうになかったのでとりあえずリミット 1 分で計算.
 
 #### 実行: CP-SAT
 
 In [ ]:
 ```python
-run_button_cpsat = mo.ui.run_button(full_width=True)
-run_button_cpsat
-```
-
-> ```
->
-> ```
-
-In [ ]:
-```python
-mo.stop(not run_button_cpsat.value, mo.md("Click 👆 to run this cell"))
-
 _params = mathopt.SolveParameters(
-    time_limit=datetime.timedelta(minutes=5), enable_output=True
+    time_limit=datetime.timedelta(minutes=1), enable_output=False
 )
 _result = mathopt.solve(
     model_linear, mathopt.SolverType.CP_SAT, params=_params
 )
+
+print(f"primal bound: {_result.primal_bound()}")
+print(f"dual bound: {_result.dual_bound()}")
 ```
 
 > ```
->
+> primal bound: 380.0
+> dual bound: 226.0
 > ```
 
 #### 実行: SCIP
 
 In [ ]:
 ```python
-run_button_scip = mo.ui.run_button(full_width=True)
-run_button_scip
-```
-
-> ```
->
-> ```
-
-In [ ]:
-```python
-mo.stop(not run_button_scip.value, mo.md("Click 👆 to run this cell"))
-
 _params = mathopt.SolveParameters(
-    time_limit=datetime.timedelta(minutes=5), enable_output=True
+    time_limit=datetime.timedelta(minutes=1), enable_output=False
 )
-_result = mathopt.solve(model_linear, mathopt.SolverType.GSCIP, params=_params)
+_result = mathopt.solve(
+    model_linear, mathopt.SolverType.GSCIP, params=_params
+)
+
+print(f"primal bound: {_result.primal_bound()}")
+print(f"dual bound: {_result.dual_bound()}")
 ```
 
 > ```
->
+> primal bound: 410.0
+> dual bound: 226.0
 > ```
 
 #### 実行: Highs
 
 In [ ]:
 ```python
-run_button_highs = mo.ui.run_button(full_width=True)
-run_button_highs
-```
-
-> ```
->
-> ```
-
-In [ ]:
-```python
-mo.stop(not run_button_highs.value, mo.md("Click 👆 to run this cell"))
-
 _params = mathopt.SolveParameters(
-    time_limit=datetime.timedelta(minutes=5), enable_output=True
+    time_limit=datetime.timedelta(minutes=1), enable_output=False
 )
-_result = mathopt.solve(model_linear, mathopt.SolverType.HIGHS, params=_params)
+_result = mathopt.solve(
+    model_linear, mathopt.SolverType.HIGHS, params=_params
+)
+
+print(f"primal bound: {_result.primal_bound()}")
+print(f"dual bound: {_result.dual_bound()}")
 ```
 
 > ```
->
+> primal bound: 384.0000000000428
+> dual bound: 226.00000000000153
 > ```
-
-### 結果
-
-CP-SAT ソルバーが最良解の目的関数値が最も良く, 378 だった(最適値は 374).
-SCIP と Highs は目的関数値 410 程度までしか得られなかった.
-Dual bound は全てのソルバーで 226 程度だった.

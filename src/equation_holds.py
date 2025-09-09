@@ -9,20 +9,18 @@
 
 import marimo
 
-__generated_with = "0.14.17"
+__generated_with = "0.15.2"
 app = marimo.App(width="medium")
+
+with app.setup:
+    from ortools.sat.python import cp_model
 
 
 @app.cell
 def _():
     import marimo as mo
+    import nbformat
     return (mo,)
-
-
-@app.cell
-def _():
-    from ortools.sat.python import cp_model
-    return (cp_model,)
 
 
 @app.cell(hide_code=True)
@@ -66,37 +64,33 @@ def _(mo):
 
     を実現する制約は big-M 法を使えば次のように線形に書ける. 
 
-    \begin{align*}
-    a &\leq b + M (1 - x) \\
-    a - 1 &\geq b - M x
-    \end{align*}
+    - $a \leq b + M (1 - x)$
+    - $a - 1 \geq b - M x$
     """
     )
     return
 
 
-@app.cell
-def _(cp_model):
-    class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
-        def __init__(self, variables):
-            cp_model.CpSolverSolutionCallback.__init__(self)
-            self.__variables = variables
-            self.__solution_count = 0
+@app.class_definition
+class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
+    def __init__(self, variables):
+        cp_model.CpSolverSolutionCallback.__init__(self)
+        self.__variables = variables
+        self.__solution_count = 0
 
-        def on_solution_callback(self):
-            self.__solution_count = self.__solution_count + 1
-            for v in self.__variables:
-                print(f'{v}={self.value(v)}', end=' ')
-            print()
+    def on_solution_callback(self):
+        self.__solution_count = self.__solution_count + 1
+        for v in self.__variables:
+            print(f'{v}={self.value(v)}', end=' ')
+        print()
 
-        @property
-        def solution_count(self):
-            return self.__solution_count
-    return (VarArraySolutionPrinter,)
+    @property
+    def solution_count(self):
+        return self.__solution_count
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model):
+def _():
     _lb_a, _ub_a = (1, 5)
     _lb_b, _ub_b = (1, 5)
     _model = cp_model.CpModel()
@@ -127,14 +121,14 @@ def _(mo):
     big-M 法を用いれば方程式の場合も線形に表すことができる. 
 
     - $x = 1 \iff a \leq b$ を表す制約
-      - $a \leq b + M (1 - x)$
-      - $a - 1 \geq b - M x$
+        - $a \leq b + M (1 - x)$
+        - $a - 1 \geq b - M x$
     - $y = 1 \iff a \geq b$ を表す制約
-      - $b \leq a + M (1 - y)$
-      - $b - 1 \geq a - M y$
+        - $b \leq a + M (1 - y)$
+        - $b - 1 \geq a - M y$
     - $z = x \land y$ を表す制約
-      - $z + 1 \geq x + y$
-      - $2 z \leq x + y$
+        - $z + 1 \geq x + y$
+        - $2 z \leq x + y$
 
     これで
     $z = 1 \iff a = b$
@@ -145,7 +139,7 @@ def _(mo):
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model):
+def _():
     _lb_a, _ub_a = (1, 5)
     _lb_b, _ub_b = (1, 5)
     _model = cp_model.CpModel()
@@ -207,7 +201,7 @@ def _(mo):
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model):
+def _():
     _lb_a, _ub_a = (1, 5)
     _lb_b, _ub_b = (1, 5)
     _model = cp_model.CpModel()
@@ -250,7 +244,7 @@ def _(mo):
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model):
+def _():
     _lb_a, _ub_a = (1, 5)
     _lb_b, _ub_b = (1, 5)
     _model = cp_model.CpModel()
@@ -316,29 +310,29 @@ def _(mo):
     #### 制約
 
     - 祠を壊したものは呪いで嘘しかつけなくなっている
-      - $y_* <= x_*$
+        - $y_* <= x_*$
     - A「俺がやりました」
-      - $x_A = 0 \Longrightarrow y_A = 1$
-      - $x_A = 1 \Longrightarrow y_A = 0$
-      - 上記 2 つをまとめて $x_A = 1 - y_A$ と書ける
+        - $x_A = 0 \Longrightarrow y_A = 1$
+        - $x_A = 1 \Longrightarrow y_A = 0$
+        - 上記 2 つをまとめて $x_A = 1 - y_A$ と書ける
     - B「犯人は2人いる」
         - $x_B = 0 \Longrightarrow y_A + y_B + y_C + y_D = 2$
         - $x_B = 1 \Longrightarrow y_A + y_B + y_C + y_D \ne 2$
     - C「Dが犯人でないなら僕が犯人」
-      - $x_C = 0 \Longrightarrow$ 「$y_D = 0 \Longrightarrow y_C = 1$」だがこれは $1 - x_C \leq y_C + y_D$ と同値
-      - $x_C = 1 \Longrightarrow$ 「$y_D = 0 \land y_C = 0$」だがこれは $2 (1 - x_C) \geq y_C + y_D$ と同値
+        - $x_C = 0 \Longrightarrow$ 「$y_D = 0 \Longrightarrow y_C = 1$」だがこれは $1 - x_C \leq y_C + y_D$ と同値
+        - $x_C = 1 \Longrightarrow$ 「$y_D = 0 \land y_C = 0$」だがこれは $2 (1 - x_C) \geq y_C + y_D$ と同値
     - D「4人の中で嘘つきは奇数人」
-      - $x_D = 0 \Longrightarrow x_A + x_B + x_C + x_D \equiv 1 \mod 2$
-      - $x_D = 1 \Longrightarrow x_A + x_B + x_C + x_D \equiv 0 \mod 2$
-      - 上記をまとめて $x_A + x_B + x_C + x_D \equiv 1 - x_D \mod 2$ として実装する
-      - この条件は線形にすることができる.
+        - $x_D = 0 \Longrightarrow x_A + x_B + x_C + x_D \equiv 1 \mod 2$
+        - $x_D = 1 \Longrightarrow x_A + x_B + x_C + x_D \equiv 0 \mod 2$
+        - 上記をまとめて $x_A + x_B + x_C + x_D \equiv 1 - x_D \mod 2$ として実装する
+        - この条件は線形にすることができる.
         $e, o$ を 0-1 決定変数とし, 嘘つきの数が偶数人か奇数人かに対応させるとする.
         この条件は次のように書ける. $s_e, z$ を整数決定変数として,
 
-        - $e + o = 1$
-        - $x_D = e$
-        - $s_e = 2 * z$
-        - $x_A + x_B + x_C + x_D = s_e + o$
+            - $e + o = 1$
+            - $x_D = e$
+            - $s_e = 2 * z$
+            - $x_A + x_B + x_C + x_D = s_e + o$
 
         とすればよい.
         こうして A から D までの全ての条件は線形制約で記述できる.
@@ -360,7 +354,7 @@ def _():
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model, suspects):
+def _(suspects):
     _model = cp_model.CpModel()
     _liar = {_s: _model.new_bool_var(f'{_s}_is_liar') for _s in suspects}
     _culprit = {_s: _model.new_bool_var(f'{_s}_is_culprit') for _s in suspects}
@@ -391,7 +385,7 @@ def _(mo):
 
 
 @app.cell
-def _(VarArraySolutionPrinter, cp_model, suspects):
+def _(suspects):
     _model = cp_model.CpModel()
     _liar = {_s: _model.new_bool_var(f'{_s}_is_liar') for _s in suspects}
     _culprit = {_s: _model.new_bool_var(f'{_s}_is_culprit') for _s in suspects}
@@ -434,7 +428,7 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-    犯人が 1 人以上いると仮定すると犯人は B でそれ以外は無実だった. 
+    犯人が 1 人以上いると仮定すると犯人は B でそれ以外は無実. 
     全員が犯人でないケースもあり得たが今回は除外. 
     嘘つきかどうかに関しては D 以外は全員嘘つきで確定していて, D は嘘つきでも正直ものでもどちらでも整合する. 
 

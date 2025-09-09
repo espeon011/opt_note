@@ -9,13 +9,14 @@
 
 import marimo
 
-__generated_with = "0.14.17"
-app = marimo.App(width="medium", auto_download=["ipynb"])
+__generated_with = "0.15.2"
+app = marimo.App(width="medium")
 
 
 @app.cell
 def _():
     import marimo as mo
+    import nbformat
     return (mo,)
 
 
@@ -382,26 +383,8 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    run_button_scip_quad = mo.ui.run_button(full_width=True)
-    run_button_scip_quad
-    return (run_button_scip_quad,)
-
-
 @app.cell
-def _(
-    ages,
-    employees,
-    groups,
-    mathopt,
-    mo,
-    projects,
-    run_button_scip_quad,
-    tables,
-):
-    mo.stop(not run_button_scip_quad.value, mo.md("Click 👆 to run this cell"))
-
+def _(ages, employees, groups, mathopt, projects, tables):
     model_scip = mathopt.Model(name="sheet")
     x_1 = [
         [
@@ -571,6 +554,17 @@ def _(mo):
 
 
 @app.cell
+def _(mo):
+    mo.md(
+        r"""
+    Google OR-Tools の MathOpt を用いてモデリングし, 
+    計算時に呼び出すソルバーを切り替えて比較する. 
+    """
+    )
+    return
+
+
+@app.cell
 def _(ages, employees, groups, mathopt, projects, tables):
     model_linear = mathopt.Model(name="sheet")
     x_2 = [
@@ -628,7 +622,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""どのソルバーも現実的な時間で終わらなかったのでタイムリミットを 5 分に設定""")
+    mo.md(r"""どのソルバーも終わりそうになかったのでとりあえずリミット 1 分で計算. """)
     return
 
 
@@ -638,23 +632,17 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    run_button_cpsat = mo.ui.run_button(full_width=True)
-    run_button_cpsat
-    return (run_button_cpsat,)
-
-
 @app.cell
-def _(datetime, mathopt, mo, model_linear, run_button_cpsat):
-    mo.stop(not run_button_cpsat.value, mo.md("Click 👆 to run this cell"))
-
+def _(datetime, mathopt, model_linear):
     _params = mathopt.SolveParameters(
-        time_limit=datetime.timedelta(minutes=5), enable_output=True
+        time_limit=datetime.timedelta(minutes=1), enable_output=False
     )
     _result = mathopt.solve(
         model_linear, mathopt.SolverType.CP_SAT, params=_params
     )
+
+    print(f"primal bound: {_result.primal_bound()}")
+    print(f"dual bound: {_result.dual_bound()}")
     return
 
 
@@ -664,21 +652,17 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    run_button_scip = mo.ui.run_button(full_width=True)
-    run_button_scip
-    return (run_button_scip,)
-
-
 @app.cell
-def _(datetime, mathopt, mo, model_linear, run_button_scip):
-    mo.stop(not run_button_scip.value, mo.md("Click 👆 to run this cell"))
-
+def _(datetime, mathopt, model_linear):
     _params = mathopt.SolveParameters(
-        time_limit=datetime.timedelta(minutes=5), enable_output=True
+        time_limit=datetime.timedelta(minutes=1), enable_output=False
     )
-    _result = mathopt.solve(model_linear, mathopt.SolverType.GSCIP, params=_params)
+    _result = mathopt.solve(
+        model_linear, mathopt.SolverType.GSCIP, params=_params
+    )
+
+    print(f"primal bound: {_result.primal_bound()}")
+    print(f"dual bound: {_result.dual_bound()}")
     return
 
 
@@ -688,39 +672,17 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    run_button_highs = mo.ui.run_button(full_width=True)
-    run_button_highs
-    return (run_button_highs,)
-
-
 @app.cell
-def _(datetime, mathopt, mo, model_linear, run_button_highs):
-    mo.stop(not run_button_highs.value, mo.md("Click 👆 to run this cell"))
-
+def _(datetime, mathopt, model_linear):
     _params = mathopt.SolveParameters(
-        time_limit=datetime.timedelta(minutes=5), enable_output=True
+        time_limit=datetime.timedelta(minutes=1), enable_output=False
     )
-    _result = mathopt.solve(model_linear, mathopt.SolverType.HIGHS, params=_params)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""### 結果""")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        r"""
-    CP-SAT ソルバーが最良解の目的関数値が最も良く, 378 だった(最適値は 374). 
-    SCIP と Highs は目的関数値 410 程度までしか得られなかった. 
-    Dual bound は全てのソルバーで 226 程度だった.
-    """
+    _result = mathopt.solve(
+        model_linear, mathopt.SolverType.HIGHS, params=_params
     )
+
+    print(f"primal bound: {_result.primal_bound()}")
+    print(f"dual bound: {_result.dual_bound()}")
     return
 
 
