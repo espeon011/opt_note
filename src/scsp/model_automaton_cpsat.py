@@ -8,7 +8,7 @@
 
 import marimo
 
-__generated_with = "0.15.0"
+__generated_with = "0.15.2"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -29,7 +29,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -37,7 +37,7 @@ def _(mo):
 
     **定数**
 
-    - $\Sigma = \{ \sigma_1, \dots, \sigma_q \}$: 文字の集合
+    - $\Sigma = \lbrace \sigma_1, \dots, \sigma_q \rbrace$: 文字の集合
 
     **決定変数**
 
@@ -45,19 +45,18 @@ def _(mo):
       どの文字も対応しないとき $0$. 
       このとき解は $\sigma_{x_0} \sigma_{x_1} \dots$ となる.
       ただし $\sigma_0$ は空文字列とする. 
-
-    - $v_i \in \{ 0, 1 \}$: 解の $i$ 番目が空でないとき $1$. 空のとき $0$.
+    - $v_i \in \lbrace 0, 1 \rbrace$: 解の $i$ 番目が空でないとき $1$. 空のとき $0$.
 
     **制約条件**
 
     - $x_i > 0 \Rightarrow v_i = 1$
     - 与えられた文字列 $s \in S$ の各文字を $\Sigma$ を基準にインデックスの配列としたものを $\mathrm{index}_s$ とする.
       $\mathrm{index}_s$ を部分配列にもつすべての配列を受理するオートマトンを文字列の数だけ作成し, 
-      $\{ x_i \}_i$ が受理されるという制約を課す. 
+      $\lbrace x_i \rbrace_i$ が受理されるという制約を課す. 
 
     **目的関数**
 
-    - minimize $\Sigma_{i} v_i$
+    - minimize $\sum_{i} v_i$
     """
     )
     return
