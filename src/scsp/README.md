@@ -27,10 +27,10 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.md](./__marimo__/model_linear_highs.md))
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.md](./__marimo__/model_linear_cpsat.md))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.md](./__marimo__/model_automaton_cpsat.md))
-- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定して解くのを繰り返し, 二分探索を行う ([model_automaton_cpsat_sat.md](./__marimo__/model_automaton_cpsat_sat.md))
+- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([model_automaton_cpsat_sat.md](./__marimo__/model_automaton_cpsat_sat.md))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.md](./__marimo__/model_wmm_hexaly.md))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.md](./__marimo__/model_wmm_hexaly_init.md))
-- `DIDP` DIDP ソルバーを用いた定式化[^6] ([model_didp.md](./__marimo__/model_didp.md))
+- `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([model_didp.md](./__marimo__/model_didp.md))
 
 ## ベンチマーク
 
@@ -91,5 +91,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 [^3]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
 [^4]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
 [^5]: Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). https://doi.org/10.1007/BF01075212
-[^6]: https://github.com/okaduki/opt100
+[^6]: https://github.com/okaduki/opt100, 2025-09-09 アクセス. 
 [^7]: Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
+[^8]: https://zenn.dev/okaduki/articles/7f9a3f3c54bc98, 2025-09-09 アクセス. 
