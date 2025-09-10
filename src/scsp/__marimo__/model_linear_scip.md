@@ -16,12 +16,12 @@ import util
 
 **決定変数**
 
-- $x_{i,j} \in \mathbb{N} \ (\forall i \in \{ 1, \dots, n \}, \ \forall j \in \{ 1, \dots, |s_i| \})$: $i$ 番目の文字列の $j$ 番目の文字が解において何番目に対応するか.
+- $x_{i,j} \in \mathbb{N} \ (\forall i \in \lbrace 1, \dots, n \rbrace, \ \forall j \in \lbrace 1, \dots, |s_i| \rbrace)$: $i$ 番目の文字列の $j$ 番目の文字が解において何番目に対応するか.
 
 **制約条件**
 
-- $x_{i,j} < x_{i,j+1} \ (\forall i \in \{ 1, \dots, n \}, \ \forall j \in \{ 1, \dots, |s_i| - 1 \})$
-- $i_1, i_2 \in \{ 1, \dots, n\} \ (i_1 \ne i_2)$ と $j_1 \in \{ 1, \dots, |s_{i_1}| \}, \ j_2 \in \{ 1, \dots, |s_{i_2}| \}$ に対し,
+- $x_{i,j} < x_{i,j+1} \ (\forall i \in \lbrace 1, \dots, n \rbrace, \ \forall j \in \lbrace 1, \dots, |s_i| - 1 \rbrace)$
+- $i_1, i_2 \in \lbrace 1, \dots, n \rbrace \ (i_1 \ne i_2)$ と $j_1 \in \lbrace 1, \dots, |s_{i_1}| \rbrace, \ j_2 \in \lbrace 1, \dots, |s_{i_2}| \rbrace$ に対し,
   $s_{i_1}[j_1] \ne s_{i_2}[j_2]$ ならば $x_{i_1, j_1} \ne x_{i_2, j_2}$.
 
 **目的関数**
