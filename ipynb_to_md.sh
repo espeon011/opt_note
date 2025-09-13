@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-# 与えられた名文字列の末尾を .ipynb から .md にしたものを返す
+# 与えられた文字列の末尾を .ipynb から .md にしたものを返す
 change_ext_ipynb_to_md() {
     arg_filename="$1"
 
