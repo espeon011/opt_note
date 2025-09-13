@@ -1,8 +1,15 @@
 In [ ]:
 ```python
 import enum
+from collections.abc import Callable
 import didppy
 import util
+
+# Dual Bound を追加で設定する関数の型
+type TypeBoundExprFunc = Callable[
+    [list[str], didppy.Model, list[didppy.ElementVar]],
+    didppy.IntExpr
+]
 ```
 
 In [ ]:
@@ -14,39 +21,6 @@ import nbformat
 # DIDP を用いたモデル
 
 考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)
-
-In [ ]:
-```python
-class BoundOption(enum.IntFlag):
-    MAX_LEN = 0b1
-    SCS2LEN = 0b10
-    CHAR_COUNT = 0b100
-
-    ALL = 0b111
-```
-
-In [ ]:
-```python
-def boundexpr_maxlen(
-    instance: list[str],
-    dpmodel: didppy.Model,
-    index_vars: list[didppy.ElementVar]
-) -> didppy.IntExpr:
-    min_to = dpmodel.add_int_table(
-        [
-            [
-                len(s) - j for j in range(len(s) + 1)
-            ]
-            for s in instance
-        ]
-    )
-
-    bound = didppy.IntExpr(0)
-    for sidx, index_var in enumerate(index_vars):
-        bound = didppy.max(bound, min_to[sidx, index_var])
-
-    return bound
-```
 
 In [ ]:
 ```python
@@ -94,46 +68,11 @@ def boundexpr_scs2len(
 
 In [ ]:
 ```python
-def boundexpr_charcount(
-    instance: list[str],
-    dpmodel: didppy.Model,
-    index_vars: list[didppy.ElementVar]
-) -> didppy.IntExpr:
-    chars = sorted(list(set("".join(instance))))
-
-    # alpha_counts[char][s_i][idx]
-    alpha_counts: list[list[list[int]]] = [
-        [
-            [0] * (len(s) + 1)
-            for s in instance
-        ]
-        for char in chars
-    ]
-
-    for cidx, c in enumerate(chars):
-        for sidx, s in enumerate(instance):
-            alpha_counts[cidx][sidx][len(s)] = 0
-            for i in range(len(s) - 1, -1, -1):
-                alpha_counts[cidx][sidx][i] = alpha_counts[cidx][sidx][
-                    i + 1
-                ] + (1 if s[i] == c else 0)
-
-    bound = didppy.IntExpr(0)
-    for cidx, _ in enumerate(chars):
-        expr = didppy.IntExpr(0)
-        for sidx, _ in enumerate(instance):
-            table_i = dpmodel.add_int_table(alpha_counts[cidx][sidx])
-            expr = didppy.max(expr, table_i[index_vars[sidx]])
-        bound += expr
-
-    return bound
-```
-
-In [ ]:
-```python
 class Model:
     def __init__(
-        self, instance: list[str], bound_option: BoundOption = BoundOption.SCS2LEN
+        self,
+        instance: list[str],
+        extra_bounds: list[TypeBoundExprFunc] | None = None,
     ):
         chars = sorted(list(set("".join(instance))))
 
@@ -182,18 +121,13 @@ class Model:
             )
             dpmodel.add_transition(trans)
 
-        # Dual Bound
-        if bound_option & BoundOption.MAX_LEN:
-            # 残っている文字数が最長のものが下限
-            dpmodel.add_dual_bound(boundexpr_maxlen(instance, dpmodel, index_vars))
-        if bound_option & BoundOption.SCS2LEN:
-            # 残っている文字列から 2 つを選んで SCS を取って長さが最大の物が下限
-            # primal solution は 3 つの中で一番良いけど best bound は弱い
-            dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
-        if bound_option & BoundOption.CHAR_COUNT:
-            # 文字列とアルファベットごとに残数をカウントし, その最大値をアルファベット全体にわたって足したものが下限
-            # best bound は良くなるけど primal solution はそんなに良くない
-            dpmodel.add_dual_bound(boundexpr_charcount(instance, dpmodel, index_vars))
+        # 残っている文字列から 2 つを選んで SCS を取って長さが最大のものを Dual Bound とする. 
+        dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
+
+        # 追加の Dual Bound があれば. 
+        if extra_bounds:
+            for bound_func in extra_bounds:
+                dpmodel.add_dual_bound(bound_func(instance, dpmodel, index_vars))
 
         self.instance = instance
         self.dpmodel = dpmodel
@@ -248,11 +182,11 @@ else:
 > str4: igevazgbrddbcsvrvnngf
 > 
 > --- Solution (of length 62) ---
->  Sol: ultkcignkyuhcosjoemviqfaozgpplnbrxdxdbcsvrvnnshtuqgpxzvxissbxf
-> str1: --tk--gnk-uh------m--------p-----x---------n--ht-qg-xzvxis----
-> str2: -----i-------o-j----iqf-o----lnb-x-x--c-v----s--uq-p--v-issbxf
-> str3: ul--ci-n-y--cos-o--v----oz-ppl---------------------p----------
-> str4: -----ig----------e-v---a-zg----br-d-dbcsvrvnn-----g----------f
+>  Sol: ultckignkycosoevjuaiqfozhgmpplnbrxddbxcsvrvsnhntuqgpxzvxissbxf
+> str1: --t-k-gnk--------u------h-mp-----x----------nh-t-qg-xzvxis----
+> str2: -----i-----o----j--iqfo------lnb-x---xc-v--s----uq-p--v-issbxf
+> str3: ul-c-i-n-ycoso-v------oz---ppl---------------------p----------
+> str4: -----ig-------ev--a----z-g-----br-ddb-csvrv-n-n---g----------f
 > 
 > solution is feasible: True
 > solution is optimal: True
@@ -293,16 +227,16 @@ else:
 > str7: enbczfjtvxerzbrvigple
 > str8: rxwxqkrdrlctodtmprpxwd
 > 
-> --- Solution (of length 99) ---
->  Sol: iojiqfopyplrtkgbdenbxvazwxqkrdurlcphmqvzfgjtdbpfuivxernzdsychodutmsbopcsvroqgxzpvnxnigplesswbpbxhdf
-> str1: ------------tkg---n--------k--u----hm---------p----x--n-----h---t----------qgxz-v-x-i----s---------
-> str2: iojiqfo---l-------nbx----x-------c----v------------------s-----u-----------q---pv---i----ss-b--x--f
-> str3: ------------------------------u-lc---------------i----n---yc-o----s-o---v-o---zp------pl-----p-----
-> str4: i-------------g--e---vaz-----------------g---b-------r--d-----d----b--csvr------vn-n-g------------f
-> str5: -------pyplr-----------z-x----u--cp-mqv--g-td--fuiv--------c--d---sbo------------------------------
-> str6: -------p-------bde---v-------d---c----v-----d-pf-------z-s-------msb-----roq----v-----------b-b-h--
-> str7: -----------------enb-------------c-----zf-jt------vxer-z-----------b-----r------v---igple----------
-> str8: -----------r--------x---wxqkrd-rlc---------t-----------------od-tm---p---r-----p--x--------w-----d-
+> --- Solution (of length 98) ---
+>  Sol: tikojiqgfpobydeplnbrxvcazwxqgkbrfdrulhcpmqvjgtdpfuivxerbnyczodsohtvmpsubroqgxzpvnxnigplewpssbbhxdf
+> str1: t-k----g---------n-----------k-----u-h--m------p----x---n-------ht--------qgxz-v-x-i------s-------
+> str2: -i-ojiq-f-o-----lnb-x-----x-----------c---v-------------------s-------u---q---pv---i------ssb--x-f
+> str3: -----------------------------------ul-c-----------i-----nyc-o-so--v------o---zp------pl--p--------
+> str4: -i-----g------e------v-az---g-br-d------------d--------b--c---s---v-----r------vn-n-g------------f
+> str5: ---------p--y--pl--r----z-x--------u--cpmqv-gtd-fuiv------c--ds--------b-o------------------------
+> str6: ---------p-b-de------v-----------d----c---v---dpf----------z--s----m-s-broq----v------------bbh---
+> str7: --------------e--nb---c-z-------f----------j-t-----vxer----z-----------br------v---igple----------
+> str8: -------------------rx----wxq-k-r-dr-l-c------t--------------od---t-mp---r-----p--x------w-------d-
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -351,24 +285,24 @@ else:
 > str15: htxxqjzqbctbakn
 > str16: xusfcfzpeecvwantfmgqzu
 > 
-> --- Solution (of length 149) ---
->   Sol: pyplrsxutiqobdzkjwaisgexqfolnbvckurdafzcpgqafjhtvdbmpxierfngxlequycdvjzseghtiwaoduqmbkvncestfzompbuvhdgikskrjvozqxizucpwvdsbngphxbaknghzlwidcompyfsge
-> str01: --------t------k-----g------n---ku------------h----mpx----n---------------ht------q-------------------g----------x-z----v-------x---------i-------s--
-> str02: ---------i-o----j--i----qfolnb-----------------------x------x-----c-v--s---------uq-------------p--v---i-s----------------sb----x----------------f---
-> str03: -------u-------------------l---c----------------------i---n------yc------------o----------s---o----v----------oz------p-------p---------l------p-----
-> str04: ---------i-----------ge-------v-----a-z--g--------b-----r----------d------------d---b---c-s--------v-------r-v--------------n-------ng-----------f---
-> str05: pyplr---------z--------x---------u-----cp----------m-----------q----v----g-t----d-----------f-----u----i-----v-------c---dsb-----------------o-------
-> str06: p-----------bd--------e-------v----d---c--------vd--p----f------------zs-----------m------s------b---------r--o-q-------v--b-----b----h--------------
-> str07: ----------------------e-----nb-c------z-----fj-tv----x-er-------------z-------------b----------------------r-v----i----------gp---------l-----------e
-> str08: ----r-x----------w-----xq-------k-rd--------------------r----l----c--------t---od----------t---mp----------r----------p---------x--------w-d---------
-> str09: ---------------k----------------k---------qaf---------i----g---q-----j-------w-o-----k------------------kskr---------------b------------l----------g-
-> str10: ---l--x----------------x----------------p--a------b---i-------------v---------------b-v------z----------k-----oz---z----vd---------------------------
-> str11: ---------------k------------------r-------------------i--f-------------s------a-------vnc------------d----------q------w-------h-------z----c--------
-> str12: ----------q-------a----x---------u-d-----gq-----v--------------q--c-----e----w------b-------f---------gi----j-o--------w-----------------w------y----
-> str13: ----rsx---q-----j-----------n--------f--p--a-----d----i---------u------s----i-----q-b----e---z------h---k-----o----------------h--------------m----g-
-> str14: ---------i-------w--s-------------------------h-v-------------------------h-------------c-----om-------i------------u---vd-----------------d--m------
-> str15: ----------------------------------------------ht-----x------x--q-----jz-----------q-b---c--t-----b--------------------------------akn----------------
-> str16: ------xu------------s----f-----c-----fz-p--------------e------e---c-v--------wa--------n---tf--m------g---------q--zu--------------------------------
+> --- Solution (of length 148) ---
+>   Sol: pyplrsxiboqjdgtuswevaizkgxqnfokulnpbrdcfzgpqahfjtmvdpxiuserlxgqefbnychvjeziwsgtuhaqomdkvsbncptfeomurvzdgihkoxsgzpkuqvcrnjbdsbowphzxlavknwdimgfpeysuc
+> str01: --------------t--------kg--n--ku-------------h---m--px------------n--h--------t---q--------------------g----x--z----v-------------x-------i------s--
+> str02: -------i-o-j---------i----q-fo--ln-b-----------------x------x-------c-v-----s--u--q---------p-------v---i----s-------------sb-----x----------f------
+> str03: ---------------u----------------l-----c---------------i-----------nyc--------------o----s-------o---v------o---zp--------------p---l----------p-----
+> str04: -------i-----g----eva-z-g----------brd-------------d-------------b--c-------s----------v-----------rv------------------n---------------n----gf------
+> str05: pyplr-----------------z--x-----u------c---p------m------------q-------v------gt------d--------f---u-----i-----------vc----dsbo----------------------
+> str06: p-------b---d-----ev-----------------dc-----------vdp-----------f--------z--s-------m---sb---------r-------o-------qv----b--b---h-------------------
+> str07: ------------------e--------n-------b--c-z-----fjt-v--x---er--------------z---------------b---------rv---i-----g-p------------------l-----------e----
+> str08: ----r-x----------w-------xq---k-----rd--------------------rl--------c---------t----o-d-------t---m--------------p-----r--------p--x-----wd----------
+> str09: -----------------------k------k------------qa-f-------i------gq--------j---w-------o--k-------------------k--s---k----r--b---------l--------g-------
+> str10: ---l--x------------------x--------p---------a--------------------b--------i------------v-b----------vz----ko---z-----------------z---v---d----------
+> str11: -----------------------k------------r-----------------i---------f-----------s----a-----v--nc----------d------------q----------w-hz-----------------c
+> str12: ----------q---------a----x-----u-----d---g-q------v-----------q-----c---e--w-------------b----f--------gi---------------j----ow---------w-------y---
+> str13: ----rsx---qj---------------nf-----p---------a------d--ius-----------------i-------q------b-----e-----z---hko--------------------h----------mg-------
+> str14: -------i---------w--------------------------------------s------------hv---------h----------c----om------i---------u-v-----d--------------d-m--------
+> str15: ---------------------------------------------h--t----x------x-q--------j-z--------q------b-c-t---------------------------b----------a-kn------------
+> str16: ------x--------us-----------f---------cfz-p--------------e-----e----c-v----w-----a--------n--tf--m-----g-----------q-------------z----------------u-
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -412,17 +346,17 @@ else:
 > str10: bdabdbeaad
 > 
 > --- Solution (of length 27) ---
->   Sol: bbaedcdbeacdeecbdbeacbdcade
-> str01: ----dc-b--c---c-db--c--c--e
-> str02: b---d-dbe---ee----e--bd----
-> str03: -----c---acdeec---e--b----e
-> str04: --aed-d----d----d-e--bd--d-
-> str05: --a--c-be---e-c----a-b-c--e
-> str06: bba----be------bd---cb--a--
-> str07: bbae-----a--e--b---a--d-a--
-> str08: ---e----e---eecbdbe-------e
-> str09: -----c----cdee--d--a--dc-d-
-> str10: b---d----a-----bdbea----ad-
+>   Sol: bbaeddcbeacdeecbdbecabdcead
+> str01: ----d-cb--c---c-db-c---ce--
+> str02: b---dd-be---ee----e--bd----
+> str03: ------c--acdeec---e--b--e--
+> str04: --aedd-----d----d-e--bd---d
+> str05: --a---cbe---e-c-----ab-ce--
+> str06: bba----be------bd--c-b---a-
+> str07: bbae-----a--e--b----a-d--a-
+> str08: ---e----e---eecbdbe-----e--
+> str09: ------c---cdee--d---a-dc--d
+> str10: b---d----a-----bdbe-a----ad
 > 
 > solution is feasible: True
 > solution is optimal: True
@@ -506,57 +440,57 @@ else:
 > str50: dbdabcecbb
 > 
 > --- Solution (of length 34) ---
->   Sol: dbaecdeabecdabceadecbdeabeacdbcead
-> str01: d---c---b-c---c--d--b------c--ce--
-> str02: -b---d-----d-b-e--e---e--e---b---d
-> str03: ----c--a--cd---e--ec--e-be--------
-> str04: --ae-d-----d-----d---de-b---d----d
-> str05: --a-c---be-----e---c---ab--c---e--
-> str06: -b------b---ab-e----bd-----c-b--a-
-> str07: -b------b---a--ea-e-b--a----d---a-
-> str08: ---e--e--e-----e---cbd--be-----e--
-> str09: ----c-----cd---e--e--d-a----d-c--d
-> str10: -b---d-ab--d-b-ea------a----d-----
-> str11: ---e-de----da---a------a-ea-----a-
-> str12: --a----a-e--a---a---b-e--eac------
-> str13: ---e---a----abc-a--c-------cdb----
-> str14: -b---de--e--a----de----a----d--e--
-> str15: ----c--a-e-da----de---e--e--d-----
-> str16: ---e----b-c-a----d--b--ab----b-e--
-> str17: d----d----c----e--e----ab---d--ea-
-> str18: d-a-----b-cd-----de----a-e-c------
-> str19: --a----a---d--ce--e--d-a--a--b----
-> str20: --ae--e---c---ce--e---ea--a-------
-> str21: -b------b--da--e---c---a--a-d--e--
-> str22: d-a-c-e----da--e-d-----ab---------
-> str23: --a----a-e--ab------b---b----bce--
-> str24: d--e-d--b-c--bc-a------ab---------
-> str25: db---d-a----a--e----b---b--c-b----
-> str26: d--e----be-d-b-e----b--a---c------
-> str27: ----c-e--e---bc--d-cbde-----------
-> str28: db-e-d-a----a----d-----a--a--b----
-> str29: ----c-----c---c--d-cb-e-b---d-c---
-> str30: --ae--ea--cd-bc-----bd------------
-> str31: d-a-c---be--a-c----c-------cd-----
-> str32: ---ec-e-b-c---c--d--bd--b---------
-> str33: d----d--b----bce-d-----ab----b----
-> str34: --a----a-e--ab--a------a-e---b--a-
-> str35: ---ec---b----bc-a------a----d-c--d
-> str36: d--e----b-c---ce---c-d--b--c------
-> str37: d-a----a--c--b--a-e---e-b--c------
-> str38: --a--d-abe--a---a--c-------c---e--
-> str39: d-aecd--b---a-c-a------a----------
-> str40: d-a-c---b----b---d-c--e-----d-c---
-> str41: d--e-d--be-----e----b---b---d--e--
-> str42: ----cd-a---d--c--d-c-d-a--a-------
-> str43: ----c-e--e-d--c-----b--a-e-----e-d
-> str44: ----c-ea-ec-a---a------a---c----a-
-> str45: d---c-----c---ce----b---b----b--ad
-> str46: -bae--ea-e---b------bde-----------
-> str47: db---de-b---a-c----c-d--b---------
-> str48: ---e----b-c--b-e--e--d-a-ea-------
-> str49: --ae--e--e---b------bd--b--c----a-
-> str50: db---d-ab-c----e---cb---b---------
+>   Sol: dabecedbaecdabcdeaecbdeabceadbcead
+> str01: d---c--b--c---cd----b----c----ce--
+> str02: --b---d----d-b--e-e---e---e--b---d
+> str03: ----c---a-cd----e-ec--e-b-e-------
+> str04: -a-e--d----d---d-----de-b---d----d
+> str05: -a--c--b-e------e--c---abce-------
+> str06: --b----ba----b--e---bd---c---b--a-
+> str07: --b----bae--a---e---b--a----d---a-
+> str08: ---e-e---e------e--cbd--b-e----e--
+> str09: ----c-----cd----e-e--d-a----d-c--d
+> str10: --b---d-a----b-d----b-ea---ad-----
+> str11: ---e--d--e-da----a-----a--ea----a-
+> str12: -a------ae--a----a--b-e---ea--c---
+> str13: ---e----a---abc--a-c-----c--db----
+> str14: --b---d--e------ea---dea----d--e--
+> str15: ----c---ae-da--de-e---e-----d-----
+> str16: ---e---b--c-a--d----b--ab----b-e--
+> str17: d-----d---c-----e-e----ab---d--ea-
+> str18: dab-c-d----d----eaec--------------
+> str19: -a------a--d--c-e-e--d-a---a-b----
+> str20: -a-e-e----c---c-e-e---ea---a------
+> str21: --b----b---da---e--c---a---ad--e--
+> str22: da--ced-ae-dab--------------------
+> str23: -a------ae--ab------b---b----bce--
+> str24: d--e--db--c--bc--a-----ab---------
+> str25: d-b---d-a---a---e---b---bc---b----
+> str26: d--e---b-e-d-b--e---b--a-c--------
+> str27: ----ce---e---bcd---cbde-----------
+> str28: d-be--d-a---a--d-a-----ab---------
+> str29: ----c-----c---cd---cb-e-b---d-c---
+> str30: -a-e-e--a-cd-bc-----bd------------
+> str31: da--c--b-e--a-c----c-----c--d-----
+> str32: ---ece-b--c---cd----bd--b---------
+> str33: d-----db-----bc-e----d-ab----b----
+> str34: -a------ae--ab---a-----a--e--b--a-
+> str35: ---ec--b-----bc--a-----a----d-c--d
+> str36: d--e---b--c---c-e--c-d--bc--------
+> str37: da------a-c--b---ae---e-bc--------
+> str38: -a----d-a----b--ea-----a-c----ce--
+> str39: da-ec-dba-c-a----a----------------
+> str40: da--c--b-----b-d---c--e-----d-c---
+> str41: d--e--db-e------e---b---b---d--e--
+> str42: ----c-d-a--d--cd---c-d-a---a------
+> str43: ----ce---e-d--c-----b--a--e----e-d
+> str44: ----ce--aec-a----a-----a-c-a------
+> str45: d---c-----c---c-e---b---b----b--ad
+> str46: --b-----ae------eae-b---b---d--e--
+> str47: d-b---d--e---b---a-c-----c--db----
+> str48: ---e---b--c--b--e-e--d-a--ea------
+> str49: -a-e-e---e---b------bd--bc-a------
+> str50: d-b---d-a----bc-e--cb---b---------
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -600,17 +534,17 @@ else:
 > str10: TCTAAACGAA
 > 
 > --- Solution (of length 24) ---
->   Sol: TACTACGCGTAGATCAGACTGTAC
-> str01: -A-T--G-G--GAT-A--C-G---
-> str02: -A-TAC-C-T---TC---C----C
-> str03: --C-ACG---A-AT-----TG-A-
-> str04: TA--A-----A-ATC----TGT--
-> str05: -A----G-GTA-A-CA-A----A-
-> str06: T--T-C-C-TAG----G--T--A-
-> str07: T--T--G--TAGATC----T----
-> str08: T-----G-G--GA--AG--T-T-C
-> str09: T--T-C-C--A---CA-ACT----
-> str10: T-CTA-----A-A-C-GA----A-
+>   Sol: TACTACGCGGTAATCGAATCGTAC
+> str01: -A-T--G-GG-A-T--A--CG---
+> str02: -A-TAC-C--T--TC----C---C
+> str03: --C-ACG----AAT----T-G-A-
+> str04: TA--A------AATC---T-GT--
+> str05: -A----G-G-TAA-C-AA----A-
+> str06: T--T-C-C--TA---G----GTA-
+> str07: T--T--G---TA---GA-TC-T--
+> str08: T-----G-GG-AA--G--T--T-C
+> str09: T--T-C-C---A--C-AA-C-T--
+> str10: T-CTA------AA-CGAA------
 > 
 > solution is feasible: True
 > solution is optimal: True
@@ -694,57 +628,57 @@ else:
 > str50: ATGAGCACTAAGCGAAGAACCAAAAAGCAGACAATACAACCCGCTATTAC
 > 
 > --- Solution (of length 133) ---
->   Sol: ACTGACGTAGTAACGTACATGCATCAGACTCAGTCAGTAGCTGATCATGCGATCAGTACAGCTAACTGCAAGTACCTGCATAGCATGCAGTCGATGCACTGCAGTACTCGTACGTAGACTGCATCCGTAGTCR
-> str01: --T-A-GTAGTA--G-AC-T-C--C-G-----G--A--AG-TGA-CA----A--A---C--C---CTG-AA--A-----A--G-A---A-T-G--G-A-T--A--A-----A--TA---T--A----------
-> str02: ---G--G-A-TAA---ACA--C-TC---C-C-G--A--A----A--AT---A--A-T-----T---TG-A----C-T---TA--A---A--C-A---AC-GC-G-AC----A-GT----T-CA-----AG---
-> str03: A-T-AC-------C-T---T-C--C----T-AG---GTA----A-CA----A--A---C--C-AAC--CAA---C-T---T----T----T-GAT-C--T-C--T--T-GTA-G-A---T-C-T--G------
-> str04: --T-A---A--A---T---T--AT-A-A-TC--T---TA--T-A-C-T---A---GTA-A---AA----AA-TA---G----G---G---T-G-T--A----A---C-CG-A---A-A----A-C-G--GTC-
-> str05: --T----TA--AA---ACA-GC--C----T--GT--G--G--G-T--TGC-A-C----C--C-A-CT-CA----C----A--G---G--G-C----C-C---A---CT-G---G--G-C-GCA-----AG---
-> str06: A-TGAC-T--T--C---CA---AT--G-----G--A-T--C----C---C-A--A---C--CT--C---AAG--C-T---T--C---CA--C----C-C--CA--A-T-G---GT----T---TC---AG-C-
-> str07: A---AC--A--AAC---CA---A-C---C--A---A----CT--T--T----T--G-A----T--CT-C---T---TG--TAG-AT-C--T-G-T----T-C--T-CT---A---A-AC-G-A-----A--C-
-> str08: A-TGA---A--AACG-A-A---A--A---T---T-A-T---T-ATCA----A---G----G------G----TA--TG----G-A---AGT-G--G-A----AG--CT-G-ACG-A-A----AT---------
-> str09: ACT--CG--G---C-T----GCAT--G-CT---T-AGT-GC--A-C-T-C-A-C-G--CAG-TA--T--AA-T---T--A-A---T--A----A--C--T--A--A-T--TA---------------------
-> str10: --T----T-GTA--G-A--T-C-T--G--T---TC--T--CT-A--A----A-C-G-A-A-CT---T-----TA-----A-A--AT-C--T-G-TG---TG--G--CT-GT-C--A--CT-C-----------
-> str11: ---G-C--AG-A--G--CAT---T-----T---TC--TA----AT-AT-C---CA---CA---AA----A--T----G-A-AG---GCA----AT--A----A-T--T-GTAC-TA--CT-C-----------
-> str12: A-TGA-G------C---CA---A---GA-TC---C-G-A-C-GA--A-G--A---G--C--C---C--CAAG-----G-A--G---G-AG---A---A--G--G-A---G---G--GAC--C--CC-----C-
-> str13: --T--C-T-----C--ACA-G--T-----TCA---AG-A----A-C---C---CA--A-AG-TA-C--C-----CC--C----CAT--AG-C----C-CT-C--T--T---A---A-A--GC--C---A--C-
-> str14: A--G--GT--T----TA--T--A-C---CT---TC-----CT-A----G-G-T-A--ACA---AAC--CAA---CC---A-A-C-T----T---T-C---G-A-T-CTC-T---T-G--T--A----------
-> str15: A--G--GT--T----TA--T--A-C---CT---TC-----C----CA-G-G-T-A--ACA---AAC--CAA---CC---A-A-C-T----T---T-C---G-A-T-CTC-T---T-G--T--A----------
-> str16: --T-A---A--AAC--A-A--C-TCA-A-T-A--CA--A-C--AT-A----A---G-A-A---AA-T-CAA---C--GCA-A--A---A----A--CACT-CA---C----A---A-A---------------
-> str17: -C---CG------C---C---CAT-----T---T--G--G--G--C--G-G--C--T-C---T--C-G-A-G--C--G-ATAGC-T-C-GTCGA---A-T-C----C-C-T-CG-A--C--C-T---------
-> str18: A-T-AC-------C-T---T-C--C---C--AG---GTA----A-CA----A--A---C--C-AAC--CAA---C-T---T----T-C-G---AT-C--T-C--T--T-GTA-G-A---T-C-T--G------
-> str19: --T--C-T-----C--ACA-G--T-----TCA---AG-A----A-C---C--TCA--A--G-T--CT-C-----CC--C----CAT--AG--G---C-CT-C--T--T--T-C--AG--T-CA---G------
-> str20: ---GA--T-----C-T-C-T-C-TCA--C-C-G--A--A-C----C-TG-G--C----C--C---C-G---G-----GCA-A--ATGC---C----C--T--A--A-TC---C--AGA--G-----GT-G---
-> str21: A--GA-G------C--A-AT-CA---G--T--G-CA-T--C--A----G--A--A--A----TA--T--A----CCT--AT----T--A-T--A--CACT----T--T-G--C-TA-A--G-A-----A-T--
-> str22: A---A--T--TAA---A-A--CATC----TCA---A-TA-C--A--A--C-AT-A--A--G--AA----AA--AC----A-A-C--GCA----A---A----A--AC----AC-T---C---AT---------
-> str23: A---A---A----CG-A-A--C-T-----T---T-A--A----A--AT-C--T--GT---G-T----G---G--C-TG--T--CA--C--TCG--GC--TGCA-T----G--C-T----T--A---GT-G-C-
-> str24: A-T-A---A----C-TA-AT---T-A--CT--GTC-GT---TGA-CA-G-GA-CA---C-G--A---G----TA-----A---C-T-C-GTC--T--A-T-C--T--TC-T--G-------------------
-> str25: A-TGA-GT-GT--C--AC--G-A--A---T---TCA----C-G-T-A--C-A--A-T---G--AACTG---G-A--TG--T----T-CA--CG-TG----G-A--A-T---A---A-----------------
-> str26: AC---CGT-G----G-----GC----GA----G-C-G--G-TGA-C---CG----GT---G-T--CT-----T-CCT--A--G--TG--G--G-T-C-C--CA---C--GT---T-GA----A---------R
-> str27: A---A---AG----GT---T---T-A---T-A--C-----CT--TC---C---CAG----G-TAAC---AA--ACC---A-A-C---CA----A--C--T----T--TCG-A--T---CT-C-T---T-G---
-> str28: A--G---TAGT----T-C--GC--C----T--GT--GT-G---A----GC--T--G-ACA---AACT-----TA---G--TAG--TG---T---T----TG---T----G-A-G--GA-T---T----A----
-> str29: --T----T--TA---TAC---C-T-----TC---C--TAG--G-T-A----A-CA--A-A-C---C---AA---CC---A-A-C-T----T---T-C---G-A-T-CTC-T---T-G--T--A---G-A-T--
-> str30: A-TG-CG--GT--CGT-C-T-C-TC---C-C---C-G--GCT--T--T----T---T-----T---T-C-----CC--C---GC--GC---CG---C---G---T--T-G---G----C-GC--C-G-A----
-> str31: ---G---T-G-A-C--A-A---A--A-AC--A-T-A--A--TG-----G--A-C--T-C--C-AAC---A----CC---AT-G--T-CA----A-GC--T----T--TC--A-G--G--T--A---G-A--C-
-> str32: ---G---T-GTAA-G-A-A---A-CAG--T-A---AG---C----C---CG----G-A-AG-T----G---GT----G--T----T----T---TGC---G-A-T--T--T-CG-AG---GC--C-G--G---
-> str33: ---GA-G-A--A---T----G-A---G--TC--TCA-T---T-A-C---CG--C----C--C-----G---GTAC-T---TAGCA---AG-C--T--A----A-TA---GT-C--A--C-G-----G----C-
-> str34: A-TG---T-G----GT-C--G-AT--G-C-CA-T--G--G---A----G-G--C----C--C-A-C--CA-GT---T-CAT----T--A----A-G----GC--T-C-C-T--G--G-C---AT---T-----
-> str35: AC-GA-G------CGT---T---T-----T-A---AG--G--G--C---C---C-G--C-G--A-CTGC--G-AC--G----GC---CA--C-ATG----GC----C-C-T--GTA---TG--T---------
-> str36: ---G--GT--T----TA--T--A-C---CT---TC-----C----CA-G-G-T-A--ACA---AAC--CAA---CC---A-A-C-T----T---T-C---G-A-T-CTC-T---T-G--T--A---G------
-> str37: --TG--G--G-AA-GT---T-C--CA-A---A---AG-A--T---CA--C-A--A--A-A-C-A-CT--A----CC---A--G--T-CA----A--C-CTG-A--A---GTAC--A--C--------------
-> str38: ---GA---AG---CGT---T--A--A--C---GT--GT---TGA----G-GA--A--A-AG--A-C---A-G--C-T---TAG---G-AG---A---AC---A--A---G-A-G----CTG-----G--G---
-> str39: AC---C--AG---CG--CA--C-T-----TC-G---G---C--A----GCG----G--CAGC-A-C--C---T-C--G----GCA-GCA--C----C--T-CAG--C----A-G----C---A-----A--C-
-> str40: A-TG--G--G-A-C--A-A--C-T-----T-A-T---T--C----C-T---ATCA-T---G-T----GC-----C----A-AG-A-G--GT---T----T----TAC-C---CG--G--TG-A-CC--A----
-> str41: --T----T-GTA--G-A--T-C-T--G--T---TC--T--CT-A--A----A-C-G-A-A-CT---T-----TA-----A-A--AT-C--T-G-TG---TG--GT--T-GT-C--A--CT-C-----------
-> str42: A---AC-------C--A-A--C--CA-ACT---T---T--C-GATC-T-C--T---T---G-TA---G-A--T-C-TG--T----T-C--TC--T--A----A--AC--G-A---A--CT---T---TA----
-> str43: ---G--G--GT----T-C-TGC--CAG-----G-CA-TAG-T---C-T----T---T-----T---T-----T---T-C-T-G---GC-G--G---C-C--C--T--T-GT--GTA-A----A-CC-T-G---
-> str44: ---G--G------C-T----GCAT--G-CT---T-AGT-GC--A-C-T-C-A-C-G--CAG-TA--T--AA-T---T--A-A---T--A----A--C--T--A--A-T--TAC-T-G--T-------------
-> str45: --TG-C--A-T---G--C-T---T-AG--T--G-CA----CT---CA--CG--CAGTA----TAA-T-----TA-----ATA--A--C--T--A---A-T----TACT-GT-CGT------------------
-> str46: --T----T-----C---CA--CA--A--CT---T---T--C----CA--C---CA--A--GCT--CTGCAAG-A--T-C----C---CAG---A-G---T-CAG-----G---G--G-C--C-T--GT-----
-> str47: --T--C-TA--AACG-A-A--C-T-----T---T-A--A----A--AT-C--T--GT---G-T----G---G--C-TG--T--CA--C--TCG--GC--TGCA-T----G--C-T----T--A---G------
-> str48: AC---CG--G-A---T----G-----G-C-C-G-C-G-A--T--T--T----T---T-C-G------G-A-GT-CCT---T-G---G--G--G--G-AC--CA---CTC--A-G-A-A-T--A---G-A----
-> str49: -CT----T-GTA--G-A--T-C-T--G--T---TC--T--CT-A--A----A-C-G-A-A-CT---T-----TA-----A-A--AT-C--T-G-TG---TG--G--CT-GT-C--A--CT-------------
-> str50: A-TGA-G------C--AC-T--A--AG-C---G--A--AG---A--A--C---CA--A-A---AA--GCA-G-AC----A-A---T--A--C-A---AC--C----C--G--C-TA---T---T----A--C-
+>   Sol: ATGACCGTAGTAACGTCAATGCATGCTACAGTCAGTCAGTAGCTAGCTACGTGCATCAGAGTCACGTACATGCTAGACTCGAGTACGATCATGCAGACTCGTATCGATCCGTACGTAGCTAGTCACGTAGCTR
+> str01: -T-A--GTAGTA--G--A---C-T-C--C-G---G--A--AG-T-G--AC----A--A-A--C-C---C-TG--A-A----A--A-GA--ATG--GA-T---A---A-----A--TA--TA------------
+> str02: --G---G-A-TAA----A---CA--CT-C---C---C-G-A---A---A-----AT-A-A-T----T---TG--A--CT----TA--A--A--CA-AC--G---CGA-C---A-GT---T---CA---AG---
+> str03: AT-ACC-T--T--C--C--T--A-G-----GT-A---A----C-A---A-----A-C-----CA---AC---C-A-ACT----T----T--TG-A---TC-T--C--T---T--GTAG--A-TC---T-G---
+> str04: -T-A----A--A---T---T--AT---A-A-TC--T---TA--TA-CTA-GT--A--A-A---A---A-AT---AG----G-GT--G-T-A---A--C-CG-A---A-----A---A-C--G----GT--C--
+> str05: -T-----TA--AA----A---CA-GC--C--T--GT--G--G---G-T---TGCA-C-----C-C--AC-T-C-A--C---AG---G-----GC---C-C--A-C--T--G---G--GC--G-CA---AG---
+> str06: ATGAC--T--T--C--CAATG---G--A---TC---C-----C-A---AC---C-TCA-AG-C---T---T-C----C---A---C---C---C---C----A---AT--G---GT---T--TCA-G---C--
+> str07: A--AC---A--AAC--CAA--C---C-A-A--C--T---T---T---T--G---ATC----TC---T---TG-TAGA-TC---T--G-T--T-C----TC-TA---A-----ACG-A---A--C---------
+> str08: ATGA----A--AACG--AA---A----A---T---T-A-T---TA--T-C----A--AG-G----GTA--TG---GA----AGT--G-----G-A-A---G---C--T--G-ACG-A---A---A--T-----
+> str09: A---C--T-----CG-----GC-TGC-A---T--G-C--T---TAG-T--G--CA-C----TCACG--CA-G-TA---T--A--A---T--T--A-A-T---A---A-C--TA---A--T--T-A--------
+> str10: -T-----T-GTA--G--A-T-C-TG-T----TC--TC--TA---A---ACG---A--A----C---T---T--TA-A----A--A---TC-TG-----T-GT---G----G--C-T-G-T---CAC-T--C--
+> str11: --G-C---AG-A--G-CA-T---T--T----TC--T-A--A--TA--T-C---CA-CA-A---A---A--TG--A-A---G-G--C-A--AT--A-A-T--T---G-T----AC-TA-CT---C---------
+> str12: ATGA--G------C--CAA-G-AT-C--C-G--A--C-G-A---AG--A-G--C--C-----C-C--A-A-G---GA---G-G-A-GA--A-G--GA---G----G----G-AC----C----C-C----C--
+> str13: -T--C--T-----C---A---CA-G-T----TCA---AG-A---A-C--C---CA--A-AGT-AC---C---C----C-C-----C-AT-A-GC---C-C-T--C--T---TA---A---AG-C-C--A-C--
+> str14: A-G---GT--T----T-A-T--A--C--C--T---TC-----CTAG----GT--A--A----CA---A-A--C----C---A--AC---CA---A--CT--T-TCGATC--T-C-T---T-GT-A--------
+> str15: A-G---GT--T----T-A-T--A--C--C--T---TC-----C---C-A-G-G--T-A-A--CA---A-A--C----C---A--AC---CA---A--CT--T-TCGATC--T-C-T---T-GT-A--------
+> str16: -T-A----A--AAC---AA--C-T-C-A-A-T-A--CA--A-C-A--TA-----A---GA---A---A-AT-C-A-AC--G----C-A--A---A-A-----A-C-A-C--T-C--A-C-A---A---A----
+> str17: ----CCG------C--C----CAT--T----T--G---G--GC--G----G--C-TC----TC--G-A---GC--GA-T--AG--C--TC--G-----TCG-A---ATCC---C-T--C--G--AC----CT-
+> str18: AT-ACC-T--T--C--C----CA-G-----GT-A---A----C-A---A-----A-C-----CA---AC---C-A-ACT----T----TC--G-A---TC-T--C--T---T--GTAG--A-TC---T-G---
+> str19: -T--C--T-----C---A---CA-G-T----TCA---AG-A---A-C--C-T-CA--AG--TC---T-C---C----C-C-----C-AT-A-G--G-C-C-T--C--T---T---T--C-AGTCA-G------
+> str20: --GA---T-----C-TC--T-C-T-C-AC---C-G--A--A-C---CT--G-GC--C-----C-CG-----G---G-C---A--A--AT---GC---C-C-TA---ATCC--A-G-AG---GT---G------
+> str21: A-GA--G------C---AAT-CA-G-T---G-CA-TCAG-A---A---A--T--AT-A----C-C-TA--T--TA---T--A---C-A-C-T------T--T---G--C--TA---AG--A---A--T-----
+> str22: A--A---T--TAA----AA--CAT-CT-CA---A-T-A----C-A---AC----AT-A-AG--A---A-A----A-AC---A--ACG--CA---A-A-----A---A-C---AC-T--C-A-T----------
+> str23: A--A----A----CG--AA--C-T--T----T-A---A--A---A--T-C-TG--T--G--T---G-----GCT-G--TC-A---C--TC--G--G-CT-G---C-AT--G--C-T---TAGT---G---C--
+> str24: AT-A----A----C-T-AAT---T---AC--T--GTC-GT---T-G--AC----A---G-G--AC--AC--G--AG--T--A--AC--TC--G-----TC-TATC--T---T-C-T-G---------------
+> str25: ATGA--GT-GT--C---A---C--G--A-A-T---TCA----C--G-TAC----A--A---T---G-A-A--CT-G----GA-T--G-T--T-CA--C--GT---G----G-A---A--TA---A--------
+> str26: A---CCGT-G----G-----GC--G--A--G-C-G---GT-G--A-C--CG-G--T--G--TC---T---T-C----CT--AGT--G-----G--G--TC----C---C---ACGT---T-G--A---A---R
+> str27: A--A----AG----GT---T---T---A---T-A--C-----CT---T-C---C--CAG-GT-A---ACA----A-AC-C-A--AC---CA---A--CT--T-TCGATC--T-C-T---T-G-----------
+> str28: A-G----TAGT----TC---GC---CT---GT--GT--G-AGCT-G--AC----A--A-A--C---T---T---AG--T--AGT--G-T--T------T-GT---GA---G---G-A--T--T-A--------
+> str29: -T-----T--TA---T-A---C---CT----TC---C--TAG---G-TA-----A-CA-A---AC---CA----A--C-C-A--AC--T--T------TCG-ATC--TC--T---T-G-TAG--A--T-----
+> str30: ATG-C-G--GT--CGTC--T-C-T-C--C---C---C-G--GCT---T---T---T-----T----T---T-C----C-C-----CG--C--GC---C--G---CG-T---T--G--GC--G-C-CG-A----
+> str31: --G----T-G-A-C---AA---A----A-A--CA-T-A--A--T-G----G---A-C----TC-C--A-A--C-A--C-C-A-T--G-TCA---AG-CT--T-TC-A---G---GTAG--A--C---------
+> str32: --G----T-GTAA-G--AA---A--C-A--GT-A---AG---C---C--CG-G-A--AG--T---G-----G-T-G--T----T----T--TGC-GA-T--T-TCGA---G---G---C----C--G--G---
+> str33: --GA--G-A--A---T----G-A-G-T-C--TCA-T---TA-C---C---G--C--C-----C--G-----G-TA--CT----TA-G--CA---AG-CT---A---AT----A-GT--C-A--C--G--GC--
+> str34: ATG----T-G----GTC---G-ATGC--CA-T--G---G-AG---GC--C---CA-C-----CA-GT---T-C-A---T----TA--A----G--G-CTC----C--T--G---G---C-A-T----T-----
+> str35: A---C-G-AG---CGT---T---T--TA-AG---G---G---C---C--CG--C----GA--C---T----GC--GAC--G-G--C---CA--CA---T-G----G--CC---C-T-G-TA-T---GT-----
+> str36: --G---GT--T----T-A-T--A--C--C--T---TC-----C---C-A-G-G--T-A-A--CA---A-A--C----C---A--AC---CA---A--CT--T-TCGATC--T-C-T---T-GT-A-G------
+> str37: -TG---G--G-AA-GT---T-C---C-A-A---A---AG-A--T--C-AC----A--A-A---AC--AC-T---A--C-C-AGT-C-A--A--C---CT-G-A---A---GTAC--A-C--------------
+> str38: --GA----AG---CGT---T--A----AC-GT--GT---T-G--AG----G---A--A-A---A-G-ACA-GCT----T--AG---GA----G-A-AC----A---A---G-A-G---CT-G----G--G---
+> str39: A---CC--AG---CG-CA---C-T--T-C-G---G-CAG---C--G----G--CA---G---CAC---C-T-C--G----G----C-A----GCA--C-C-T--C-A---G--C--AGC-A---AC-------
+> str40: ATG---G--G-A-C---AA--C-T--TA---T---TC-----CTA--T-C----AT--G--T---G--C---C-A-A---GAG---G-T--T------T--TA-C---CCG---GT-G--A--C-C--A----
+> str41: -T-----T-GTA--G--A-T-C-TG-T----TC--TC--TA---A---ACG---A--A----C---T---T--TA-A----A--A---TC-TG-----T-GT---G----GT---T-G-T---CAC-T--C--
+> str42: A--ACC--A--A-C--CAA--C-T--T----TC-G--A-T--CT--CT---TG--T-AGA-TC---T----G-T----TC---T-C--T-A---A-AC--G-A---A-C--T---T---TA------------
+> str43: --G---G--GT----TC--TGC---C-A--G---G-CA-TAG-T--CT---T---T-----T----T---T--T---CT-G-G--CG-----GC---C-C-T-T-G-T--GTA---A---A--C-C-T-G---
+> str44: --G---G------C-T----GCATGCT----T-AGT--G---C-A-CT-C----A-C-G---CA-GTA--T---A-A-T----TA--AT-A---A--CT---A---AT---TAC-T-G-T-------------
+> str45: -TG-C---A-T---G-C--T---T---A--GT--G-CA----CT--C-ACG--CA---G--T-A--TA-AT--TA-A-T--A--AC--T-A---A---T--TA-C--T--GT-CGT-----------------
+> str46: -T-----T-----C--CA---CA----AC--T---T---T--C---C-AC---CA--AG---C---T-C-TGC-A-A---GA-T-C---C---CAGA---GT--C-A---G---G--G---G-C-C-T-G-T-
+> str47: -T--C--TA--AACG--AA--C-T--T----T-A---A--A---A--T-C-TG--T--G--T---G-----GCT-G--TC-A---C--TC--G--G-CT-G---C-AT--G--C-T---TAG-----------
+> str48: A---CCG--G-A---T----G---GC--C-G-C-G--A-T---T---T---T---TC-G-G--A-GT-C---CT----T-G-G---G-----G--GAC-C--A-C--TC---A-G-A---A-T-A-G-A----
+> str49: ----C--T--T---GT-A--G-AT-CT---GT---TC--T--CTA---A-----A-C-GA---AC-T---T--TA-A----A--A---TC-TG-----T-GT---G----G--C-T-G-T---CAC-T-----
+> str50: ATGA--G------C---A---C-T---A-AG-C-G--A--AG--A---AC---CA--A-A---A---A---GC-AGAC---A--A---T-A--CA-AC-C----CG--C--TA--T---TA--C---------
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -788,17 +722,17 @@ else:
 > str10: MESLVPGFNE
 > 
 > --- Solution (of length 44) ---
->   Sol: MQPSKFTRAESLNESYAQHFVDANISRCPGVKFGTNEALHDGYQ
-> str01: M-------A--L--SY-----------CP--K-GT---------
-> str02: MQ-S------SLN---A-------I---P-V-------------
-> str03: M-P--------L--SY-QHF------R----K------------
-> str04: M--------E---E----H-V--N------------E-LHD---
-> str05: M--S--------N------F-DA-I-R----------AL-----
-> str06: M----F-R----N----Q-----N-SR--------N-----G--
-> str07: M----F---------YA-H---A---------FG-------GY-
-> str08: M--SKFTR------------------R-P-------------YQ
-> str09: M--S-F--------------V-A------GV---T--A-----Q
-> str10: M--------ESL--------V-------PG--F--NE-------
+>   Sol: MAPLEQSKFYTSRLNEQAHFDVAINCSFRPGVFNEKGTALHDYQ
+> str01: MA-L--S--Y---------------C---P-----KGT------
+> str02: M----QS----S-LN--A-----I-----P-V------------
+> str03: M-PL--S--Y------Q-HF--------R------K--------
+> str04: M---E----------E--H--V--N---------E----LHD--
+> str05: M-----S-------N----FD-AI----R---------AL----
+> str06: M-------F---R-N-Q-------N-S-R----N--G-------
+> str07: M-------FY-------AH---A----F--G-----G-----Y-
+> str08: M-----SKF-T-R---------------RP------------YQ
+> str09: M-----S-F------------VA-------GV-----TA----Q
+> str10: M---E-S------L-------V-------PG-FNE---------
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -881,58 +815,58 @@ else:
 > str49: MFYAHAFGGYDENLHAFPGISSTVANDVRKYSVVSVYNKKYNIVKNKYMW
 > str50: MANYSKPFLLDIVFNKDIKCINDSCSHSDCRYQSNSYVELRRNQALNKNL
 > 
-> --- Solution (of length 500) ---
->   Sol: MEWFNGPAKDELRYSIVFDAHREPSNGADLIKSDTYQLREHIGSANIFTKGVPLYERQSFKVIDNLVWASGANEKAIQTMEGRLDMNASFHQAPKYRLTDYIEVADIFQNTWGLIDEPSAHKVLDGNSMYWRQATIHVFWNECKPAADHLNTFAQSRVCDLMGIAWLAEKPRGIFYVDLASQTNGEAHFDLIDPFERVTKGNSCRPQLETWKDAMGYSHGEQRKIVTLMPFNAQLHDRYFSATGGNSDCVLNFKMPEADGHIVKTGCRYEPARDNTFAHQKSLEQMVVYIATNGLSFADWRGKESTICAYLRFAKWPVCIDANTRAKHYLWSGVDKFQSNIELVDFYCLRAEPIGIEMAIKTYEFVMDSLNHPARYIAGKDEHKLFTNRFASYVIGDPLCGEQFCADLSAVRWEKTPGNDCEIVSEVAPRDMYGACDKFWHQDNSKLIYTHMAGEVDQLNSHTMLQAIYRWSHPKVIADGQMTSNRQFGLADTIKYVHPL
-> str01: M-----------R-------H--------L---------------NI----------------D------------I---E-----------------T-Y-----------------S--------S------------N------D---------------I-----K-------------NG------------V------------------Y------K--------------Y--A-----D---------A-----------E---D--F------E-----I----L---------------L-FA--------------Y--S--------I---D---------G-----------------------G--E-----------V-------E--C--L-----------D--------------------------L--T-------------------R------------------------------
-> str02: ME----------R--------R-----A------------H---------------R---------------------T-----------HQ-----------------N-W---D---A--------------T--------KP-----------R-----------E--R------------------------R--K------Q--T-----------Q-------------H-R------------L-------------T-------------H-------------------------------------P---D-------------D---S-I-----Y-----P---------------------R-I----E-K------A----------E---------------G-----------R-------K----------------E-D----H-----------------G--------------------
-> str03: ME----P-------------------GA-------------------F----------S-------------------T--------A---------L---------F-------D---A---L------------------C----D-----------D---I--L--------------------H--------R-------R--LE--------S---Q-----L---------R-F---GG----V-----------------------------Q---------I--------------------------P-----------------------------------P---E--------V--S-----------D----------------P-------------R-----------V--------Y-A------------------G--------------Y--------A-----------L---------L
-> str04: M----G--K--------F-----------------Y------------------Y---S-----N-----------------R-------------RL------A-----------------V---------------F------A--------Q---------A----------------Q--------------------S-R-------------H--------L---------------GG-S---------------------YE---------Q-------------------W----------L--A----C--------------V----S---------------G------------DS----A-----------F--R-A----------E--------V---K------------A-R-------------------------V-Q----------------K---D---------------------
-> str05: ---F-------------F---RE--N---L--------------A--F---------Q-------------------Q---G------------K---------A--------------------------R---------E----------F-----------------P---------S----E---------E-----------------A--------R---------A------------NS--------P--------T----------------S------------------R--E------L----W-V------R------------------------R----G-----------------------G--------N---------PL---------S----E-------------A-----GA-------------------E--------------R---------------R--G---T-------
-> str06: M--------D-------------PS----L----T-Q--------------V---------------WA----------------------------------V------------E--------G-S---------V-----------L-----S--------A--A--------VD----T---A--------E--T--N----------D-------------T-----------------------------E-------------P--D---------E---------GLS-A-----E------------------N------------------E------------G-E----T------------R-I-----------------I----------------R----------I--------------------------T---G------S---------------------------------------
-> str07: M------A---------FD----------------------------F----------S--V----------------T--G----N-----------T----------------------K-LD---------T--------------------S------G-----------F-------T-----------------------Q--------G---------V--------------S-----S-------M---------T---------------------V---A------A---G---T----L--------I-A------------D-------LV----------------KT-----------A-----------------S----------------S--------------------------------Q----L--T---------N----L-A-------------Q--S----------------
-> str08: M------A--------V-------------I------L--------------P-----S-------------------T----------------Y--TD------------G---------------------T----------AA-----------C-----------------------TNG-----------------S--P------D------------V-----------------------V---------G----TG---------T---------M-------------W-----------------V----NT----------------I-L---------P-G------------D-----------------F---F----------------------W--TP-------S--------G--------------------E-----S--------------V---------R----------V---
-> str09: M---N-----------------------------T-------G---I---------------ID-L-----------------------F---------D---------N----------H-V-D--S-------I--------P------T-----------I--L---P----------------H------------------QL-----A------------TL--------D-Y-----------L-----------V----R-------T-------------I----------------I-------------D--------------------E----------------------------N---R----------------S-V----L--------L------------------------------F-H------I---M-G------S------------------G--------------------
-> str10: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------L-----R-T-----R----T-----------Q-----L-P-------------------------P-A----------Y------T----------------N--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str11: M--------D----S----------------K-------E--------T-------------I--L----------I---E--------------------I----I----------P---K-------------I-------K-----------S-------------------Y--L-----------L-D-----T--N----------------------I---------------S--------------P-------K-----------------S------Y---N-----D-------------F------I-----------S-----------------R--------------------N--------K-------N------I--------F------V-----------I--------------------N--L-Y----------N---------------V-------S--------TI------
-> str12: M----------L-----------------L--S---------G------K----------K-------------K----M---L-------------L-D---------N-------------------Y-----------E---------T-A----------A--A---RG-----------------------R---G--------------G--------------------D-------------------E----------R----R---------------------------RG-------------W-----A--------------F-------D----R--P-----AI-----V--------------------T---------------------------K--------------RD------K------S-----------D------------R-----------M--------A------H--
-> str13: M---NG----E-----------E-----D----D-----------N---------E-Q----------A--A---A----E----------Q----------------Q-T----------K---------------------K-A-----------------------K-R-------------E-------------K-----P-----K---------Q----------A----R---------------K--------V-T----------------S-E------A--------W---E-----------------------H--------F-------D-----A----------T-----D------------D--------------G---------A-------E------C----------------K--H-----------------------------------------------------------
-> str14: ME------------S--------------L---------------------VP-----------------G------------------F-------------------N------E----K------------T-HV----------------Q-----L-------------------S---------L--P---V---------L-------------Q---V-----------R---------D-VL-----------V----R-------------------------G--F----G------------------D----------S-V-------E---------E-------------V---L---------------------S---------E---A-----R-----------------------------Q--------H-------L---------------K---DG--T-----------------
-> str15: M-----------RY-IV-------S---------------------------P----Q-------LV----------------L-------Q-----------V--------G--------K---G------Q--------E---------------V----------E--R-------A----------L-------------------------Y----------L--------------T------------P------------Y----D--------------YI--------D----E----------K----------------S--------------------PI--------Y------------Y---------F------------L------------R------------S---------------H-----L------------N-------I------------Q----R------------P-
-> str16: M-----P-----R---V------P---------------------------V--Y--------D-----S-----------------------P--------------Q-------------V----S----------------P-----NT-----V------------P----------Q----A---------R----------L-----A------------T--P----------S-----------F----A------T-----P----TF-----------------------RG------A-----------DA------------------------------P-----A-----F-------------------------------------Q---D--------T-----------A---------------N-------------Q-------QA--R----------Q-------------------
-> str17: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------L-----R-T-----R----T-----------Q-----L-P----L------A--------------------------Y------T----------------N--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str18: M--F------------VF-----------------------------F---V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------L-------T----------T------------R---T------QL--------------------P--------------PA----------------Y--TN--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str19: ME-----A-------I--------------I-S--------------F--------------------A-G-----I----G-------------------I-------N-------------------Y-------------K-------------------------K--------L--Q--------------------S--------K---------------L-----Q-HD--F---G-----------------------R------------------V-------L-------K-----A-L------------T---------V---------------------------T-----------AR--A------L------------P--G-Q-------------P--------------------K--H------I----A--------------I-R----------Q-------------------
-> str20: M------A------S---------S-G-------------------------P--ER-----------A----E----------------HQ---------I----I------L---P-----------------------E-------------S-------------------------------H--L-----------S--------------S-----------P----L--------------V---K------H--K------------------L-----------L--------------Y------------------Y-W----K------L------------------T----------------G-----L------------PL-----------------P--D-E-------------CD-F---D-------H-------L--------I--------------------------------
-> str21: ME------------S--------------L---------------------VP-----------------G------------------F-------------------N------E----K------------T-HV----------------Q-----L-------------------S---------L--P---V---------L-------------Q---V-----------R---------D-VL-----------V----R-------------------------G--F----G------------------D----------S-V-------E---------E-------------V---L---------------------S---------E--------VR-----------------------------Q--------H-------L---------------K---DG--T-----------------
-> str22: M----------L-------A---PS---------------------------P-----------N----S----K-IQ-----L-----F-------------------N----------------N--------I----N----------------------I-------------D-------------I---------N--------------Y---E--------------H------T-------L-----------------Y-------FA---S----V--------S-A---------------------------------------Q-N----------------------------S----------------F---FA-----------Q---------W----------V--V-----Y-----------S-------A---D-----------------K--A---------------I------
-> str23: M-------------S----A----------I---T----E--------TK--P-------------------------T----------------------IE----------L---P-A---L---------A-------E--------------------G-----------F------Q--------------R-------------------Y--------------N---------------------K----------T-----P----------------------G--F--------T-C---------V-----------L----D--------------R------------Y----D---H------G--------------VI-----------------------ND----S------------K---------I-------V--L---------Y---------------N---------------
-> str24: M-------K----------------N----I-------------A----------E---FK-------------KA-----------------P--------E----------L-----A---------------------E-K-----L----------L-------E-------V-----------F-------------S----------------------------N--L------------------K-----G--------------N------S------------------R---S-----L---------D-------------------------------P----M----------------R--AGK--H-------------D-------------V------------V--V--------------------I------E-----S-T-----------K-------------------K----L
-> str25: M-----P-----------------------------Q---------------PL------K----------------Q----------S--------L-D--------Q---------S--K--------W------------------L------R-----------E----------A-----E-------------K------------------H--------L---------R---A--------L-----E------------------------SL---V-----------D-----S-----------------N------L-----------E---------E----E---K--------L---------K-----------------P----Q----LS----------------------M-G--------------------E-D------------------V----Q--S----------------
-> str26: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------LI------T-----R----T-----------Q------------------S---------------------------Y------T----------------N--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------T---Q----D--------
-> str27: M-------K--------FD--------------------------------V-L----S------L-----------------------F--AP-----------------W-------A-KV-D----------------E------------Q-------------E------Y-D---Q------------------------QL-----------------------N-------------N-----N------------------------------LE-----------S----------I----------------T-A--------------------------P-------K---F--D------------D--------------G---------A---------T-----EI--E------------------S---------E--------------R---------G-----------D-I------
-> str28: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N----F---------T--N--R----T-----------Q-----L-P----------SA--------------------------Y------T----------------N--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str29: M-W-----------SI--------------I--------------------V-L------K----L----------I-----------S------------I------Q--------P-----L-------------------------L----------L---------------V-----T-------------------S----L---------------------P----L---Y------N---------P------------------N----------M------------D-----S--C----------C----------L----------I---------------------------S-----R-I---------T----------P---E-----L-A-------G-------------------K--------L--T--------------------W-----I----------F-----I------
-> str30: ME------------S--------------L---------------------VP-----------------G------------------F-------------------N------E----K------------T-HV----------------Q-----L-------------------S---------L--P---V---------L-------------Q---V-----------R---------D-VL-----------V----R-------------------------G--F----G------------------D----------S-V-------E---------E------------F----L---------------------S---------E---A-----R-----------------------------Q--------H-------L---------------K---DG--T-----------------
-> str31: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V---M--------P-------L---------F------------N-----L----------------I-T---------------T---------------------T--------------Q-S------Y--TN---F--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H--L-----------------------------------
-> str32: M-------------------H---------------Q----I------T--V---------V-------SG----------------------P----T---EV--------------S---------------T-------C---------F---------G-----------------S---------L---------------------------H----------PF--Q------S---------L--K-P------V----------------------M----A-N----A------------L---------------------GV--------L--------E--G-----K-----M------------------F-------------C--------S-------------I----------G-------------------G---------------R-S-----------------L----------
-> str33: M------A--------------------------T--L---------------L--R-S------L--A--------------L-----F----K-R------------N-----------K--D------------------KP-------------------------P--I--------T-------------------S------------G-S-G-----------------------G-------------A---I-----R-------------------------G------------I-------K------------H------------I------------I-I---------V------P---I--------------------P--G-----D-S---------------S----------------------I-T------------T------R-S-------------R--------------
-> str34: ME------------S--------------L---------------------VP-----------------G------------------F-------------------N------E----K------------T-HV----------------Q-----L-------------------S---------L--P---V---------L-------------Q---V-----------R---------D-VL-----------V----R-------------------------G--F----G------------------D----------S-------------------------M-----E-----------------E-----------V----L---------S----E-------------A-R-----------Q--------H-------L---------------K---DG--T-----------------
-> str35: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------L-------T----------T-----G----------T------QL--------------------P--------------PA----------------Y--TN--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str36: M------A-----------------N----I----------I---N-------L-------------W----N--------G-------------------I-V-------------P----------M--------V----------------Q----D----------------V------N-------------V---------------A---S------I-T-----A------F-------------K---------------------------S---M---I--------D----E-T---------W----D-----K--------K----IE--------A-------------------N---------------T------------C----------------------I-S----R-------K--H----------------------------R--------------N---------------
-> str37: M----------L-------------N------------R--I---------------Q--------------------T----L-M--------K---T-----A----N----------------N--Y-----------E---------T-----------I----E----I----L-----------------R----N--------------Y----------L---------R------------L-----------------Y--------------------I----------------I---L--A----------R--------------N-E---------E--G-------------------R---G---------------I---L-----------------------I---------Y---D-----DN---I--------D---S--------------V------------------------
-> str38: M------A-D-------------P---A--------------G-----T---------------N-----G--E------EG----------------T-------------G-----------------------------C-------N-----------G--W--------FYV--------EA----------V---------------------------V------------------------------E------K----------------K----------T-G----D---------A----------I-----------S--D---------D------E------------------N----------E-----N--------D-----------S----------D-----------------------------T---GE-D-L----------------V--D---------------------
-> str39: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V-------------------------N------L-----R-T-----R----T-----------Q-----L-P-------------------------P-------------------------S------Y--TN--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H---------S----------------------------
-> str40: ME------------S--------------L---------------------VP-----------------G------------------F-------------------N------E----K------------T-HV----------------Q-----L-------------------S---------L--P---V---------L-------------Q---V----------------------C---------D---V-------------------L---V-------------RG----------F-------------------G-D---S----V-------E----E--------V---L---------------------S---------E---A-----R-----------------------------Q--------H-------L---------------K---DG--T-----------------
-> str41: M---N--------------------N----------Q-R----------K----------K-----------------T--------A--------R--------------------PS-------------------F-N--------------------M----L--K-R-------A----------------R----N--R--------------------V--------------S-T------V-------------------------------S--Q---------L--A----K--------RF------------------S---K------------------G--------------L--------------L------S---G------Q--------------G----------P--M-----K--------L--------V-------M--A--------------------F------------
-> str42: M-------------S----------N---------------------F---------------D----A-------I-----R----A---------L-----V-D----T----D---A---------Y-------------K-----L------------G------------------------H---I--------------------------H---------M---------Y----------------PE--G----T----E------------------Y----------------------------V-----------L-S-------N-----F---------------T-----D------R---G------------S-------------------R----------I--E-------G---------------------V------T---------H---------T-------------VH--
-> str43: M--------------I------E------L--------R-H--------------E-----V---------------Q---G--D------------L-----V------T---I-----------N----------V-------------------V----------E-------------T----------P-E----------------D--------------L--------D------G--------F--------------R-----D--F------------I----------R-------A------------------H-L----------I------CL-A--------------V-D------------------T--------------E-------------T---------------------------------T---G----L-------------------D--------------I-Y----
-> str44: M--F------------VF-----------L---------------------V-L-----------L---------------------------P---L-----V--------------S--------S----Q---------C--------------V---M--------P-------L---------F------------N-----L----------------I-T---------------T--N---------------------------------Q-S------Y--TN--SF--------T-----R--------------------GV------------Y---------------Y---------P-------D--K---------V---------F-------R------------S-------------------S----------V--L--H--------------------------------------
-> str45: M-------------S----------------K-D---L-------------V----------------A-------------R--------QA----L------------------------------M-----T----------A----------R----M-------K---------A---------D----F--V--------------------------------F--------F----------L-F---------V-------------------L----------------W--K-----A-L--------------------S----------L---------P------------V------P-------------T-R----------C--Q-------------------I-------DM--A--K-------KL-------------S-----A------------G--------------------
-> str46: M------A------S--------------L-------L-----------K--------S------L------------T----L-----F----K-R-T--------------------------------R---------------D------Q---------------P----------------------P-------------L-----A---S-G--------------------S--GG------------A---I-----R-------------------------G------------I-------K------------H-----V------I------------I-----------V---L------I--------------------P--G-----D-S---------------S----------------------I-------V------T------R-S-------------R--------------
-> str47: M-----------R---V----R----G---I------LR------N---------------------W---------Q-------------Q-------------------W------------------W----I---W-----------T---S----L-G-----------F-----------------------------------W---M---------------F-----------------------M------I----C--------------S----VV-----G----------------------------N------LW--V---------------------------T---V---------Y----------------Y--G--------------V-----P------V---------------W-----K--------E-----------A-------K-------T---------T-------
-> str48: M------A--------V-----EP-----------------------F----P---R-------------------------R----------P-------I--------T--------------------R------------P---H----A-S-------I----E-------VD----T-------------------S------------G--------I------------------GG-S----------A-G---------------------S-------------S-------E----------K--V------------------F----------CL----IG-----------------------------------------------Q--A-------E---G---------------G--------------------E------------------P----------N-------T---V---
-> str49: M--F---------Y-----AH------A-------------------F--G-------------------G------------------------Y---D--E------N---L------H------------A----F-----P-----------------GI----------------S---------------------S------T---------------V------A------------N-D-V-----------------R------------K-------Y------S---------------------V---------------V----S----V--Y-----------------------N--------K---K--------Y-------------------------N---IV-------------K-----N-K--Y--M------------------W-----------------------------
-> str50: M------A-----------------N---------Y-------S-----K--P------F-----L-----------------LD----------------I-V---F-N-----------K--D----------I-------K--------------C----I-------------------N-----D------------SC-------------SH---------------------S------DC------------------RY----------Q-S----------N--S-------------Y-------V-----------------------EL------R------------------------R------------N--------------Q--A-L----------N------------------K-----N--L-----------------------------------------------------
+> --- Solution (of length 499) ---
+>   Sol: MEINWAGRFDSVNPKELVFLDVNRIQAVHGQYIPESTNLDVFAGPHADEIKVEPFGLRYSNEKITKWMQDAESLRAAEPIFQHVLDGTKSCIFYNARTLDPQGANEWVKSAILQDATCMFVHAIKTVNYELWDSGARCLPIFQMCANTLHSVKAWNAMFQSRIDAPTRVNEGILQSKPCRAHLQTEGPFADINGYVSTEKRFFDWLHRTGVALSDKQYHIRCHEKTGLMNPQALYAISFGDVTNHKMEFQGARISHPGTEDYLPKCNMGPVQYAASTVAGDYFNRILWNHDSKAEPRFLCGSIAVTYDLWNACGMKLAYVSFGPINDRQGAEHLWSDTIKRNVYSEMFCTRIEGPLAIRANPTVYKDEIGYLPVDNHREAFKGIFPVHTACRLSKDFRAIEQAPSYMRGNWDTIVDACFHLQVREWCPQLSDGIMKYAVIEGFSYHLAKITNAGDEPDRHKVWLIGTMVSGCADNTYQHRGKMSILFYNVDRGHIPQWT
+> str01: M------R--------------------H---------L---------------------N--I-----D---------I-------------------------E----------T-----------Y----S----------------S----N-------D--------I---K---------------NG-V---------------------Y------K---------YA----D----------A-------ED---------------------F-----------E-------I-----L-------L----F--------A------------YS------I--------------D--G------------G-----------------E-------------V---------E-C--L-D--------------L---T-------R----------------------------------------
+> str02: ME-----R---------------R--A-H----------------------------R------T-----------------H------------------Q--N-W-------DAT-------K--------------P---------------------R--------E--------R--------------------R--------------KQ--------T-----Q------------H-------R---------L-------------T------------H-----P-----------D------------------D--------S--I----Y----------P---R---------I---------E--K-------A----------E-------G--------------R-----------K----E-------------D----H-----G---------------------------------
+> str03: ME-----------P---------------G------------A-----------F----S----T-----A--L------F----D---------A--L------------------C--------------D------------------------------D--------IL-------H------------------R------R----L----------E-------------S-----------Q------------L---------------------R------------F--G------------G-----V--------Q---------I---------------P------P-----E-----V-------------------S-D-------P---R------V---------------------YA---G--Y--A---------------L---------------------L-------------
+> str04: M-----G-------K---F------------Y--------------------------YSN-------------R---------------------R-L----A---V-----------F--A-------------------Q--A-------------QSR-------------------HL---G------G--S--------------------Y-----E-------Q-------------------------------------------------------W----------L----A--------C------VS-G---D--------S--------------------A-----------------------F----------R------A-E-------------V--------------------K-A--------------------R--V---------------Q---K--------D--------
+> str05: --------F---------F----R----------E--NL---A-----------F-------------Q------------Q----G-K------AR--------E-------------F-------------------P----------S-------------------E--------------E---A----------R----------A-----------------N-------S------------------P-T----------------S--------R---------E---L----------W---------V-------R------------R------------G---------------G-----N---------P------LS------E-A-----G-------A-------E---------------------------------R--------------------RG-----------------T
+> str06: M--------D---P---------------------S--L-------------------------T---Q--------------V----------------------W---A---------V--------E----G---------------SV---------------------L-S----A--------A-----V-------D----T--A-----------E-T---N----------D-T----E--------P---D---------------------------------E-----G-------L-----------S---------AE---------N---E-------G-------------E--------------------T--R-------I-------------I---------R---------I----------------T--G---------------S-----------------------------
+> str07: M----A--FD--------F----------------S----V-----------------------T---------------------G-------N--T----------K---L-D-T----------------SG------F-----T-----------Q-----------G-----------------------VS----------------S--------------M-------------T---------------------------V--AA----G-------------------------T--L---------------I-----A-----D------------------L-------V-K----------------------TA---S----------S----------------Q-------L--------------------TN-----------L--------A----Q-----S---------------
+> str08: M----A-----V------------I-------------L-----P--------------S----T----------------------------Y---T-D--G-------------T-----A------------A-C---------T-------N---------------G---S-P------------D----V--------------V---------------G---------------T-------G-------T--------M-------------------W----------------V-----N--------------------------TI----------------L-----P-------G----D-----F---F-------------------------W-T--------------P--S-G-------E--S-----------------V-----------------R---------V---------
+> str09: M--N--------------------------------T------G-----I-------------I-----D---L------F----D--------N--------------------------H----V-----DS------I------------------------PT-----IL---P---H-Q---------------------L-----A-------------T-L------------D--------------------YL-------V-------------R--------------------T------------------I-------------I---------------------------DE-------N-R---------------S--------------------V-----L--------L------------F--H---I-----------------M--G------------S--------G------
+> str10: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L-----R----T---------------R-------T-------Q----------L--P-------------------------P----------------A-------Y-----------------------T----N---------SF---------------T--R------------G---------VY-----Y-P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str11: M--------DS---KE--------------------T------------I------L------I-------E-------I-----------I--------P-------K--I------------K--------S------------------------------------------------------------Y----------L------L-D----------T---N------IS------------------P-------K----------S-----Y-N------D------F----I-----------------S------R-------------N-----------------------K---------N-------IF-V------------I---------N----------L---------------Y--------------N---------V-------S-----T--------I--------------
+> str12: M---------------L--L---------------S-------G------K-----------K--K-M-----L----------LD--------N---------------------------------YE-----------------T-----A--A-------A--R---G-------R------G------G---------D-------------------E----------------------------R-------------------------------R-----------R---G--------W-A---------F----DR--------------------------P-AI-----V------------------------T-----K--R-------------D-----------------------K-------S----------D---R--------M----A-----H--------------------
+> str13: M--N--G--------E------------------E----D-------D------------NE------Q-A----AAE---Q-------------------Q--------------T-------K---------------------------KA----------------------K--R-----E-------------K------------------------------P--------------K---Q-AR-----------K-----V-----T--------------S--E--------A-----W---------------------EH--------------F------------------D------------A--------T------D---------------D--------------------G----A--E------------------------------C---------K-----------H-----
+> str14: ME--------S-----LV---------------P---------G----------F-----NEK-T-----------------HV-----------------Q----------L--------------------S----LP-----------V---------------------LQ--------------------V----R--D------V-L----------------------------V----------R----G------------------------F-----------------G------D------------S---------------------V--E------E----------V-------L---------------------S------E-A----R-------------Q-----------------------HL-K-----D----------GT--------------------------------
+> str15: M------R-----------------------YI-------V------------------S------------------P--Q--L----------------------V----LQ------V-------------G-----------------K------------------G--Q----------E---------V--E-R----------AL----Y---------L--------------T-------------P----Y------------------DY---I----D---E--------------------K----S--PI------------------Y--------------------Y---------------F-----------L----R------S--------------HL------------------------------N------------I------------Q-R---------------P---
+> str16: M------------P---------R---V-----P------V-----------------Y----------D--S-----P--Q-V-----S----------P---N-----------T---V------------------P--Q--A---------------R-----------L------A---T--P--------S----F---------A-------------T----P-----------T-----F---R----G---------------A------D------------A-P-------A-----------------F------Q-------DT------------------A---N----------------------------------------Q-------------------Q---------------A--------------------R------------------Q---------------------
+> str17: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L-----R----T---------------R-------T-------Q----------L--P--L-A-------------------------Y--------------T------N-------S-----F-------T---------------------R-G------------VY--------------------Y-------P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str18: M-------F--V------F----------------------F---------V----L----------------L----P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L----------T------------T--R-------T-------Q----------L--P-------------------------P----------------A-------Y-----------------------T----N---------SF---------------T--R------------G---------VY-----Y-P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str19: ME---A------------------I-------I--S-----FAG-----I-----G-------I------------------------------N---------------------------------Y-----------------------K-----------------------K-----LQ------------S--K-----L----------Q-H---------------------D-------F-G-R-----------------V---------------L-----KA----L------T-------------V-----------------T------------------A-RA-----------LP---------G------------------Q-P-------------------------------K---------H---I--A-----------I--------------R----------------Q--
+> str20: M----A----S------------------------S-------GP---E--------R------------AE----------H------------------Q---------I-----------I------L--------P------------------------------E----S-----HL-------------S----------------S----------------P--L-------V---K---------H--------K---------------------L-----------L-------Y-----------Y---------------W----K---------------L------T------G-LP-------------------L----------P-------D------------E-C----D----------F-----------D----H---LI----------------------------------
+> str21: ME--------S-----LV---------------P---------G----------F-----NEK-T-----------------HV-----------------Q----------L--------------------S----LP-----------V---------------------LQ--------------------V----R--D------V-L----------------------------V----------R----G------------------------F-----------------G------D------------S---------------------V--E------E----------V-------L---------------------S------E-------------V--------R----Q----------------HL-K-----D----------GT--------------------------------
+> str22: M---------------L---------A------P-S--------P---------------N-----------S---------------K--I---------Q----------L------F-------N------------------N---------------I------N--I-----------------DIN-Y---E-------H-T---L----Y--------------------F------------A--S---------------V----S--A-------------------------------------------------Q------------N--S--F--------------------------------F--------A-----------Q--------W---V-------V-------------Y------S---A------D-----K-----------A-----------I--------------
+> str23: M---------S---------------A-----I---T-----------E---------------TK------------P--------T---I-------------E------L--------------------------P-----A--L----A----------------EG----------------F---------------------------Q---R-------------Y--------N-K------------T----P----G-------------F----------------------T------C------V-------------L--D---R--Y----------------------D---------H-----G---V------------I---------N-D------------------S----K---I---------------------V-L------------Y-----------N----------
+> str24: M-------------K-------N-I-A-------E------F--------K-----------K-------A-------P--------------------------E------L--A-------------E----------------------K--------------------L--------L--E---------V-----F-----------S---------------N---L-----------K----G---------------N--------S--------R------S------L--------D---------------P----------------------M---R-----A------------G-----------K-----H-------D------------------V-------V---------------VIE--S------T---------K--------------------K---L-------------
+> str25: M------------P-----------Q-------P----L-----------K-----------------Q---SL-----------D---------------Q-------S--------------K------W------L----------------------R--------E---------A----E-------------K------H-----L-------R-----------AL-------------E------S-------L-------V---------D----------S------------------N-----L--------------E-------------E------E------------K-----L---------K---P---------------Q------------------L---------S---M------G-------------E-D---V---------------Q-----S---------------
+> str26: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L-----------------I-----T--R-------T-------Q--------------------S-----------------------Y--------------T------N-------S-----F-------T---------------------R-G------------VY--------------------Y-------P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----T-Q------------D--------
+> str27: M-------------K---F-DV----------------L--------------------S-------------L------F--------------A----P-----W---A-------------K-V-----D-------------------------------------E---Q----------E--------Y--------D------------Q--------------Q-L---------N----------------------N----------------N--L-------E------SI--T-----A-----------P---------------K-------F------------------D-------D-------G------A----------------------T-----------E--------I------E--S-----------E--R------G-------D----------I--------------
+> str28: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N--F-------T--N---------R----T-------------------------------Q----------L--P------S-------------A---------Y--------------T------N-------S-----F-------T---------------------R-G------------VY--------------------Y-------P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str29: M---W-----S-------------I-------I-------V---------------L-----K----------L-----I---------S-I---------Q-------------------------------------P--------L------------------------L--------L------------V-T---------------S-------------L--P--LY--------N------------P---------NM------------D----------S-------C------------C---L-------I----------S----R----------I----------T---------P-----E-------------L-----A---------G--------------------------K----------L---T-----------W-I---------------------F-------I----
+> str30: ME--------S-----LV---------------P---------G----------F-----NEK-T-----------------HV-----------------Q----------L--------------------S----LP-----------V---------------------LQ--------------------V----R--D------V-L----------------------------V----------R----G------------------------F-----------------G------D------------S---------------------V--E------E---------------------------F-----------LS------E-A----R-------------Q-----------------------HL-K-----D----------GT--------------------------------
+> str31: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V-----M-------P-------L--------------F---N------------L-------------I-----T----------------T---------------T------------Q---S-----Y-----------------------T----N----------F---------------T--R------------G---------VY-----Y-P-D------K----V---------FR------S-------------------------S-------V-------L------------H---L-----------------------------------
+> str32: M---------------------------H-Q-I---T---V----------V-------S--------------------------G-------------P---------------T------------E---------------------V--------S-----T-----------C---------F----G--S--------LH-----------------------P-------F----------Q----S-------L-K----PV-------------------------------------------M--A-------N----A--L-------------------G---------V-------L------E---G-----------K-----------M-----------F-------C---S--I-------G-----------G----R----------S---------------L-------------
+> str33: M----A------------------------------T-L-----------------LR-S-------------L-A--------L-------F---------------K---------------------------R---------N-----K----------D------------KP---------P---I-----T---------------S------------G----------S-G----------GA-I------------------------------R---------------G-I------------K----------------H-----I------------I-----I-----V--------P----------I-P----------------------G--D------------------S------------S-----IT---------------T------------R---S-------R-------
+> str34: ME--------S-----LV---------------P---------G----------F-----NEK-T-----------------HV-----------------Q----------L--------------------S----LP-----------V---------------------LQ--------------------V----R--D------V-L----------------------------V----------R----G------------------------F-----------------G------D------------S-------------------------M-----E--------------E-----V------------------LS------E-A----R-------------Q-----------------------HL-K-----D----------GT--------------------------------
+> str35: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L----------T------------T-----------G---------------T-----Q-L----------------------P------P---------A-------Y-----------------------T----N---------SF---------------T--R------------G---------VY-----Y-P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str36: M----A------N-----------I-------I----NL---------------------------W---------------------------N-------G--------I--------V------------------P---M-------V-------Q---D----VN-------------------------V---------------A-S-----I-----T------A-----F------K--------S------------M-----------------I----D---E----------T---W----------------D------------K-------------------------K--I---------EA-----------------------------N--T----C---------------I---------S--------------R-K-----------------HR--------N----------
+> str37: M---------------L-----NRIQ----------T-L----------------------------M--------------------K--------T-----AN----------------------NYE-----------------T--------------I-------E-IL-----R------------N-Y----------L-R----L----Y-I----------------I-------------------------L----------A----------R---N-----E------------------------------------E---------------------G----R----------G-------------I--------L------I-----Y-----D---D-----------------------------------N------------I--------D---------S-----V---------
+> str38: M----A---D---P------------A--G------TN-----G----E---E--G--------T---------------------G---C---N-------G---W------------F--------Y----------------------V------------------E---------A--------------V--------------V------------EK--------------------K------------T---------G-----------D------------A--------I-----------------S-----D---------D--------E--------------N------E-------N-------------------D--------S------DT-------------------G-------E-------------D--------L----V----D-------------------------
+> str39: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V---N-----------------L-----R----T---------------R-------T-------Q----------L--P-------------------------P------------------S-----Y-----------------------T----N---------SF---------------T--R------------G---------VY-----Y-P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------S-----------------------------
+> str40: ME--------S-----LV---------------P---------G----------F-----NEK-T-----------------HV-----------------Q----------L--------------------S----LP-----------V---------------------LQ--------------------V-------------------------C------------------DV--------------------L-------V-------------R---------------G--------------------FG---D--------S------V--E------E----------V-------L---------------------S------E-A----R-------------Q-----------------------HL-K-----D----------GT--------------------------------
+> str41: M--N--------N------------Q-------------------------------R----K--K---------------------T-------AR---P--------S---------F-------N---------------M----L---K--------R--A--R-N---------R---------------VST------------V--S--Q----------L----A------------K------R-----------------------------F--------SK-------G-------L-------L---S-G-----QG------------------------P---------------------------------------------------M----------------------------K----------L--------------V-----M----A-------------F------------
+> str42: M---------S-N-----F-D-----A-----I------------------------R------------A--L---------V-D-T-----------D---A------------------------Y-----------------------K--------------------L------------G-------------------H------------I--H-----M-----Y---------------------P--E--------G-------T-----------------E-----------Y------------V-------------L-S-----N-----F-T----------------D----------R----G----------S---R-IE-------G-----V-----------------------------------T--------H------T-V---------H--------------------
+> str43: M-I------------EL------R----H-----E-----V---------------------------Q-----------------G------------D------------L-------V----T--------------I-----N----V----------------V-E-------------T--P----------E----D-L--------D-----------G-----------F-------------R-------D---------------------F--I----------R------A----------------------------HL----I---------C------LA------V--D---------------------T-----------E-----------T-------------------------------------T--G---------L---------D----------I--Y-----------
+> str44: M-------F--V------FL-V----------------L-----------------L---------------------P-----L----------------------V-S-----------------------S--------Q-C------V-----M-------P-------L--------------F---N------------L-------------I-----T----------------TN-----Q----S------Y--------------T------N-------S-----F-------T---------------------R-G------------VY--------------------Y-------P-D------K----V---------FR------S-------------------------S-------V-------L------------H---------------------------------------
+> str45: M---------S---K-----D-----------------L-V-A--------------R----------Q-A--L--------------------------------------------M------T---------AR------M--------KA---------D------------------------F------V-----FF--L--------------------------------F--V--------------------L------------------------W----KA----L--S------L--------------P------------------V-----------P-------T--------------R------------C----------Q-----------I-D------------------M--A----------K-----------K--L-----S--A-------G------------------
+> str46: M----A----S-----L--L------------------------------K--------S-------------L-------------T----------L--------------------F----K-----------R----------T-------------R-D----------Q--P---------P-----------------L-----A-S------------G----------S-G----------GA-I------------------------------R---------------G-I------------K----------------H---------V--------I-----I-----V-------L-----------I-P----------------------G--D------------------S------------S-----I-----------V----T------------R---S-------R-------
+> str47: M------R---V-----------R-----G--I-----L------------------R--N-----W-Q------------Q------------------------W------------------------W--------I-------------W-----------T--------S------L---G-F---------------W-----------------------M---------F-------M------I-----------C---------S-V--------------------------V--------G-----------N-------LW-------V------T-------------VY-----Y-----------G---V----------------P----------V----------W---------K----E------AK-T---------------T--------------------------------
+> str48: M----A-----V---E-----------------P-------F--P------------R----------------R---PI-------T--------R---P--------------------HA----------S------I-----------------------------E------------------------V-------D----T----S------------G---------I--G----------G---S------------------A-----G-----------S---------S-----------------------------E-------K--V----FC------L-I-----------G-------------------------------QA---------------------E-------G--------G-------------EP-----------------NT-------------V---------
+> str49: M-------F----------------------Y----------A--HA-------FG------------------------------G------Y-----D-----E---------------------N--L------------------H---A----F------P-----GI--S--------------------ST------------VA-----------------N----------DV----------R-----------K-------Y--S-V--------------------------V---------------S---------------------VY----------------N----K---------------K-----------------------Y---N---IV--------------------K---------------N--------K---------------Y-----M--------------W-
+> str50: M----A------N------------------Y---S--------------K--PF-L----------------L-----------D-----I---------------V-----------F-------N------------------------K----------D--------I---K-C------------IN----------D---------S-------C---------------S------H---------S-----D----C------------------R---------------------Y---------------------Q------S-----N--S-------------------Y--------V----E-------------L----R---------R-N-----------Q---------------A--------L----N--------K-------------N----------L-------------
 > 
 > solution is feasible: True
 > solution is optimal: False

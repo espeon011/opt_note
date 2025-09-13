@@ -8,13 +8,20 @@
 
 import marimo
 
-__generated_with = "0.15.2"
+__generated_with = "0.15.3"
 app = marimo.App(width="medium")
 
 with app.setup:
     import enum
+    from collections.abc import Callable
     import didppy
     import util
+
+    # Dual Bound を追加で設定する関数の型
+    type TypeBoundExprFunc = Callable[
+        [list[str], didppy.Model, list[didppy.ElementVar]],
+        didppy.IntExpr
+    ]
 
 
 @app.cell
@@ -32,41 +39,8 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)"""
-    )
+    mo.md(r"""考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)""")
     return
-
-
-@app.class_definition
-class BoundOption(enum.IntFlag):
-    MAX_LEN = 0b1
-    SCS2LEN = 0b10
-    CHAR_COUNT = 0b100
-
-    ALL = 0b111
-
-
-@app.function
-def boundexpr_maxlen(
-    instance: list[str],
-    dpmodel: didppy.Model,
-    index_vars: list[didppy.ElementVar]
-) -> didppy.IntExpr:
-    min_to = dpmodel.add_int_table(
-        [
-            [
-                len(s) - j for j in range(len(s) + 1)
-            ]
-            for s in instance
-        ]
-    )
-
-    bound = didppy.IntExpr(0)
-    for sidx, index_var in enumerate(index_vars):
-        bound = didppy.max(bound, min_to[sidx, index_var])
-
-    return bound
 
 
 @app.function
@@ -111,46 +85,12 @@ def boundexpr_scs2len(
     return bound
 
 
-@app.function
-def boundexpr_charcount(
-    instance: list[str],
-    dpmodel: didppy.Model,
-    index_vars: list[didppy.ElementVar]
-) -> didppy.IntExpr:
-    chars = sorted(list(set("".join(instance))))
-
-    # alpha_counts[char][s_i][idx]
-    alpha_counts: list[list[list[int]]] = [
-        [
-            [0] * (len(s) + 1)
-            for s in instance
-        ]
-        for char in chars
-    ]
-
-    for cidx, c in enumerate(chars):
-        for sidx, s in enumerate(instance):
-            alpha_counts[cidx][sidx][len(s)] = 0
-            for i in range(len(s) - 1, -1, -1):
-                alpha_counts[cidx][sidx][i] = alpha_counts[cidx][sidx][
-                    i + 1
-                ] + (1 if s[i] == c else 0)
-
-    bound = didppy.IntExpr(0)
-    for cidx, _ in enumerate(chars):
-        expr = didppy.IntExpr(0)
-        for sidx, _ in enumerate(instance):
-            table_i = dpmodel.add_int_table(alpha_counts[cidx][sidx])
-            expr = didppy.max(expr, table_i[index_vars[sidx]])
-        bound += expr
-
-    return bound
-
-
 @app.class_definition
 class Model:
     def __init__(
-        self, instance: list[str], bound_option: BoundOption = BoundOption.SCS2LEN
+        self,
+        instance: list[str],
+        extra_bounds: list[TypeBoundExprFunc] | None = None,
     ):
         chars = sorted(list(set("".join(instance))))
 
@@ -199,18 +139,13 @@ class Model:
             )
             dpmodel.add_transition(trans)
 
-        # Dual Bound
-        if bound_option & BoundOption.MAX_LEN:
-            # 残っている文字数が最長のものが下限
-            dpmodel.add_dual_bound(boundexpr_maxlen(instance, dpmodel, index_vars))
-        if bound_option & BoundOption.SCS2LEN:
-            # 残っている文字列から 2 つを選んで SCS を取って長さが最大の物が下限
-            # primal solution は 3 つの中で一番良いけど best bound は弱い
-            dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
-        if bound_option & BoundOption.CHAR_COUNT:
-            # 文字列とアルファベットごとに残数をカウントし, その最大値をアルファベット全体にわたって足したものが下限
-            # best bound は良くなるけど primal solution はそんなに良くない
-            dpmodel.add_dual_bound(boundexpr_charcount(instance, dpmodel, index_vars))
+        # 残っている文字列から 2 つを選んで SCS を取って長さが最大のものを Dual Bound とする. 
+        dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
+
+        # 追加の Dual Bound があれば. 
+        if extra_bounds:
+            for bound_func in extra_bounds:
+                dpmodel.add_dual_bound(bound_func(instance, dpmodel, index_vars))
 
         self.instance = instance
         self.dpmodel = dpmodel
