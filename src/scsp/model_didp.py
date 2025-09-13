@@ -91,6 +91,7 @@ class Model:
         self,
         instance: list[str],
         extra_bounds: list[TypeBoundExprFunc] | None = None,
+        disable_default_bound: bool = False, 
     ):
         chars = sorted(list(set("".join(instance))))
 
@@ -140,7 +141,8 @@ class Model:
             dpmodel.add_transition(trans)
 
         # 残っている文字列から 2 つを選んで SCS を取って長さが最大のものを Dual Bound とする. 
-        dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
+        if not disable_default_bound:
+            dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
 
         # 追加の Dual Bound があれば. 
         if extra_bounds:
