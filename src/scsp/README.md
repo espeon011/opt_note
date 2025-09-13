@@ -16,21 +16,21 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 ## モデル
 
-- `DP` 動的計画法[^5] ([model_dp.md](./__marimo__/model_dp.md))
-- `ALPHABET` アルファベットアルゴリズム[^3] ([model_alphabet.md](./__marimo__/model_alphabet.md))
-- `MM` Majority Merge アルゴリズム[^1] ([model_mm.md](./__marimo__/model_mm.md))
-- `WMM` Weighted Majority Merge アルゴリズム[^4] ([model_wmm.md](./__marimo__/model_wmm.md))
-- `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([model_la_sh.md](./__marimo__/model_la_sh.md))
-- `IBS_SCS` IBS_SCS アルゴリズム[^2] ([model_ibs_scs.md](./__marimo__/model_ibs_scs.md))
-- `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([model_descending.md](./__marimo__/model_descending.md))
-- `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([model_linear_scip.md](./__marimo__/model_linear_scip.md))
-- `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.md](./__marimo__/model_linear_highs.md))
-- `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.md](./__marimo__/model_linear_cpsat.md))
-- `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.md](./__marimo__/model_automaton_cpsat.md))
-- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([model_automaton_cpsat_sat.md](./__marimo__/model_automaton_cpsat_sat.md))
-- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.md](./__marimo__/model_wmm_hexaly.md))
-- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.md](./__marimo__/model_wmm_hexaly_init.md))
-- `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([model_didp.md](./__marimo__/model_didp.md))
+- `DP` 動的計画法[^5] ([model_dp.md](./model_dp.md))
+- `ALPHABET` アルファベットアルゴリズム[^3] ([model_alphabet.md](./model_alphabet.md))
+- `MM` Majority Merge アルゴリズム[^1] ([model_mm.md](./model_mm.md))
+- `WMM` Weighted Majority Merge アルゴリズム[^4] ([model_wmm.md](./model_wmm.md))
+- `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([model_la_sh.md](./model_la_sh.md))
+- `IBS_SCS` IBS_SCS アルゴリズム[^2] ([model_ibs_scs.md](./model_ibs_scs.md))
+- `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([model_descending.md](./model_descending.md))
+- `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([model_linear_scip.md](./model_linear_scip.md))
+- `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([model_linear_highs.md](./model_linear_highs.md))
+- `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([model_linear_cpsat.md](./model_linear_cpsat.md))
+- `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([model_automaton_cpsat.md](./model_automaton_cpsat.md))
+- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([model_automaton_cpsat_sat.md](./model_automaton_cpsat_sat.md))
+- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([model_wmm_hexaly.md](./model_wmm_hexaly.md))
+- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([model_wmm_hexaly_init.md](./model_wmm_hexaly_init.md))
+- `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([model_didp.md](./model_didp.md))
 
 ## ベンチマーク
 
