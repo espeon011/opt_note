@@ -1,8 +1,8 @@
 In [ ]:
 ```python
-import numpy
 import didppy
 import util
+import model_didp
 ```
 
 In [ ]:
@@ -115,83 +115,14 @@ def boundexpr_scs3len(
 
 In [ ]:
 ```python
-class Model:
-    def __init__(self, instance: list[str]):
-        chars = sorted(list(set("".join(instance))))
-
-        dpmodel = didppy.Model(maximize=False, float_cost=False)
-
-        index_types = [dpmodel.add_object_type(number=len(s) + 1) for s in instance]
-        index_vars = [
-            dpmodel.add_element_var(object_type=index_type, target=0)
-            for index_type in index_types
-        ]
-
-        instance_table = dpmodel.add_element_table(
-            [
-                [
-                    chars.index(c)
-                    for c in s
-                ] + [len(chars)]
-                for s in instance
-            ]
-        )
-
-        dpmodel.add_base_case(
-            [
-                index_var == len(s)
-                for s, index_var in zip(instance, index_vars)
-            ]
-        )
-
-        # 文字 char に従って進む
-        for id_char, char in enumerate(chars):
-            condition = didppy.Condition(False)
-            for sidx, index_var in enumerate(index_vars):
-                condition |= (instance_table[sidx, index_var] == id_char)
-            trans = didppy.Transition(
-                name=f"{char}",
-                cost=1 + didppy.IntExpr.state_cost(),
-                effects=[
-                    (
-                        index_var,
-                        (
-                            instance_table[sidx, index_var] == id_char
-                        ).if_then_else(index_var + 1, index_var),
-                    )
-                    for sidx, index_var in enumerate(index_vars)
-                ],
-                preconditions=[condition],
-            )
-            dpmodel.add_transition(trans)
-
-        # dual bound
-        if True:
-            dpmodel.add_dual_bound(boundexpr_scs3len(instance, dpmodel, index_vars))
-
-        self.instance = instance
-        self.dpmodel = dpmodel
-        self.dpsolver = None
-        self.solution = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        self.dpsolver = didppy.CABS(
-            self.dpmodel,
-            threads=12,
-            time_limit=time_limit,
-            quiet=(not log),
-        )
-        self.solution = self.dpsolver.search()
-        return self
-
-    def to_solution(self) -> str:
-        return "".join([trans.name for trans in self.solution.transitions])
+def create_model(instance: list[str]) -> model_didp.Model:
+    return model_didp.Model(instance, extra_bounds=[boundexpr_scs3len], disable_default_bound=True)
 ```
 
 In [ ]:
 ```python
 def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -> str:
-    model = Model(instance)
+    model = create_model(instance)
     model.solve(time_limit, log)
     return model.to_solution()
 ```
@@ -206,7 +137,7 @@ def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -
 In [ ]:
 ```python
 instance_01 = util.parse("uniform_q26n004k015-025.txt")
-model_01 = Model(instance_01)
+model_01 = create_model(instance_01)
 solution_01 = model_01.solve().to_solution()
 ```
 
@@ -234,11 +165,11 @@ else:
 > str4: igevazgbrddbcsvrvnngf
 > 
 > --- Solution (of length 62) ---
->  Sol: utlkcignycosokuevjiahqfozpmplxnhtqgbrddxzxbcvsuqxpvirsvnnsbxgf
-> str1: -t-k--gn-----ku-----h-----mp-xnhtqg----xz---v---x--i-s--------
-> str2: -----i----o------ji--qfo----l-n----b---x-x-cvsuq-pvi-s---sbx-f
-> str3: u-l-ci-nycoso---v------ozp-pl--------------------p------------
-> str4: -----ig--------ev--a----z---------gbrdd---bc-s----v-r-vnn---gf
+>  Sol: ultcikgnycosjkuiqhoevmafozpxplnhtqgbrddxbxzcvsxuqpvirvsnnsbgxf
+> str1: --t--kgn-----ku--h---m----px--nhtqg----x--z-v-x----i--s-------
+> str2: ----i-----o-j--iq------fo----ln----b---x-x-cvs-uqpvi--s--sb-xf
+> str3: ul-ci--nycos------o-v---ozp-pl-------------------p------------
+> str4: ----i-g------------ev-a--z--------gbrdd-b--c-s----v-rv-nn--g-f
 > 
 > solution is feasible: True
 > solution is optimal: True
@@ -248,7 +179,7 @@ else:
 In [ ]:
 ```python
 instance_02 = util.parse("uniform_q26n008k015-025.txt")
-model_02 = Model(instance_02)
+model_02 = create_model(instance_02)
 solution_02 = model_02.solve().to_solution()
 ```
 
@@ -280,15 +211,15 @@ else:
 > str8: rxwxqkrdrlctodtmprpxwd
 > 
 > --- Solution (of length 96) ---
->  Sol: rxwiojxiqfopypltkrbdgevanzgbxkruxdlcphmqvgztdpfjztsuivxnybcodhtmsebroqvogxzpbrvxissbhnngplexpwdf
-> str1: ---------------tk---g---n----k-u-----hm------p--------xn-----ht------q--gxz---vxis--------------
-> str2: ---ioj-iqfo---l---------n--bx---x--c----v---------su-----------------q-----p--v-issb-------x---f
-> str3: -------------------------------u--lc----------------i--ny-co----s---o-vo--zp------------pl--p---
-> str4: ---i----------------geva-zgb--r--d----------d------------bc-----s-----v------rv------nng-------f
-> str5: -----------pypl--r-------z--x--u---cp-mqvg-td-f----uiv----c-d---s-b-o---------------------------
-> str6: -----------p------bd-ev----------d-c----v---dpf-z-s------------ms-broqv-----b------bh-----------
-> str7: ---------------------e--n--b-------c------z---fj-t---vx----------e-r------z-brv-i------gple-----
-> str8: rxw---x-q-------kr-d----------r---lc-------t---------------od-tm-----------p-r----------p--x-wd-
+>  Sol: iorjtipxwxypqkfolrbgdevazngbxkurlxdchpmqvgztdpfzsjutivbxnycodhtmsberoqvgoxzpbrvxissnngpbxlhfwpde
+> str1: ----t--------k-----g-----n---ku-----h-m------p---------xn----ht------q-g-xz---vxis--------------
+> str2: io-j-i------q-fol--------n-bx----x-c----v-------s-u------------------q-----p--v-iss----bx--f----
+> str3: ------------------------------u-l--c----------------i---nyco----s---o-v-o-zp----------p--l---p--
+> str4: i------------------g-evaz-gb---r--d---------d---------b---c-----s-----v------rv----nng-----f----
+> str5: ------p---yp----lr------z---x-u----c-pmqvg-td-f---u-iv----c-d---sb--o---------------------------
+> str6: ------p-----------b-dev-----------dc----v---dpfzs--------------msb-roqv-----b----------b--h-----
+> str7: ---------------------e---n-b-------c------z---f--j-t-v-x----------er------z-brv-i----gp--l-----e
+> str8: --r----xwx--qk---r--d----------rl--c-------t---------------od-tm-----------p-r--------p-x---w-d-
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -298,13 +229,9 @@ else:
 In [ ]:
 ```python
 instance_03 = util.parse("uniform_q26n016k015-025.txt")
-model_03 = Model(instance_03)
+model_03 = create_model(instance_03)
 solution_03 = model_03.solve().to_solution()
 ```
-
-> ```
->
-> ```
 
 In [ ]:
 ```python
@@ -341,24 +268,24 @@ else:
 > str15: htxxqjzqbctbakn
 > str16: xusfcfzpeecvwantfmgqzu
 > 
-> --- Solution (of length 150) ---
->   Sol: rxwusxipqtyoekgkjnibqfdpklecvazorfzxudilngcbqjhtxprvdmepxqlyecfvewouzsganhtjrdbizuqvhncodftmspbrkevguijokxzspchkqtrugvcnodsbzpxwhlzaibwvdmknghocufeyps
-> str01: ---------t---kg--n------k-----------u---------h------m-px---------------nht-------q----------------g-----xz----------v--------x-----i----------------s
-> str02: ------i----o----j-i-qf---------o-------ln--b----x-------x----c-v-----s-----------uq----------p----v--i-----s--------------sb--x------------------f----
-> str03: ---u---------------------l-c----------i-n------------------y-c----o--s-----------------o----------v----o--z-p----------------p---l------------------p-
-> str04: ------i-------g-----------e-vaz----------g-b------r-d------------------------db-------c-----s-----v---------------r--v-n-------------------ng----f----
-> str05: -------p--y------------p-l------r-zxu-----c------p---m---q-----v------g---t--d-----------f----------ui---------------vc--dsb------------------o-------
-> str06: -------p-----------b--d---e-v--------d----c--------vd--p------f-----zs---------------------ms-br-------o--------q----v-----b---------b-------h--------
-> str07: ------------e----n-b-------c--z--f-----------j-t---v----x---e---------------r---z-------------br--v--i--------------g--------p---l----------------e---
-> str08: rxw--x--q----k------------------r----d------------r-------l--c------------t------------od-tm-p-r------------p-----------------xw--------d-------------
-> str09: -------------k-k----q--------a---f----i--g--qj-------------------wo-----------------------------k-------k--s---k--r--------b-----l----------g---------
-> str10: -------------------------l---------x------------xp---------------------a------bi---v----------b---v-------z----k--------o---z-----z----vd-------------
-> str11: -------------k------------------r-----i-----------------------f------s-a-----------v-nc-d-----------------------q--------------wh-z------------c------
-> str12: --------q--------------------a-----xud---g--q------v-----q---c--ew------------b----------f---------g-ijo-----------------------w------w------------y--
-> str13: r---sx--q-------jn---f-p-----a-------di----------------------------u-s---------i--q-----------b--e--------z---hk--------o-------h--------m--g---------
-> str14: ------i----------------------------------------------------------w---s---h---------vh-co---m---------i-------------u-v---d--------------dm------------
-> str15: ----------------------------------------------htx-------xq-----------------j----z-q-----------b--------------c---t---------b-------a------kn----------
-> str16: -x-us----------------f-----c-----fz--------------p----e-----ec-v-w-----an-t--------------f-m-------g------------q-----------z-------------------u-----
+> --- Solution (of length 151) ---
+>   Sol: rxiwusxptypokqjgenkiqbdflcevarzoxflxupjadzhcgpiqnbrmtvdxpxgqlfeyecujvzsinhgewtoaudqrzvbenmcktsofmpbuvzkrgdijhsoqxzuvwcdskpxirgobnpabhznlvkwdmsgxfnycoep
+> str01: --------t---k--g-nk-----------------u-----h--------m----px--------------nh---t----q---------------------g-------xz-v------xi-----------------s---------
+> str02: --i--------o--j----iq--f-------o--l-------------nb-----x-x-------c--v-s---------u-q--------------p--v-----i--s---------s-------b---------------xf------
+> str03: ----u-------------------lc--------------------i-n--------------y-c------------o--------------so-----v---------o--z-------p-------p-----l--------------p
+> str04: --i------------ge----------va-z-------------g----br---d--------------------------d----b---c--s------v--r-----------v------------n-----n-------g-f------
+> str05: -------p-yp-------------l----rz-x---u------c-p-----m-------q--------v-----g--t---d-------------f---u------i--------v-cds-------b--------------------o--
+> str06: -------p-------------bd---ev------------d--c---------vd-p----f-------zs------------------m---s----b----r------oq---v-----------b---bh------------------
+> str07: ----------------en---b---c----z--f----j-------------tv-x------e--------------------rz-b----------------r-----------v-------i-g---p-----l-------------e-
+> str08: rx-w--x------q----k----------r----------d---------r---------l----c-----------to--d----------t---mp-----r-----------------px---------------wd-----------
+> str09: ------------k-----k-q-------a----f------------i-----------gq-------j--------w-o------------k----------k------s----------k---r--b-------l------g--------
+> str10: ------------------------l-------x--x-p-a---------b---------------------i-------------vb-------------vzk-------o--z-------------------z--v--d-----------
+> str11: ------------k----------------r----------------i--------------f--------s--------a-----v--n-c--------------d-----q----w---------------hz-------------c---
+> str12: -------------q--------------a---x---u---d---g--q-----v-----q-----c---------ew---------b--------f--------g-ij--o-----w---------------------w-------y----
+> str13: r----sx------qj--n-----f-------------p-ad-----i-------------------u---si----------q---be-------------z------h-----------k-----o-----h-------m-g--------
+> str14: --iw-s------------------------------------h----------v-------------------h----------------c---o-m---------i-------uv--d--------------------dm----------
+> str15: ------------------------------------------h---------t--x-x-q-------j-z------------q---b---c-t-----b-------------------------------a------k-------n-----
+> str16: -x--us-----------------f-c-------f-------z---p----------------e-ec--v-------w--a--------n---t--fm-------g------q-zu------------------------------------
 > 
 > solution is feasible: True
 > solution is optimal: False
@@ -368,7 +295,7 @@ else:
 In [ ]:
 ```python
 instance_04 = util.parse("uniform_q05n010k010-010.txt")
-model_04 = Model(instance_04)
+model_04 = create_model(instance_04)
 solution_04 = model_04.solve().to_solution()
 ```
 
@@ -402,17 +329,17 @@ else:
 > str10: bdabdbeaad
 > 
 > --- Solution (of length 27) ---
->   Sol: bbaeddcbeacdeecbdbceabdcead
-> str01: ----d-cb--c---c-dbc----ce--
-> str02: b---dd-be---ee-----e-bd----
-> str03: ------c--acdeec----e-b--e--
-> str04: --aedd-----d----d--e-bd---d
-> str05: --a---cbe---e-c-----ab-ce--
-> str06: bba----be------bd-c--b---a-
-> str07: bbae-----a--e--b----a-d--a-
-> str08: ---e----e---eecbdb-e----e--
-> str09: ------c---cdee--d---a-dc--d
-> str10: b---d----a-----bdb-ea----ad
+>   Sol: bbaeddcbacdeeecbdbceabdcead
+> str01: ----d-cb-c----c-dbc----ce--
+> str02: b---dd-b---eee-----e-bd----
+> str03: ------c-acdee-c----e-b--e--
+> str04: --aedd----d-----d--e-bd---d
+> str05: --a---cb---ee-c-----ab-ce--
+> str06: bba----b---e---bd-c--b---a-
+> str07: bbae----a--e---b----a-d--a-
+> str08: ---e-------eeecbdb-e----e--
+> str09: ------c--cdee---d---a-dc--d
+> str10: b---d---a------bdb-ea----ad
 > 
 > solution is feasible: True
 > solution is optimal: True
@@ -422,7 +349,7 @@ else:
 In [ ]:
 ```python
 instance_06 = util.parse("nucleotide_n010k010.txt")
-model_06 = Model(instance_06)
+model_06 = create_model(instance_06)
 solution_06 = model_06.solve().to_solution()
 ```
 
@@ -476,7 +403,7 @@ else:
 In [ ]:
 ```python
 instance_08 = util.parse("protein_n010k010.txt")
-model_08 = Model(instance_08)
+model_08 = create_model(instance_08)
 solution_08 = model_08.solve().to_solution()
 ```
 
@@ -510,44 +437,19 @@ else:
 > str10: MESLVPGFNE
 > 
 > --- Solution (of length 44) ---
->   Sol: MAPQESKLFTERSYCANQHVFLNDAIFSRPGKVFNGTEYAQLHD
-> str01: MA-----L----SYC--------------P-K---GT-------
-> str02: M--Q-S------S--------LN-AI---P--V-----------
-> str03: M-P----L----SY---QH-F-------R--K------------
-> str04: M---E-----E-------HV--N--------------E---LHD
-> str05: M----S----------N---F--DAI--R----------A-L--
-> str06: M-------F--R----NQ----N----SR-----NG--------
-> str07: M-------F----Y-A--H-----A-F---G----G--Y-----
-> str08: M----SK-FT-R----------------RP--------Y-Q---
-> str09: M----S--F----------V----A-----G-V---T--AQ---
-> str10: M---ES-L-----------V---------PG--FN--E------
+>   Sol: MQESNKFDAPETRLSNYQAHVLNASICFRPGKVFNEGTALHDYQ
+> str01: M-------A----LS-Y---------C--P-K----GT------
+> str02: MQ-S----------S------LNA-I---P--V-----------
+> str03: M--------P---LS-YQ-H-------FR--K------------
+> str04: M-E-------E--------HV-N------------E---LHD--
+> str05: M--SN-FDA----------------I--R---------AL----
+> str06: M-----F-----R--N-Q----N-S---R-----N-G-------
+> str07: M-----F---------Y-AH---A---F--G-----G-----Y-
+> str08: M--S-KF----TR---------------RP------------YQ
+> str09: M--S--F-------------V--A------G-V----TA----Q
+> str10: M-ES---------L------V--------PG--FNE--------
 > 
 > solution is feasible: True
 > solution is optimal: False
 > best bound: 34
 > ```
-
-In [ ]:
-```python
-_instance = [
-    "aehdmmqrstuwv",
-    "afiknllppaavxusqszab",
-    "bgglopqsssv",
-    "cabhiknaampawqryssuv",
-    "dbhciknddmpdqryssuwc",
-    "cajhiknapasqrssuvv",
-    "dacngoaiatsimawxltsc",
-    "zbndjkozfrizsyctviw",
-]
-_model = Model(_instance)
-_solution = _model.solve(time_limit=600).to_solution()
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-    print(f"solution is optimal: {_model.solution.is_optimal}")
-    print(f"best bound: {_model.solution.best_bound}")
-else:
-    print("--- Solution not found ---")
-```

@@ -9,13 +9,13 @@
 
 import marimo
 
-__generated_with = "0.15.2"
+__generated_with = "0.15.3"
 app = marimo.App(width="medium")
 
 with app.setup:
-    # import numpy
     import didppy
     import util
+    import model_didp
 
 
 @app.cell
@@ -137,83 +137,14 @@ def boundexpr_scs3len(
     return bound
 
 
-@app.class_definition
-class Model:
-    def __init__(self, instance: list[str]):
-        chars = sorted(list(set("".join(instance))))
-
-        dpmodel = didppy.Model(maximize=False, float_cost=False)
-
-        index_types = [dpmodel.add_object_type(number=len(s) + 1) for s in instance]
-        index_vars = [
-            dpmodel.add_element_var(object_type=index_type, target=0)
-            for index_type in index_types
-        ]
-
-        instance_table = dpmodel.add_element_table(
-            [
-                [
-                    chars.index(c)
-                    for c in s
-                ] + [len(chars)]
-                for s in instance
-            ]
-        )
-
-        dpmodel.add_base_case(
-            [
-                index_var == len(s)
-                for s, index_var in zip(instance, index_vars)
-            ]
-        )
-
-        # 文字 char に従って進む
-        for id_char, char in enumerate(chars):
-            condition = didppy.Condition(False)
-            for sidx, index_var in enumerate(index_vars):
-                condition |= (instance_table[sidx, index_var] == id_char)
-            trans = didppy.Transition(
-                name=f"{char}",
-                cost=1 + didppy.IntExpr.state_cost(),
-                effects=[
-                    (
-                        index_var,
-                        (
-                            instance_table[sidx, index_var] == id_char
-                        ).if_then_else(index_var + 1, index_var),
-                    )
-                    for sidx, index_var in enumerate(index_vars)
-                ],
-                preconditions=[condition],
-            )
-            dpmodel.add_transition(trans)
-
-        # dual bound
-        if True:
-            dpmodel.add_dual_bound(boundexpr_scs3len(instance, dpmodel, index_vars))
-
-        self.instance = instance
-        self.dpmodel = dpmodel
-        self.dpsolver = None
-        self.solution = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        self.dpsolver = didppy.CABS(
-            self.dpmodel,
-            threads=12,
-            time_limit=time_limit,
-            quiet=(not log),
-        )
-        self.solution = self.dpsolver.search()
-        return self
-
-    def to_solution(self) -> str:
-        return "".join([trans.name for trans in self.solution.transitions])
+@app.function
+def create_model(instance: list[str]) -> model_didp.Model:
+    return model_didp.Model(instance, extra_bounds=[boundexpr_scs3len], disable_default_bound=True)
 
 
 @app.function
 def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -> str:
-    model = Model(instance)
+    model = create_model(instance)
     model.solve(time_limit, log)
     return model.to_solution()
 
@@ -236,7 +167,7 @@ def _(mo):
 @app.cell
 def _():
     instance_01 = util.parse("uniform_q26n004k015-025.txt")
-    model_01 = Model(instance_01)
+    model_01 = create_model(instance_01)
     solution_01 = model_01.solve().to_solution()
     return instance_01, model_01, solution_01
 
@@ -261,7 +192,7 @@ def _(instance_01, model_01, solution_01):
 @app.cell
 def _():
     instance_02 = util.parse("uniform_q26n008k015-025.txt")
-    model_02 = Model(instance_02)
+    model_02 = create_model(instance_02)
     solution_02 = model_02.solve().to_solution()
     return instance_02, model_02, solution_02
 
@@ -286,7 +217,7 @@ def _(instance_02, model_02, solution_02):
 @app.cell
 def _():
     instance_03 = util.parse("uniform_q26n016k015-025.txt")
-    model_03 = Model(instance_03)
+    model_03 = create_model(instance_03)
     solution_03 = model_03.solve().to_solution()
     return instance_03, model_03, solution_03
 
@@ -311,7 +242,7 @@ def _(instance_03, model_03, solution_03):
 @app.cell
 def _():
     instance_04 = util.parse("uniform_q05n010k010-010.txt")
-    model_04 = Model(instance_04)
+    model_04 = create_model(instance_04)
     solution_04 = model_04.solve().to_solution()
     return instance_04, model_04, solution_04
 
@@ -336,7 +267,7 @@ def _(instance_04, model_04, solution_04):
 @app.cell
 def _():
     instance_06 = util.parse("nucleotide_n010k010.txt")
-    model_06 = Model(instance_06)
+    model_06 = create_model(instance_06)
     solution_06 = model_06.solve().to_solution()
     return instance_06, model_06, solution_06
 
@@ -361,7 +292,7 @@ def _(instance_06, model_06, solution_06):
 @app.cell
 def _():
     instance_08 = util.parse("protein_n010k010.txt")
-    model_08 = Model(instance_08)
+    model_08 = create_model(instance_08)
     solution_08 = model_08.solve().to_solution()
     return instance_08, model_08, solution_08
 
