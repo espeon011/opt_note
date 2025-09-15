@@ -14,6 +14,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "marimo[docs,lsp]>=0.15.3",
+    "pdoc3>=0.11.6",
+    "taskipy>=1.14.1",
 ]
 
 [build-system]
@@ -22,3 +24,9 @@ build-backend = "uv_build"
 
 [tool.marimo.runtime]
 pythonpath = ["src"]
+
+[tool.taskipy.tasks]
+doc = "rm -rf docs && pdoc opt_note --html -o docs --force && mv docs/opt_note/* docs/ && rm -rf docs/opt_note"
+
+[tool.taskipy.settings]
+cwd = "."
