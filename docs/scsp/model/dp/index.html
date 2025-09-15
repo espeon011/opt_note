@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
 <title>opt_note.scsp.model.dp API documentation</title>
-<meta name="description" content="動的計画法 …">
+<meta name="description" content="動的計画法[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -38,7 +38,7 @@ el.replaceWith(d);
 <h1 class="title">Module <code>opt_note.scsp.model.dp</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="_1">動的計画法</h1>
+<h1 id="_1">動的計画法<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
 <ul>
 <li>計算量: $O(k^n)$ らしいがこの実装では $O(k^n q n)$ かかる.</li>
 <li>近似精度: $1$</li>
@@ -60,6 +60,14 @@ el.replaceWith(d);
 <li>Base Case として left transversal $o = (0, \dots, 0)$ に対する $\lambda(o) = 0$ がある.</li>
 <li>次の漸化式が成り立つ: $\lambda(t) = \min \lbrace \lambda(t_K) \ | \ K \in E_t \rbrace + 1$. ただし $t \ne o$.</li>
 </ul>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). <a href="https://doi.org/10.1007/BF01075212">https://doi.org/10.1007/BF01075212</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 </section>
 <section>
 </section>

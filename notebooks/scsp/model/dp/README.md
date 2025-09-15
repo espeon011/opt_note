@@ -1,4 +1,4 @@
-# 動的計画法
+# 動的計画法[^1]
 
 - 計算量: $O(k^n)$ らしいがこの実装では $O(k^n q n)$ かかる.
 - 近似精度: $1$
@@ -19,6 +19,8 @@
 - 最終的に求めたい SCS 長は right transversal $T = (|s_1|, \dots, |s_n|)$ に対する $\lambda(T)$.
 - Base Case として left transversal $o = (0, \dots, 0)$ に対する $\lambda(o) = 0$ がある.
 - 次の漸化式が成り立つ: $\lambda(t) = \min \lbrace \lambda(t_K) \ | \ K \in E_t \rbrace + 1$. ただし $t \ne o$.
+
+[^1]: Timkovskii, V.G. Complexity of common subsequence and supersequence problems and related problems. Cybern Syst Anal 25, 565–580 (1989). https://doi.org/10.1007/BF01075212
 
 ## Python Code
 

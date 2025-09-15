@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
 <title>opt_note.scsp.model.ibs_scs API documentation</title>
-<meta name="description" content="`IBS_SCS` アルゴリズム …">
+<meta name="description" content="`IBS_SCS` アルゴリズム[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -38,7 +38,7 @@ el.replaceWith(d);
 <h1 class="title">Module <code>opt_note.scsp.model.ibs_scs</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="ibs_scs"><code>IBS_SCS</code> アルゴリズム</h1>
+<h1 id="ibs_scs"><code>IBS_SCS</code> アルゴリズム<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
 <ul>
 <li>計算量: $O(k^2 \log_2 q + L^* (n \kappa \beta q + \beta q \log_2 \left( \beta q \right)))$<ul>
 <li>(補足) $L^*$: このアルゴリズムによって返される解の長さ. $O(nk)$ で上からバウンドできる.</li>
@@ -64,6 +64,14 @@ el.replaceWith(d);
 <p>より具体的な内容は元論文か実装を参照.
 ヒューリスティック関数値の計算には一様ランダムに生成された文字列に対する性質が用いられるため,
 規則性のある文字列に対する SCS を計算する場合は性能が悪くなるかもしれない.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, <a href="https://doi.org/10.1016/j.engappai.2011.08.006.">https://doi.org/10.1016/j.engappai.2011.08.006.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 </section>
 <section>
 </section>

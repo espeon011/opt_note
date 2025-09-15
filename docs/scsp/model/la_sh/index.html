@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
 <title>opt_note.scsp.model.la_sh API documentation</title>
-<meta name="description" content="Look-Ahead Sum-Height アルゴリズム …">
+<meta name="description" content="Look-Ahead Sum-Height アルゴリズム[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -38,7 +38,7 @@ el.replaceWith(d);
 <h1 class="title">Module <code>opt_note.scsp.model.la_sh</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="look-ahead-sum-height">Look-Ahead Sum-Height アルゴリズム</h1>
+<h1 id="look-ahead-sum-height">Look-Ahead Sum-Height アルゴリズム<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
 <ul>
 <li>計算量: この実装では $O(n^2 k q m)$. 多分&hellip;</li>
 <li>近似精度: なし</li>
@@ -59,6 +59,14 @@ el.replaceWith(d);
 </ul>
 <p>$l = m = 1$ としたとき, つまり $(1, 1)$-LA-SH は Majority Merge と同じ方法である.
 元論文では $(3, 1)$-LA-SH がちょうど良いとされていたのでデフォルトは $l = 1$, $m = 3$ とする.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Ning, K., Choi, K. P., Leong, H. W., &amp; Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. <a href="https://doi.org/10.1093/nar/gni147">https://doi.org/10.1093/nar/gni147</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 </section>
 <section>
 </section>

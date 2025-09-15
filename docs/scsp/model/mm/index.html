@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
 <title>opt_note.scsp.model.mm API documentation</title>
-<meta name="description" content="Majority Merge アルゴリズム …">
+<meta name="description" content="Majority Merge アルゴリズム[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -38,7 +38,7 @@ el.replaceWith(d);
 <h1 class="title">Module <code>opt_note.scsp.model.mm</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="majority-merge">Majority Merge アルゴリズム</h1>
+<h1 id="majority-merge">Majority Merge アルゴリズム<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
 <ul>
 <li>計算量: $O(qkn)$. この実装ではもっとかかる.</li>
 <li>近似精度: なし</li>
@@ -52,6 +52,14 @@ el.replaceWith(d);
 <li>各文字列 $s_1, s_2, \dots, s_n$ に対し, 先頭の文字が $c$ である場合は先頭 1 文字を削除する.</li>
 <li>$s_1, s_2, \dots, s_n$ が全て空文字列になれば終了.</li>
 </ul>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. <a href="https://doi.org/10.1137/S009753979223842X.">https://doi.org/10.1137/S009753979223842X.</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 </section>
 <section>
 </section>

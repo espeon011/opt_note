@@ -1,4 +1,4 @@
-# `IBS_SCS` アルゴリズム
+# `IBS_SCS` アルゴリズム[^1]
 
 - 計算量: $O(k^2 \log_2 q + L^* (n \kappa \beta q + \beta q \log_2 \left( \beta q \right)))$
     - (補足) $L^*$: このアルゴリズムによって返される解の長さ. $O(nk)$ で上からバウンドできる.
@@ -22,6 +22,8 @@
 より具体的な内容は元論文か実装を参照.
 ヒューリスティック関数値の計算には一様ランダムに生成された文字列に対する性質が用いられるため,
 規則性のある文字列に対する SCS を計算する場合は性能が悪くなるかもしれない.
+
+[^1]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
 
 ## Python Code
 

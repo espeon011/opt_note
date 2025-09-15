@@ -1,4 +1,4 @@
-# アルファベットアルゴリズム
+# アルファベットアルゴリズム[^1]
 
 - 計算量: $O(qk)$
 - 近似精度: $q$
@@ -17,6 +17,8 @@ $$
 $j$ 番目のブロックの中にはどの文字列でも使用しない文字があるかもしれない. 
 そのような文字は捨てることで解を少し改善する. 
 これによって解が少し改善するが, 文字列の数が増えると削れる文字が少なくなり, 長さ $qk$ に近づく.
+
+[^1]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
 
 ## Python Code
 
