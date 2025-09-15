@@ -1,6 +1,6 @@
 # 数理最適化自由帳
 
-数理最適化関連で勉強した内容を Marimo のノートブック形式でアップロードしています. 
+数理最適化関連で勉強した内容を Marimo のノートブック形式で `notebooks` 配下にアップロードしています. 
 Marimo の Jupyter Export 機能を使って `.ipynb` 形式で `__marimo__` 配下に Jupyter Notebook に変換されたものが保存されています. 
 更に nbconvert を使って Jupyter Notebook を Markdown に変換したものもアップロードしています. 
 
