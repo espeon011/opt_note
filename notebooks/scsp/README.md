@@ -28,7 +28,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([概要](./model/linear_cpsat))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([概要](./model/automaton_cpsat))
 - `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([概要](./model/automaton_cpsat_sat))
-- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/WIP/wmm_hexaly.md))
+- `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/WIP/wmm_hexaly_init.md))
 - `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([概要](./model/didp))
 
@@ -48,7 +48,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `LINEAR_HIGHS`    | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
 | `LINEAR_CPSAT`    | 66 | 135 | 293 | 29 | 226 | **24** 🥇 | - | 51 | - |
 | `AUTOMATON_CPSAT` | 67 | 135 | 242 | 29 | 40 | 25 | - | 46 | - |
-| `WMM_HEXALY`      | **62** 🥇 | 102 | 155 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
+| `WMM_HEXALY`      | **62** 🥇 | 102 | 156 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
 | `WMM_HEXALY_INIT` | 64 | 105 | 150 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | **454** 🥇 |
 | `DIDP`            | **62*** 🥇 | **99** 🥇 | **149** 🥇 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 503 |
 | | | | | | | | | | |

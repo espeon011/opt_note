@@ -17,6 +17,7 @@ from . import (
     automaton_cpsat_sat,
     didp,
     didp_scs3,
+    wmm_hexaly,
 )
 
 __all__ = [
@@ -34,4 +35,5 @@ __all__ = [
     "automaton_cpsat_sat",
     "didp",
     "didp_scs3",
+    "wmm_hexaly",
 ]

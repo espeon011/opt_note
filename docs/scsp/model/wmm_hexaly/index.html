@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>opt_note.scsp.model.wmm_hexaly API documentation</title>
+<meta name="description" content="Weighted Majority Merge をパラメータ化し, Hexaly で探索 …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>opt_note.scsp.model.wmm_hexaly</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="weighted-majority-merge-hexaly">Weighted Majority Merge をパラメータ化し, Hexaly で探索</h1>
+<p>Hexaly の外部関数最適化機能を用いた定式化を紹介する.
+Weighted Majority Merge アルゴリズムにおいて次の文字を選択する基準は各文字列に対する残長の和であった.
+その残長の部分を Hexaly の決定変数で置き換える.</p>
+<p><strong>決定変数</strong></p>
+<ul>
+<li>$w_{ij} \in \mathbb{N}$: 文字列 $s_i$ の $j$ 文字目の重み. $(i \in \lbrace 1, \dots, n \rbrace, \ j \in \lbrace 1, \dots, |s_i| \rbrace)$<ul>
+<li>$w_i = \lbrace w_{i,1} \dots, w_{i,|s_i|} \rbrace$ とおく.</li>
+</ul>
+</li>
+</ul>
+<p><strong>目的関数</strong></p>
+<p>下記のアルゴリズムに従って構築した共通超配列の長さを目的関数とする.</p>
+<ul>
+<li>解 $\mathrm{sol}$ を空文字列で初期化する.</li>
+<li>各文字 $c$ に対して重み $\sum_{i=1, \ s_i[0] = c}^n w_{i,1}$ を計算し, 重みが最大である $c$ を求める.</li>
+<li>$\mathrm{sol}$ の後ろに $c$ を追加する.</li>
+<li>各文字列 $s_i \ (i \in \lbrace 1, \dots, n \rbrace)$ に対し, 先頭の文字が $c$ である場合は<ul>
+<li>$s_i$ の先頭の文字を削除する.</li>
+<li>$w_i$ の先頭の重みを削除し, インデックスを前に詰める.</li>
+</ul>
+</li>
+<li>$s_1, \dots, s_n$ 全てが空文字列になれば終了. $\mathrm{sol}$ が解.</li>
+</ul>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="opt_note.scsp.model.wmm_hexaly.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(
+    instance: list[str], time_limit: int | None = 60, log: bool = False
+) -&gt; str | None:
+    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str], initial_weights: list[list[int]] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Model:
+    def __init__(
+        self, instance: list[str], initial_weights: list[list[int]] | None = None
+    ):
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
+
+        hxoptimizer = hexaly.optimizer.HexalyOptimizer()
+        hxmodel = hxoptimizer.model
+        assert isinstance(hxoptimizer, hexaly.optimizer.HexalyOptimizer)
+        assert isinstance(hxmodel, hexaly.optimizer.HxModel)
+
+        # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
+        # 初期重みが与えられなかった場合は文字種数とする.
+        max_weight = (
+            max(2 * w for ws in initial_weights for w in ws)
+            if initial_weights
+            else len(chars)
+        )
+        priorities1d = [
+            hxmodel.int(1, max_weight) for s in instance for cidx, _ in enumerate(s)
+        ]
+
+        func = hxmodel.create_int_external_function(self.objective)
+        func.external_context.lower_bound = 0
+        func.external_context.upper_bound = sum(len(s) for s in instance)
+
+        indices_1d_to_2d: list[tuple[int, int]] = []
+        counter = 0
+        for s in instance:
+            indices_1d_to_2d.append((counter, counter + len(s)))
+            counter += len(s)
+
+        self.instance = instance
+        self.chars = chars
+        self.hxoptimizer = hxoptimizer
+        self.hxmodel = hxmodel
+        self.priorities1d = priorities1d
+        self.indices_1d_to_2d = indices_1d_to_2d
+
+        # これらが実行される時点で self.* が必要になるため初期化の最後に移動
+
+        hxmodel.minimize(func(*priorities1d))
+        hxmodel.close()
+
+        if initial_weights:
+            priorities2d = self.priorities_1d_to_2d(priorities1d)
+            for ps, ws in zip(priorities2d, initial_weights):
+                for p, w in zip(ps, ws):
+                    p.set_value(w)
+
+    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+        assert isinstance(self.hxoptimizer.param, hexaly.optimizer.HxParam)
+        if time_limit is not None:
+            self.hxoptimizer.param.time_limit = time_limit
+        self.hxoptimizer.param.verbosity = 1 if log else 0
+        self.hxoptimizer.solve()
+        return self
+
+    def to_solution(self) -&gt; str | None:
+        assert isinstance(self.hxoptimizer.solution, hexaly.optimizer.HxSolution)
+        status = self.hxoptimizer.solution.status
+        if status not in {
+            hexaly.optimizer.HxSolutionStatus.OPTIMAL,
+            hexaly.optimizer.HxSolutionStatus.FEASIBLE,
+        }:
+            return None
+
+        priorities1d_value: list[int] = [p.value for p in self.priorities1d]
+        priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
+        return self.wmm(priorities2d_value)
+
+    def wmm(self, priorities2d: list[list[int]]) -&gt; str:
+        indices = tuple(0 for _ in self.instance)
+        solution = &#34;&#34;
+
+        # while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
+        for _ in range(len(self.instance) * max(len(s) for s in self.instance)):
+            if all(idx == len(s) for idx, s in zip(indices, self.instance)):
+                break
+
+            counts = [
+                sum(
+                    priorities2d[sidx][idx]
+                    for sidx, (idx, s) in enumerate(zip(indices, self.instance))
+                    if idx &lt; len(s) and s[idx] == c
+                )
+                for c in self.chars
+            ]
+            next_char = self.chars[counts.index(max(counts))]
+
+            solution += next_char
+            indices = tuple(
+                idx + 1 if idx &lt; len(s) and s[idx] == next_char else idx
+                for idx, s in zip(indices, self.instance)
+            )
+
+        return solution
+
+    def priorities_1d_to_2d[T](self, priorities1d: list[T]) -&gt; list[list[T]]:
+        return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]
+
+    def objective(self, priorities1d: list[int]) -&gt; int:
+        priorities2d = self.priorities_1d_to_2d(
+            [priorities1d[i] for i in range(len(priorities1d))]
+        )
+        solution = self.wmm(priorities2d)
+        return len(solution)</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model.objective"><code class="name flex">
+<span>def <span class="ident">objective</span></span>(<span>self, priorities1d: list[int]) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def objective(self, priorities1d: list[int]) -&gt; int:
+    priorities2d = self.priorities_1d_to_2d(
+        [priorities1d[i] for i in range(len(priorities1d))]
+    )
+    solution = self.wmm(priorities2d)
+    return len(solution)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model.priorities_1d_to_2d"><code class="name flex">
+<span>def <span class="ident">priorities_1d_to_2d</span></span>(<span>self, priorities1d: list[T]) ‑> list[list[T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def priorities_1d_to_2d[T](self, priorities1d: list[T]) -&gt; list[list[T]]:
+    return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.wmm_hexaly.Model" href="#opt_note.scsp.model.wmm_hexaly.Model">Model</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+    assert isinstance(self.hxoptimizer.param, hexaly.optimizer.HxParam)
+    if time_limit is not None:
+        self.hxoptimizer.param.time_limit = time_limit
+    self.hxoptimizer.param.verbosity = 1 if log else 0
+    self.hxoptimizer.solve()
+    return self</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model.to_solution"><code class="name flex">
+<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_solution(self) -&gt; str | None:
+    assert isinstance(self.hxoptimizer.solution, hexaly.optimizer.HxSolution)
+    status = self.hxoptimizer.solution.status
+    if status not in {
+        hexaly.optimizer.HxSolutionStatus.OPTIMAL,
+        hexaly.optimizer.HxSolutionStatus.FEASIBLE,
+    }:
+        return None
+
+    priorities1d_value: list[int] = [p.value for p in self.priorities1d]
+    priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
+    return self.wmm(priorities2d_value)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="opt_note.scsp.model.wmm_hexaly.Model.wmm"><code class="name flex">
+<span>def <span class="ident">wmm</span></span>(<span>self, priorities2d: list[list[int]]) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wmm(self, priorities2d: list[list[int]]) -&gt; str:
+    indices = tuple(0 for _ in self.instance)
+    solution = &#34;&#34;
+
+    # while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
+    for _ in range(len(self.instance) * max(len(s) for s in self.instance)):
+        if all(idx == len(s) for idx, s in zip(indices, self.instance)):
+            break
+
+        counts = [
+            sum(
+                priorities2d[sidx][idx]
+                for sidx, (idx, s) in enumerate(zip(indices, self.instance))
+                if idx &lt; len(s) and s[idx] == c
+            )
+            for c in self.chars
+        ]
+        next_char = self.chars[counts.index(max(counts))]
+
+        solution += next_char
+        indices = tuple(
+            idx + 1 if idx &lt; len(s) and s[idx] == next_char else idx
+            for idx, s in zip(indices, self.instance)
+        )
+
+    return solution</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#weighted-majority-merge-hexaly">Weighted Majority Merge をパラメータ化し, Hexaly で探索</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.solve" href="#opt_note.scsp.model.wmm_hexaly.solve">solve</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.wmm_hexaly.Model" href="#opt_note.scsp.model.wmm_hexaly.Model">Model</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.Model.objective" href="#opt_note.scsp.model.wmm_hexaly.Model.objective">objective</a></code></li>
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.Model.priorities_1d_to_2d" href="#opt_note.scsp.model.wmm_hexaly.Model.priorities_1d_to_2d">priorities_1d_to_2d</a></code></li>
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.Model.solve" href="#opt_note.scsp.model.wmm_hexaly.Model.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.Model.to_solution" href="#opt_note.scsp.model.wmm_hexaly.Model.to_solution">to_solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.wmm_hexaly.Model.wmm" href="#opt_note.scsp.model.wmm_hexaly.Model.wmm">wmm</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

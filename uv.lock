@@ -363,6 +363,18 @@ wheels = [
 ]
 
 [[package]]
+name = "hexaly"
+version = "14.0.20250915"
+source = { registry = "https://pip.hexaly.com/" }
+wheels = [
+    { url = "https://pip.hexaly.com/hexaly/hexaly-14.0.20250915-py2.py3.py27.py36.py37.py38.py39.py310.py311.py312.py313.py314-none-linux_aarch64.whl" },
+    { url = "https://pip.hexaly.com/hexaly/hexaly-14.0.20250915-py2.py3.py27.py36.py37.py38.py39.py310.py311.py312.py313.py314-none-linux_x86_64.whl" },
+    { url = "https://pip.hexaly.com/hexaly/hexaly-14.0.20250915-py2.py3.py27.py36.py37.py38.py39.py310.py311.py312.py313.py314-none-macosx_10_11_x86_64.whl" },
+    { url = "https://pip.hexaly.com/hexaly/hexaly-14.0.20250915-py2.py3.py27.py36.py37.py38.py39.py310.py311.py312.py313.py314-none-macosx_11_0_arm64.whl" },
+    { url = "https://pip.hexaly.com/hexaly/hexaly-14.0.20250915-py2.py3.py27.py36.py37.py38.py39.py310.py311.py312.py313.py314-none-win_amd64.whl" },
+]
+
+[[package]]
 name = "highspy"
 version = "1.11.0"
 source = { registry = "https://pypi.org/simple" }
@@ -977,6 +989,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "didppy" },
+    { name = "hexaly" },
     { name = "highspy" },
     { name = "ortools" },
     { name = "pyscipopt" },
@@ -992,6 +1005,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "didppy", specifier = ">=0.10.0" },
+    { name = "hexaly", specifier = ">=14.0.20250915", index = "https://pip.hexaly.com/" },
     { name = "highspy", specifier = ">=1.11.0" },
     { name = "ortools", specifier = ">=9.14.6206" },
     { name = "pyscipopt", specifier = ">=5.6.0" },
