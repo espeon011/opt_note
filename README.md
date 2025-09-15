@@ -12,7 +12,7 @@ Marimo の Jupyter Export 機能を使って `.ipynb` 形式で `__marimo__` 配
 uv add "opt_note @ git+https://github.com/espeon011/opt_note"
 ```
 
-例えば以下のような Python ファイルを用意し, 
+例えば以下のような Python ファイル `main.py` を用意し, 
 
 ```python
 import opt_note.scsp as scsp
