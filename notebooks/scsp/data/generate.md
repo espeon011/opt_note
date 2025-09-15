@@ -203,7 +203,7 @@ write_nucleotide_instance(n=100, k=500)
 
 実際のタンパク質配列からデータを適当に切り出して作成する.
 
-[NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Nucleotide を選択して Download All Results をクリックし,
+[NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Protein を選択して Download All Results をクリックし,
 ランダムサンプル 1000 件をダウンロードしたデータセットに対して文字列長と文字列数を指定して配列の後ろをカットし,
 サンプル数を制限する.
 
