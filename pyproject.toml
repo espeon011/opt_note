@@ -26,7 +26,7 @@ build-backend = "uv_build"
 pythonpath = ["src"]
 
 [tool.taskipy.tasks]
-doc = "rm -rf docs && pdoc opt_note --html -o docs --force && mv docs/opt_note/* docs/ && rm -rf docs/opt_note"
+doc = "rm -rf docs && pdoc opt_note --html -o docs --force --config latex_math=True && mv docs/opt_note/* docs/ && rm -rf docs/opt_note"
 
 [tool.taskipy.settings]
 cwd = "."
