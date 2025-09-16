@@ -1,7 +1,7 @@
 In [ ]:
 ```python
-import model_wmm_hexaly
-import util
+import opt_note.scsp as scsp
+import hexaly.optimizer
 ```
 
 In [ ]:
@@ -10,127 +10,27 @@ import marimo as mo
 import nbformat
 ```
 
-# Hexaly を用いたヒューリスティックに初期重みを追加
-
-`WMM_HEXALY` モデルにおいて重み決定変数の初期値を `WMM` と等しくなるように設定する.
-
-巨大なインスタンスにおいて常に `WMM` 以上の質の解が出る反面, 小さ目のインスタンスでは `WMM_HEXALY` と比較して悪化することがある.
+# ベンチマーク
 
 In [ ]:
 ```python
-def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str:
-    return (
-        model_wmm_hexaly.Model(instance, initial=True)
-        .solve(time_limit, log)
-        .to_solution()
-    )
+def bench(instance: list[str]) -> None:
+    model = scsp.model.wmm_hexaly_init.create_model(instance).solve()
+    solution = model.to_solution()
+    scsp.util.show(instance)
+    if solution is not None:
+        scsp.util.show(instance, solution)
+        print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")
+    else:
+        print("--- Solution not found ---\n")
+
+    print(f"solution is optimal: {model.hxoptimizer.solution.status == hexaly.optimizer.HxSolutionStatus.OPTIMAL}")
+    print(f"bset bound: {model.hxoptimizer.solution.get_objective_bound(0)}")
 ```
 
 In [ ]:
 ```python
-instance_01 = util.parse("uniform_q26n004k015-025.txt")
-solution_01 = solve(instance_01, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 88, decisions = 84, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:           75
-> [ optimality gap     ]:      100.00%
-> [  1 sec,     458 itr]:           67
-> [  2 sec,     909 itr]:           65
-> [  3 sec,    1343 itr]:           65
-> [  4 sec,    1839 itr]:           65
-> [  5 sec,    2374 itr]:           65
-> [  6 sec,    3127 itr]:           65
-> [  7 sec,    3837 itr]:           65
-> [  8 sec,    4581 itr]:           64
-> [  9 sec,    5327 itr]:           64
-> [ 10 sec,    6029 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    6790 itr]:           64
-> [ 12 sec,    7490 itr]:           64
-> [ 13 sec,    8198 itr]:           64
-> [ 14 sec,    8921 itr]:           64
-> [ 15 sec,    9649 itr]:           64
-> [ 16 sec,   10421 itr]:           64
-> [ 17 sec,   11180 itr]:           64
-> [ 18 sec,   11916 itr]:           64
-> [ 19 sec,   12675 itr]:           64
-> [ 20 sec,   13401 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,   14143 itr]:           64
-> [ 22 sec,   14892 itr]:           64
-> [ 23 sec,   15660 itr]:           64
-> [ 24 sec,   16411 itr]:           64
-> [ 25 sec,   17082 itr]:           64
-> [ 26 sec,   17821 itr]:           64
-> [ 27 sec,   18542 itr]:           64
-> [ 28 sec,   19303 itr]:           64
-> [ 29 sec,   20010 itr]:           64
-> [ 30 sec,   20734 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,   21450 itr]:           64
-> [ 32 sec,   22148 itr]:           64
-> [ 33 sec,   22883 itr]:           64
-> [ 34 sec,   23634 itr]:           64
-> [ 35 sec,   24386 itr]:           64
-> [ 36 sec,   25125 itr]:           64
-> [ 37 sec,   25885 itr]:           64
-> [ 38 sec,   26617 itr]:           64
-> [ 39 sec,   27370 itr]:           64
-> [ 40 sec,   28163 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,   28886 itr]:           64
-> [ 42 sec,   29647 itr]:           64
-> [ 43 sec,   30405 itr]:           64
-> [ 44 sec,   31144 itr]:           64
-> [ 45 sec,   31929 itr]:           64
-> [ 46 sec,   32725 itr]:           64
-> [ 47 sec,   33492 itr]:           64
-> [ 48 sec,   34294 itr]:           64
-> [ 49 sec,   35074 itr]:           64
-> [ 50 sec,   35805 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,   36536 itr]:           64
-> [ 52 sec,   37289 itr]:           64
-> [ 53 sec,   38045 itr]:           64
-> [ 54 sec,   38790 itr]:           64
-> [ 55 sec,   39530 itr]:           64
-> [ 56 sec,   40270 itr]:           64
-> [ 57 sec,   41026 itr]:           64
-> [ 58 sec,   41796 itr]:           64
-> [ 59 sec,   42592 itr]:           64
-> [ 60 sec,   43381 itr]:           64
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,   43381 itr]:           64
-> [ optimality gap     ]:      100.00%
-> 
-> 43381 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =           64
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_01
-_solution = solution_01
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 ```
 
 > ```
@@ -148,111 +48,13 @@ else:
 > str4: i----g----------e-----vazg-brddbc-s-vr------vnn--------------g-f
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_02 = util.parse("uniform_q26n008k015-025.txt")
-solution_02 = solve(instance_02, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 179, decisions = 175, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:          128
-> [ optimality gap     ]:      100.00%
-> [  1 sec,       6 itr]:          124
-> [  2 sec,     238 itr]:          115
-> [  3 sec,     529 itr]:          113
-> [  4 sec,     804 itr]:          109
-> [  5 sec,    1101 itr]:          108
-> [  6 sec,    1377 itr]:          106
-> [  7 sec,    1680 itr]:          106
-> [  8 sec,    1993 itr]:          106
-> [  9 sec,    2298 itr]:          106
-> [ 10 sec,    2610 itr]:          106
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    2924 itr]:          106
-> [ 12 sec,    3217 itr]:          106
-> [ 13 sec,    3531 itr]:          106
-> [ 14 sec,    3851 itr]:          106
-> [ 15 sec,    4170 itr]:          106
-> [ 16 sec,    4488 itr]:          106
-> [ 17 sec,    4805 itr]:          106
-> [ 18 sec,    5108 itr]:          106
-> [ 19 sec,    5409 itr]:          105
-> [ 20 sec,    5718 itr]:          105
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,    6048 itr]:          105
-> [ 22 sec,    6343 itr]:          105
-> [ 23 sec,    6647 itr]:          105
-> [ 24 sec,    6966 itr]:          105
-> [ 25 sec,    7261 itr]:          105
-> [ 26 sec,    7572 itr]:          105
-> [ 27 sec,    7880 itr]:          105
-> [ 28 sec,    8212 itr]:          105
-> [ 29 sec,    8533 itr]:          105
-> [ 30 sec,    8858 itr]:          105
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,    9167 itr]:          105
-> [ 32 sec,    9483 itr]:          105
-> [ 33 sec,    9814 itr]:          105
-> [ 34 sec,   10137 itr]:          105
-> [ 35 sec,   10451 itr]:          105
-> [ 36 sec,   10759 itr]:          105
-> [ 37 sec,   11079 itr]:          105
-> [ 38 sec,   11387 itr]:          105
-> [ 39 sec,   11697 itr]:          105
-> [ 40 sec,   12033 itr]:          105
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,   12337 itr]:          105
-> [ 42 sec,   12640 itr]:          105
-> [ 43 sec,   12957 itr]:          105
-> [ 44 sec,   13269 itr]:          105
-> [ 45 sec,   13563 itr]:          105
-> [ 46 sec,   13887 itr]:          105
-> [ 47 sec,   14186 itr]:          105
-> [ 48 sec,   14496 itr]:          105
-> [ 49 sec,   14798 itr]:          105
-> [ 50 sec,   15130 itr]:          105
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,   15416 itr]:          105
-> [ 52 sec,   15724 itr]:          105
-> [ 53 sec,   16010 itr]:          105
-> [ 54 sec,   16317 itr]:          105
-> [ 55 sec,   16603 itr]:          105
-> [ 56 sec,   16882 itr]:          105
-> [ 57 sec,   17170 itr]:          105
-> [ 58 sec,   17482 itr]:          105
-> [ 59 sec,   17796 itr]:          105
-> [ 60 sec,   18097 itr]:          105
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,   18097 itr]:          105
-> [ optimality gap     ]:      100.00%
-> 
-> 18097 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =          105
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_02
-_solution = solution_02
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 ```
 
 > ```
@@ -278,111 +80,13 @@ else:
 > str8: -----------------r-xwxqkr-d----------------rlc-t-o--d-t--------------mp--r--------p-xw-d-----------------
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_03 = util.parse("uniform_q26n016k015-025.txt")
-solution_03 = solve(instance_03, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 327, decisions = 323, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:          176
-> [ optimality gap     ]:      100.00%
-> [  1 sec,      54 itr]:          163
-> [  2 sec,     180 itr]:          161
-> [  3 sec,     319 itr]:          160
-> [  4 sec,     476 itr]:          160
-> [  5 sec,     609 itr]:          159
-> [  6 sec,     750 itr]:          159
-> [  7 sec,     886 itr]:          158
-> [  8 sec,    1026 itr]:          158
-> [  9 sec,    1158 itr]:          157
-> [ 10 sec,    1302 itr]:          157
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    1437 itr]:          157
-> [ 12 sec,    1593 itr]:          157
-> [ 13 sec,    1747 itr]:          157
-> [ 14 sec,    1896 itr]:          157
-> [ 15 sec,    2031 itr]:          155
-> [ 16 sec,    2163 itr]:          155
-> [ 17 sec,    2300 itr]:          155
-> [ 18 sec,    2437 itr]:          155
-> [ 19 sec,    2584 itr]:          155
-> [ 20 sec,    2727 itr]:          155
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,    2868 itr]:          155
-> [ 22 sec,    2998 itr]:          155
-> [ 23 sec,    3129 itr]:          154
-> [ 24 sec,    3286 itr]:          154
-> [ 25 sec,    3444 itr]:          154
-> [ 26 sec,    3580 itr]:          153
-> [ 27 sec,    3739 itr]:          153
-> [ 28 sec,    3872 itr]:          153
-> [ 29 sec,    4023 itr]:          153
-> [ 30 sec,    4174 itr]:          153
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,    4331 itr]:          153
-> [ 32 sec,    4477 itr]:          152
-> [ 33 sec,    4636 itr]:          152
-> [ 34 sec,    4791 itr]:          152
-> [ 35 sec,    4931 itr]:          152
-> [ 36 sec,    5063 itr]:          151
-> [ 37 sec,    5201 itr]:          151
-> [ 38 sec,    5349 itr]:          151
-> [ 39 sec,    5493 itr]:          151
-> [ 40 sec,    5654 itr]:          151
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,    5787 itr]:          151
-> [ 42 sec,    5939 itr]:          150
-> [ 43 sec,    6102 itr]:          150
-> [ 44 sec,    6250 itr]:          150
-> [ 45 sec,    6395 itr]:          150
-> [ 46 sec,    6553 itr]:          150
-> [ 47 sec,    6683 itr]:          150
-> [ 48 sec,    6837 itr]:          150
-> [ 49 sec,    6993 itr]:          150
-> [ 50 sec,    7140 itr]:          150
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,    7288 itr]:          150
-> [ 52 sec,    7429 itr]:          150
-> [ 53 sec,    7583 itr]:          150
-> [ 54 sec,    7737 itr]:          150
-> [ 55 sec,    7899 itr]:          150
-> [ 56 sec,    8066 itr]:          150
-> [ 57 sec,    8219 itr]:          150
-> [ 58 sec,    8371 itr]:          150
-> [ 59 sec,    8531 itr]:          150
-> [ 60 sec,    8686 itr]:          150
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,    8686 itr]:          150
-> [ optimality gap     ]:      100.00%
-> 
-> 8686 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =          150
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_03
-_solution = solution_03
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 ```
 
 > ```
@@ -424,111 +128,13 @@ else:
 > str16: ----x-------------------------usfc---f-------z----------------pe-----------e-------cv---------------------wa-------nt----------------------fmg-q--zu--
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_04 = util.parse("uniform_q05n010k010-010.txt")
-solution_04 = solve(instance_04, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 104, decisions = 100, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:           32
-> [ optimality gap     ]:      100.00%
-> [  1 sec,    1259 itr]:           29
-> [  2 sec,    4447 itr]:           29
-> [  3 sec,    7469 itr]:           29
-> [  4 sec,   10499 itr]:           29
-> [  5 sec,   13648 itr]:           29
-> [  6 sec,   16703 itr]:           28
-> [  7 sec,   19761 itr]:           28
-> [  8 sec,   22854 itr]:           28
-> [  9 sec,   25843 itr]:           28
-> [ 10 sec,   28873 itr]:           28
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,   31920 itr]:           28
-> [ 12 sec,   34964 itr]:           28
-> [ 13 sec,   38035 itr]:           28
-> [ 14 sec,   41059 itr]:           28
-> [ 15 sec,   43988 itr]:           28
-> [ 16 sec,   46789 itr]:           28
-> [ 17 sec,   49583 itr]:           28
-> [ 18 sec,   52634 itr]:           28
-> [ 19 sec,   55712 itr]:           28
-> [ 20 sec,   58768 itr]:           28
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,   61764 itr]:           28
-> [ 22 sec,   64851 itr]:           28
-> [ 23 sec,   67797 itr]:           28
-> [ 24 sec,   70896 itr]:           28
-> [ 25 sec,   73947 itr]:           28
-> [ 26 sec,   76895 itr]:           28
-> [ 27 sec,   79962 itr]:           28
-> [ 28 sec,   82970 itr]:           28
-> [ 29 sec,   85960 itr]:           28
-> [ 30 sec,   89061 itr]:           28
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,   92079 itr]:           28
-> [ 32 sec,   95115 itr]:           28
-> [ 33 sec,   98109 itr]:           28
-> [ 34 sec,  101119 itr]:           28
-> [ 35 sec,  104141 itr]:           28
-> [ 36 sec,  107196 itr]:           28
-> [ 37 sec,  110218 itr]:           28
-> [ 38 sec,  113234 itr]:           28
-> [ 39 sec,  116342 itr]:           28
-> [ 40 sec,  119451 itr]:           27
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,  122540 itr]:           27
-> [ 42 sec,  125704 itr]:           27
-> [ 43 sec,  128847 itr]:           27
-> [ 44 sec,  131923 itr]:           27
-> [ 45 sec,  135175 itr]:           27
-> [ 46 sec,  138420 itr]:           27
-> [ 47 sec,  141582 itr]:           27
-> [ 48 sec,  144778 itr]:           27
-> [ 49 sec,  148041 itr]:           27
-> [ 50 sec,  151261 itr]:           27
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,  154478 itr]:           27
-> [ 52 sec,  157687 itr]:           27
-> [ 53 sec,  160866 itr]:           27
-> [ 54 sec,  164087 itr]:           27
-> [ 55 sec,  167284 itr]:           27
-> [ 56 sec,  170479 itr]:           27
-> [ 57 sec,  173679 itr]:           27
-> [ 58 sec,  176908 itr]:           27
-> [ 59 sec,  180094 itr]:           27
-> [ 60 sec,  183283 itr]:           27
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,  183283 itr]:           27
-> [ optimality gap     ]:      100.00%
-> 
-> 183283 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =           27
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_04
-_solution = solution_04
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 ```
 
 > ```
@@ -558,111 +164,13 @@ else:
 > str10: b---d----a-----bdbea---a-d-
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_05 = util.parse("uniform_q05n050k010-010.txt")
-solution_05 = solve(instance_05, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 504, decisions = 500, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:           37
-> [ optimality gap     ]:      100.00%
-> [  1 sec,      41 itr]:           35
-> [  2 sec,     761 itr]:           35
-> [  3 sec,    1298 itr]:           35
-> [  4 sec,    1716 itr]:           35
-> [  5 sec,    2203 itr]:           35
-> [  6 sec,    2673 itr]:           35
-> [  7 sec,    3258 itr]:           34
-> [  8 sec,    3896 itr]:           34
-> [  9 sec,    4504 itr]:           34
-> [ 10 sec,    5089 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    5737 itr]:           34
-> [ 12 sec,    6403 itr]:           34
-> [ 13 sec,    7074 itr]:           34
-> [ 14 sec,    7768 itr]:           34
-> [ 15 sec,    8340 itr]:           34
-> [ 16 sec,    8860 itr]:           34
-> [ 17 sec,    9402 itr]:           34
-> [ 18 sec,   10047 itr]:           34
-> [ 19 sec,   10626 itr]:           34
-> [ 20 sec,   11250 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,   11840 itr]:           34
-> [ 22 sec,   12437 itr]:           34
-> [ 23 sec,   13051 itr]:           34
-> [ 24 sec,   13672 itr]:           34
-> [ 25 sec,   14237 itr]:           34
-> [ 26 sec,   14839 itr]:           34
-> [ 27 sec,   15478 itr]:           34
-> [ 28 sec,   16047 itr]:           34
-> [ 29 sec,   16650 itr]:           34
-> [ 30 sec,   17213 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,   17797 itr]:           34
-> [ 32 sec,   18399 itr]:           34
-> [ 33 sec,   18976 itr]:           34
-> [ 34 sec,   19541 itr]:           34
-> [ 35 sec,   20185 itr]:           34
-> [ 36 sec,   20719 itr]:           34
-> [ 37 sec,   21319 itr]:           34
-> [ 38 sec,   21877 itr]:           34
-> [ 39 sec,   22498 itr]:           34
-> [ 40 sec,   23064 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,   23655 itr]:           34
-> [ 42 sec,   24205 itr]:           34
-> [ 43 sec,   24798 itr]:           34
-> [ 44 sec,   25435 itr]:           34
-> [ 45 sec,   25995 itr]:           34
-> [ 46 sec,   26589 itr]:           34
-> [ 47 sec,   27138 itr]:           34
-> [ 48 sec,   27730 itr]:           34
-> [ 49 sec,   28293 itr]:           34
-> [ 50 sec,   28867 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,   29496 itr]:           34
-> [ 52 sec,   30075 itr]:           34
-> [ 53 sec,   30670 itr]:           34
-> [ 54 sec,   31266 itr]:           34
-> [ 55 sec,   31855 itr]:           34
-> [ 56 sec,   32440 itr]:           34
-> [ 57 sec,   33093 itr]:           34
-> [ 58 sec,   33657 itr]:           34
-> [ 59 sec,   34212 itr]:           34
-> [ 60 sec,   34842 itr]:           34
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,   34842 itr]:           34
-> [ optimality gap     ]:      100.00%
-> 
-> 34842 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =           34
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_05
-_solution = solution_05
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 ```
 
 > ```
@@ -772,111 +280,13 @@ else:
 > str50: d---bda---b--c--ec-b--b-----------
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_06 = util.parse("nucleotide_n010k010.txt")
-solution_06 = solve(instance_06, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 104, decisions = 100, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:           26
-> [ optimality gap     ]:      100.00%
-> [  1 sec,     687 itr]:           25
-> [  2 sec,    4523 itr]:           24
-> [  3 sec,    8295 itr]:           24
-> [  4 sec,   12133 itr]:           24
-> [  5 sec,   15938 itr]:           24
-> [  6 sec,   19639 itr]:           24
-> [  7 sec,   23468 itr]:           24
-> [  8 sec,   27357 itr]:           24
-> [  9 sec,   31171 itr]:           24
-> [ 10 sec,   34956 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,   38627 itr]:           24
-> [ 12 sec,   42392 itr]:           24
-> [ 13 sec,   46329 itr]:           24
-> [ 14 sec,   50147 itr]:           24
-> [ 15 sec,   53986 itr]:           24
-> [ 16 sec,   57899 itr]:           24
-> [ 17 sec,   61808 itr]:           24
-> [ 18 sec,   65702 itr]:           24
-> [ 19 sec,   69573 itr]:           24
-> [ 20 sec,   73470 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,   77385 itr]:           24
-> [ 22 sec,   81250 itr]:           24
-> [ 23 sec,   85127 itr]:           24
-> [ 24 sec,   89023 itr]:           24
-> [ 25 sec,   92882 itr]:           24
-> [ 26 sec,   96692 itr]:           24
-> [ 27 sec,  100698 itr]:           24
-> [ 28 sec,  104546 itr]:           24
-> [ 29 sec,  108335 itr]:           24
-> [ 30 sec,  112185 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,  116053 itr]:           24
-> [ 32 sec,  119941 itr]:           24
-> [ 33 sec,  123762 itr]:           24
-> [ 34 sec,  127542 itr]:           24
-> [ 35 sec,  131368 itr]:           24
-> [ 36 sec,  135169 itr]:           24
-> [ 37 sec,  139035 itr]:           24
-> [ 38 sec,  142883 itr]:           24
-> [ 39 sec,  146782 itr]:           24
-> [ 40 sec,  150612 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,  154314 itr]:           24
-> [ 42 sec,  158042 itr]:           24
-> [ 43 sec,  161888 itr]:           24
-> [ 44 sec,  165719 itr]:           24
-> [ 45 sec,  169520 itr]:           24
-> [ 46 sec,  173314 itr]:           24
-> [ 47 sec,  177210 itr]:           24
-> [ 48 sec,  181020 itr]:           24
-> [ 49 sec,  184794 itr]:           24
-> [ 50 sec,  188495 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,  192302 itr]:           24
-> [ 52 sec,  196058 itr]:           24
-> [ 53 sec,  199806 itr]:           24
-> [ 54 sec,  203478 itr]:           24
-> [ 55 sec,  207233 itr]:           24
-> [ 56 sec,  210301 itr]:           24
-> [ 57 sec,  212942 itr]:           24
-> [ 58 sec,  215503 itr]:           24
-> [ 59 sec,  217900 itr]:           24
-> [ 60 sec,  220267 itr]:           24
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,  220267 itr]:           24
-> [ optimality gap     ]:      100.00%
-> 
-> 220267 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =           24
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_06
-_solution = solution_06
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("nucleotide_n010k010.txt"))
 ```
 
 > ```
@@ -906,111 +316,13 @@ else:
 > str10: T---C-TA--A--A-CG-A---A-
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_07 = util.parse("nucleotide_n050k050.txt")
-solution_07 = solve(instance_07, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 2504, decisions = 2500, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:          146
-> [ optimality gap     ]:      100.00%
-> [  1 sec,      92 itr]:          139
-> [  2 sec,     268 itr]:          139
-> [  3 sec,     453 itr]:          139
-> [  4 sec,     619 itr]:          139
-> [  5 sec,     790 itr]:          139
-> [  6 sec,     958 itr]:          139
-> [  7 sec,    1145 itr]:          139
-> [  8 sec,    1290 itr]:          139
-> [  9 sec,    1458 itr]:          139
-> [ 10 sec,    1629 itr]:          139
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    1814 itr]:          139
-> [ 12 sec,    1999 itr]:          139
-> [ 13 sec,    2161 itr]:          139
-> [ 14 sec,    2316 itr]:          139
-> [ 15 sec,    2478 itr]:          139
-> [ 16 sec,    2656 itr]:          139
-> [ 17 sec,    2834 itr]:          139
-> [ 18 sec,    3016 itr]:          139
-> [ 19 sec,    3178 itr]:          139
-> [ 20 sec,    3348 itr]:          139
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,    3519 itr]:          139
-> [ 22 sec,    3688 itr]:          139
-> [ 23 sec,    3866 itr]:          139
-> [ 24 sec,    4028 itr]:          138
-> [ 25 sec,    4208 itr]:          138
-> [ 26 sec,    4370 itr]:          138
-> [ 27 sec,    4553 itr]:          138
-> [ 28 sec,    4733 itr]:          138
-> [ 29 sec,    4913 itr]:          138
-> [ 30 sec,    5087 itr]:          138
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,    5264 itr]:          138
-> [ 32 sec,    5450 itr]:          138
-> [ 33 sec,    5630 itr]:          138
-> [ 34 sec,    5800 itr]:          138
-> [ 35 sec,    5974 itr]:          138
-> [ 36 sec,    6142 itr]:          138
-> [ 37 sec,    6316 itr]:          138
-> [ 38 sec,    6496 itr]:          138
-> [ 39 sec,    6676 itr]:          138
-> [ 40 sec,    6856 itr]:          138
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,    7030 itr]:          138
-> [ 42 sec,    7203 itr]:          138
-> [ 43 sec,    7380 itr]:          138
-> [ 44 sec,    7535 itr]:          138
-> [ 45 sec,    7722 itr]:          138
-> [ 46 sec,    7897 itr]:          138
-> [ 47 sec,    8064 itr]:          138
-> [ 48 sec,    8228 itr]:          138
-> [ 49 sec,    8410 itr]:          138
-> [ 50 sec,    8572 itr]:          138
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,    8741 itr]:          138
-> [ 52 sec,    8904 itr]:          138
-> [ 53 sec,    9057 itr]:          138
-> [ 54 sec,    9229 itr]:          138
-> [ 55 sec,    9414 itr]:          138
-> [ 56 sec,    9602 itr]:          138
-> [ 57 sec,    9761 itr]:          138
-> [ 58 sec,    9932 itr]:          138
-> [ 59 sec,   10101 itr]:          138
-> [ 60 sec,   10273 itr]:          138
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,   10273 itr]:          138
-> [ optimality gap     ]:      100.00%
-> 
-> 10273 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =          138
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_07
-_solution = solution_07
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("nucleotide_n050k050.txt"))
 ```
 
 > ```
@@ -1120,111 +432,13 @@ else:
 > str50: ATGA-G--C--AC--T-A--AGC----GA-----A-GA--A-C---CA-A--A---A-AGCA---G-AC--A--A-T-A--CA---A-C--C--C--G--C-TA-T---TAC--------------------------
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_08 = util.parse("protein_n010k010.txt")
-solution_08 = solve(instance_08, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 104, decisions = 100, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:           57
-> [ optimality gap     ]:      100.00%
-> [  1 sec,     455 itr]:           51
-> [  2 sec,    1157 itr]:           48
-> [  3 sec,    1716 itr]:           47
-> [  4 sec,    2323 itr]:           47
-> [  5 sec,    2921 itr]:           46
-> [  6 sec,    3568 itr]:           46
-> [  7 sec,    4260 itr]:           46
-> [  8 sec,    4916 itr]:           46
-> [  9 sec,    5660 itr]:           46
-> [ 10 sec,    6446 itr]:           46
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,    7249 itr]:           46
-> [ 12 sec,    8110 itr]:           46
-> [ 13 sec,    8971 itr]:           46
-> [ 14 sec,    9730 itr]:           46
-> [ 15 sec,   10523 itr]:           46
-> [ 16 sec,   11366 itr]:           46
-> [ 17 sec,   12172 itr]:           46
-> [ 18 sec,   12980 itr]:           46
-> [ 19 sec,   13743 itr]:           46
-> [ 20 sec,   14530 itr]:           46
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,   15295 itr]:           46
-> [ 22 sec,   16058 itr]:           46
-> [ 23 sec,   16854 itr]:           46
-> [ 24 sec,   17620 itr]:           46
-> [ 25 sec,   18379 itr]:           46
-> [ 26 sec,   19203 itr]:           45
-> [ 27 sec,   20027 itr]:           45
-> [ 28 sec,   20815 itr]:           45
-> [ 29 sec,   21644 itr]:           45
-> [ 30 sec,   22493 itr]:           45
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,   23339 itr]:           45
-> [ 32 sec,   24125 itr]:           45
-> [ 33 sec,   24958 itr]:           45
-> [ 34 sec,   25790 itr]:           45
-> [ 35 sec,   26618 itr]:           45
-> [ 36 sec,   27439 itr]:           45
-> [ 37 sec,   28299 itr]:           45
-> [ 38 sec,   29102 itr]:           45
-> [ 39 sec,   29887 itr]:           45
-> [ 40 sec,   30690 itr]:           45
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,   31407 itr]:           45
-> [ 42 sec,   32186 itr]:           45
-> [ 43 sec,   32969 itr]:           45
-> [ 44 sec,   33775 itr]:           45
-> [ 45 sec,   34518 itr]:           45
-> [ 46 sec,   35299 itr]:           45
-> [ 47 sec,   36057 itr]:           45
-> [ 48 sec,   36797 itr]:           45
-> [ 49 sec,   37561 itr]:           45
-> [ 50 sec,   38340 itr]:           45
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,   39096 itr]:           45
-> [ 52 sec,   39823 itr]:           45
-> [ 53 sec,   40600 itr]:           45
-> [ 54 sec,   41359 itr]:           45
-> [ 55 sec,   42084 itr]:           45
-> [ 56 sec,   42874 itr]:           45
-> [ 57 sec,   43682 itr]:           45
-> [ 58 sec,   44515 itr]:           45
-> [ 59 sec,   45264 itr]:           45
-> [ 60 sec,   46027 itr]:           45
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,   46027 itr]:           45
-> [ optimality gap     ]:      100.00%
-> 
-> 46027 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =           45
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_08
-_solution = solution_08
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("protein_n010k010.txt"))
 ```
 
 > ```
@@ -1254,111 +468,13 @@ else:
 > str10: MES-----L-------V---P-GF-NE------------------
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```
 
 In [ ]:
 ```python
-instance_09 = util.parse("protein_n050k050.txt")
-solution_09 = solve(instance_09, log=True)
-```
-
-> ```
-> 
-> Model:  expressions = 2504, decisions = 2500, constraints = 0, objectives = 1
-> Param:  time limit = 60 sec, no iteration limit
-> 
-> [objective direction ]:     minimize
-> 
-> [  0 sec,       0 itr]:          475
-> [ optimality gap     ]:      100.00%
-> [  1 sec,      17 itr]:          475
-> [  2 sec,      27 itr]:          473
-> [  3 sec,      36 itr]:          462
-> [  4 sec,      55 itr]:          462
-> [  5 sec,      70 itr]:          457
-> [  6 sec,      91 itr]:          457
-> [  7 sec,     120 itr]:          457
-> [  8 sec,     150 itr]:          457
-> [  9 sec,     176 itr]:          457
-> [ 10 sec,     193 itr]:          456
-> [ optimality gap     ]:      100.00%
-> [ 11 sec,     221 itr]:          456
-> [ 12 sec,     241 itr]:          456
-> [ 13 sec,     259 itr]:          454
-> [ 14 sec,     289 itr]:          454
-> [ 15 sec,     317 itr]:          454
-> [ 16 sec,     346 itr]:          454
-> [ 17 sec,     376 itr]:          454
-> [ 18 sec,     405 itr]:          454
-> [ 19 sec,     434 itr]:          454
-> [ 20 sec,     464 itr]:          454
-> [ optimality gap     ]:      100.00%
-> [ 21 sec,     482 itr]:          454
-> [ 22 sec,     511 itr]:          454
-> [ 23 sec,     540 itr]:          454
-> [ 24 sec,     566 itr]:          454
-> [ 25 sec,     591 itr]:          454
-> [ 26 sec,     618 itr]:          454
-> [ 27 sec,     641 itr]:          454
-> [ 28 sec,     663 itr]:          454
-> [ 29 sec,     692 itr]:          454
-> [ 30 sec,     720 itr]:          454
-> [ optimality gap     ]:      100.00%
-> [ 31 sec,     743 itr]:          454
-> [ 32 sec,     764 itr]:          454
-> [ 33 sec,     793 itr]:          454
-> [ 34 sec,     822 itr]:          454
-> [ 35 sec,     843 itr]:          454
-> [ 36 sec,     872 itr]:          454
-> [ 37 sec,     896 itr]:          454
-> [ 38 sec,     922 itr]:          454
-> [ 39 sec,     944 itr]:          454
-> [ 40 sec,     973 itr]:          454
-> [ optimality gap     ]:      100.00%
-> [ 41 sec,    1002 itr]:          454
-> [ 42 sec,    1031 itr]:          454
-> [ 43 sec,    1048 itr]:          454
-> [ 44 sec,    1073 itr]:          454
-> [ 45 sec,    1093 itr]:          454
-> [ 46 sec,    1119 itr]:          454
-> [ 47 sec,    1135 itr]:          454
-> [ 48 sec,    1156 itr]:          454
-> [ 49 sec,    1169 itr]:          454
-> [ 50 sec,    1181 itr]:          454
-> [ optimality gap     ]:      100.00%
-> [ 51 sec,    1211 itr]:          454
-> [ 52 sec,    1232 itr]:          454
-> [ 53 sec,    1261 itr]:          454
-> [ 54 sec,    1274 itr]:          454
-> [ 55 sec,    1287 itr]:          454
-> [ 56 sec,    1308 itr]:          454
-> [ 57 sec,    1321 itr]:          454
-> [ 58 sec,    1342 itr]:          454
-> [ 59 sec,    1365 itr]:          454
-> [ 60 sec,    1385 itr]:          454
-> [ optimality gap     ]:      100.00%
-> [ 60 sec,    1385 itr]:          454
-> [ optimality gap     ]:      100.00%
-> 
-> 1385 iterations performed in 60 seconds
-> 
-> Feasible solution: 
->   obj    =          454
->   gap    =      100.00%
->   bounds =            0
-> ```
-
-In [ ]:
-```python
-_instance = instance_09
-_solution = solution_09
-
-util.show(_instance)
-if _solution is not None:
-    util.show(_instance, _solution)
-    print(f"solution is feasible: {util.is_feasible(_instance, _solution)}")
-else:
-    print("--- Solution not found ---")
+bench(scsp.example.load("protein_n050k050.txt"))
 ```
 
 > ```
@@ -1468,4 +584,6 @@ else:
 > str50: M-A---------N----------------------------------Y--S--K------------PF--L------L-----------------------D---I--------V--------------------------------F---------N-------------K-D-----------------I----K---------------------------------------C---------I-----------N----------D--------S--------------------------------C------S---------HS-D----------------------------C---R-------------Y------QSN-SYV-ELRR-N-----------------------------QAL----N---K-NL-----------
 > 
 > solution is feasible: True
+> solution is optimal: False
+> bset bound: 0
 > ```

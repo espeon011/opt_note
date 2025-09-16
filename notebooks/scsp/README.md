@@ -29,7 +29,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([概要](./model/automaton_cpsat))
 - `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([概要](./model/automaton_cpsat_sat))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
-- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/WIP/wmm_hexaly_init.md))
+- `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/wmm_hexaly_init))
 - `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([概要](./model/didp))
 
 ## ベンチマーク

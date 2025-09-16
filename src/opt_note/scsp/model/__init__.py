@@ -18,6 +18,7 @@ from . import (
     didp,
     didp_scs3,
     wmm_hexaly,
+    wmm_hexaly_init,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "didp",
     "didp_scs3",
     "wmm_hexaly",
+    "wmm_hexaly_init",
 ]
