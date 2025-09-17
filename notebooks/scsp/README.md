@@ -27,7 +27,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([概要](./model/linear_highs))
 - `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([概要](./model/linear_cpsat))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([概要](./model/automaton_cpsat))
-- `AUTOMATON_CPSAT_SAT` 上記モデルで解の長さを固定した決定問題を繰り返し解き, 二分探索を行う ([概要](./model/automaton_cpsat_sat))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/wmm_hexaly_init))
 - `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([概要](./model/didp))
@@ -60,7 +59,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
   - `LA_SH` $m = 3$, $l = 1$.
 - 下記モデルは性能の問題により表から除外.
   - `DP`
-  - `AUTOMATON_CPSAT_SAT`
 - TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
 
 ## 解法の分類
@@ -68,7 +66,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
-- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `AUTOMATON_CPSAT_SAT`
+- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
@@ -76,7 +74,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - ビームサーチ ... `IBS_SCS`, `DIDP`
 - 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`
-- その他 ... `AUTOMATON_CPSAT_SAT`
 
 | 探索法\解の構築法 | 前から1文字ずつ取ってくる | その他 |
 | --- | --- | --- |
@@ -84,7 +81,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | ビームサーチ | `IBS_SCS`, `DIDP` | |
 | 全探索 | `DP`, `DIDP` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
 | アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | |
-| その他 | | `AUTOMATON_CPSAT_SAT` |
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
