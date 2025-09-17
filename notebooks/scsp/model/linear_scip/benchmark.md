@@ -14,13 +14,17 @@ import nbformat
 In [ ]:
 ```python
 def bench(instance: list[str]) -> None:
-    solution = scsp.model.linear_scip.solve(instance)
+    model = scsp.model.linear_scip.Model(instance).solve()
+    solution = model.to_solution()
     scsp.util.show(instance)
     if solution is not None:
         scsp.util.show(instance, solution)
         print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")
     else:
-        print("--- Solution not found ---")
+        print("--- Solution not found ---\n")
+
+    print(f"solution status: {model.scip.getStatus()}")
+    print(f"best bound: {model.scip.getDualbound()}")
 ```
 
 In [ ]:
@@ -43,6 +47,8 @@ bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 > str4: i--g------e----va----zg--b--r-d-----d------bc-s---v----rv--n-n-g-----f
 > 
 > solution is feasible: True
+> solution status: timelimit
+> best bound: 26.0
 > ```
 
 In [ ]:
@@ -73,6 +79,8 @@ bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 > str8: rxwxqkrdrlctodtmprpxwd---------------------------------------------------------------------------------------------------------------------------------------------------------
 > 
 > solution is feasible: True
+> solution status: timelimit
+> best bound: 26.0
 > ```
 
 In [ ]:
@@ -100,6 +108,9 @@ bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 > str16: xusfcfzpeecvwantfmgqzu
 > 
 > --- Solution not found ---
+> 
+> solution status: timelimit
+> best bound: 25.0
 > ```
 
 In [ ]:
@@ -134,6 +145,8 @@ bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 > str10: ---b-------d---ab-d-b-ea--------a---d--------
 > 
 > solution is feasible: True
+> solution status: timelimit
+> best bound: 11.0
 > ```
 
 In [ ]:
@@ -195,6 +208,9 @@ bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 > str50: dbdabcecbb
 > 
 > --- Solution not found ---
+> 
+> solution status: timelimit
+> best bound: -1e+20
 > ```
 
 In [ ]:
@@ -229,6 +245,8 @@ bench(scsp.example.load("nucleotide_n010k010.txt"))
 > str10: T-CTA-A---A-C-G--A----A-------------------
 > 
 > solution is feasible: True
+> solution status: timelimit
+> best bound: 12.0
 > ```
 
 In [ ]:
@@ -290,6 +308,9 @@ bench(scsp.example.load("nucleotide_n050k050.txt"))
 > str50: ATGAGCACTAAGCGAAGAACCAAAAAGCAGACAATACAACCCGCTATTAC
 > 
 > --- Solution not found ---
+> 
+> solution status: timelimit
+> best bound: -1e+20
 > ```
 
 In [ ]:
@@ -324,6 +345,8 @@ bench(scsp.example.load("protein_n010k010.txt"))
 > str10: M-E------S---LVPG----F-----N---E--------------------------------------
 > 
 > solution is feasible: True
+> solution status: timelimit
+> best bound: 12.010309278350514
 > ```
 
 In [ ]:
@@ -385,4 +408,7 @@ bench(scsp.example.load("protein_n050k050.txt"))
 > str50: MANYSKPFLLDIVFNKDIKCINDSCSHSDCRYQSNSYVELRRNQALNKNL
 > 
 > --- Solution not found ---
+> 
+> solution status: timelimit
+> best bound: -1e+20
 > ```

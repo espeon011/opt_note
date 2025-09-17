@@ -3,15 +3,22 @@
 # dependencies = [
 #     "didppy==0.10.0",
 #     "highspy==1.11.0",
+#     "hexaly>=14.0.20250915",
 #     "nbformat==5.10.4",
 #     "ortools==9.14.6206",
 #     "pyscipopt==5.6.0",
 # ]
+# [[tool.uv.index]]
+# name ="hexaly"
+# url = "https://pip.hexaly.com"
+# explict = true
+# [tool.uv.sources]
+# hexaly = { index = "hexaly" }
 # ///
 
 import marimo
 
-__generated_with = "0.15.3"
+__generated_with = "0.15.5"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -33,13 +40,21 @@ def _(mo):
 
 @app.function
 def bench(instance: list[str]) -> None:
-    solution = scsp.model.linear_highs.solve(instance)
+    model = scsp.model.linear_highs.Model(instance).solve()
+    solution = model.to_solution()
+    print()
     scsp.util.show(instance)
     if solution is not None:
         scsp.util.show(instance, solution)
         print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")
     else:
-        print("--- Solution not found ---")
+        print("--- Solution not found ---\n")
+
+    info = model.highs.getInfo()
+    primal_status = model.highs.solutionStatusToString(info.primal_solution_status)
+    dual_status = model.highs.solutionStatusToString(info.dual_solution_status)
+    print(f"primal solution status: {primal_status}")
+    print(f"best bound: {info.mip_dual_bound}")
 
 
 @app.cell

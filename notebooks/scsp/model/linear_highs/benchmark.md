@@ -14,13 +14,21 @@ import nbformat
 In [ ]:
 ```python
 def bench(instance: list[str]) -> None:
-    solution = scsp.model.linear_highs.solve(instance)
+    model = scsp.model.linear_highs.Model(instance).solve()
+    solution = model.to_solution()
+    print()
     scsp.util.show(instance)
     if solution is not None:
         scsp.util.show(instance, solution)
         print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")
     else:
-        print("--- Solution not found ---")
+        print("--- Solution not found ---\n")
+
+    info = model.highs.getInfo()
+    primal_status = model.highs.solutionStatusToString(info.primal_solution_status)
+    dual_status = model.highs.solutionStatusToString(info.dual_solution_status)
+    print(f"primal solution status: {primal_status}")
+    print(f"best bound: {info.mip_dual_bound}")
 ```
 
 In [ ]:
@@ -30,6 +38,7 @@ bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 25 chars) ---
 > str1: tkgnkuhmpxnhtqgxzvxis
 > str2: iojiqfolnbxxcvsuqpvissbxf
@@ -44,6 +53,8 @@ bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 > str4: ----------------------i--------------g--------e-v--a---z---gb-rddbcsvrvnngf
 > 
 > solution is feasible: True
+> primal solution status: Feasible
+> best bound: 25.0
 > ```
 
 In [ ]:
@@ -53,6 +64,7 @@ bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 26 chars) ---
 > str1: tkgnkuhmpxnhtqgxzvxis
 > str2: iojiqfolnbxxcvsuqpvissbxf
@@ -75,6 +87,8 @@ bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 > str8: --------------------rxw--------xqkrdrlctodtmprpxw-----------------------d---------------------------------------------------------------------------
 > 
 > solution is feasible: True
+> primal solution status: Feasible
+> best bound: 25.0
 > ```
 
 In [ ]:
@@ -84,6 +98,7 @@ bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 26 chars) ---
 > str01: tkgnkuhmpxnhtqgxzvxis
 > str02: iojiqfolnbxxcvsuqpvissbxf
@@ -103,6 +118,9 @@ bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 > str16: xusfcfzpeecvwantfmgqzu
 > 
 > --- Solution not found ---
+> 
+> primal solution status: None
+> best bound: 25.0
 > ```
 
 In [ ]:
@@ -112,6 +130,7 @@ bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 5 chars) ---
 > str01: dcbccdbcce
 > str02: bddbeeeebd
@@ -138,6 +157,8 @@ bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 > str10: --b--d--a-b-------d--be-a------a---d----------------
 > 
 > solution is feasible: True
+> primal solution status: Feasible
+> best bound: 11.0
 > ```
 
 In [ ]:
@@ -147,6 +168,7 @@ bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 5 chars) ---
 > str01: dcbccdbcce
 > str02: bddbeeeebd
@@ -200,6 +222,9 @@ bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 > str50: dbdabcecbb
 > 
 > --- Solution not found ---
+> 
+> primal solution status: None
+> best bound: 10.0
 > ```
 
 In [ ]:
@@ -209,6 +234,7 @@ bench(scsp.example.load("nucleotide_n010k010.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 4 chars) ---
 > str01: ATGGGATACG
 > str02: ATACCTTCCC
@@ -235,6 +261,8 @@ bench(scsp.example.load("nucleotide_n010k010.txt"))
 > str10: -T------C--T----A---AAC--G----AA
 > 
 > solution is feasible: True
+> primal solution status: Feasible
+> best bound: 11.0
 > ```
 
 In [ ]:
@@ -244,6 +272,7 @@ bench(scsp.example.load("nucleotide_n050k050.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 5 chars) ---
 > str01: TAGTAGTAGACTCCGGAAGTGACAAACCCTGAAAAGAATGGATAAATATA
 > str02: GGATAAACACTCCCGAAAATAATTTGACTTAAACAACGCGACAGTTCAAG
@@ -297,6 +326,9 @@ bench(scsp.example.load("nucleotide_n050k050.txt"))
 > str50: ATGAGCACTAAGCGAAGAACCAAAAAGCAGACAATACAACCCGCTATTAC
 > 
 > --- Solution not found ---
+> 
+> primal solution status: None
+> best bound: -inf
 > ```
 
 In [ ]:
@@ -306,6 +338,7 @@ bench(scsp.example.load("protein_n010k010.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 19 chars) ---
 > str01: MALSYCPKGT
 > str02: MQSSLNAIPV
@@ -332,6 +365,8 @@ bench(scsp.example.load("protein_n010k010.txt"))
 > str10: M-----------------E-------------S-----------LVPGFNE---------------
 > 
 > solution is feasible: True
+> primal solution status: Feasible
+> best bound: 11.0
 > ```
 
 In [ ]:
@@ -341,6 +376,7 @@ bench(scsp.example.load("protein_n050k050.txt"))
 
 > ```
 > Running HiGHS 1.11.0 (git hash: 364c83a): Copyright (c) 2025 HiGHS under MIT licence terms
+> 
 > --- Condition (with 20 chars) ---
 > str01: MRHLNIDIETYSSNDIKNGVYKYADAEDFEILLFAYSIDGGEVECLDLTR
 > str02: MERRAHRTHQNWDATKPRERRKQTQHRLTHPDDSIYPRIEKAEGRKEDHG
@@ -394,4 +430,7 @@ bench(scsp.example.load("protein_n050k050.txt"))
 > str50: MANYSKPFLLDIVFNKDIKCINDSCSHSDCRYQSNSYVELRRNQALNKNL
 > 
 > --- Solution not found ---
+> 
+> primal solution status: None
+> best bound: -inf
 > ```
