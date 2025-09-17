@@ -22,6 +22,7 @@ with app.setup:
 def _():
     import marimo as mo
     import nbformat
+
     return (mo,)
 
 
@@ -42,7 +43,7 @@ def bench(instance: list[str]) -> None:
     else:
         print("--- Solution not found ---\n")
 
-    print(f"solution status: {model.solution.is_optimal}")
+    print(f"solution is optimal: {model.solution.is_optimal}")
     print(f"bset bound: {model.solution.best_bound}")
 
 

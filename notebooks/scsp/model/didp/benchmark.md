@@ -23,7 +23,7 @@ def bench(instance: list[str]) -> None:
     else:
         print("--- Solution not found ---\n")
 
-    print(f"solution status: {model.solution.is_optimal}")
+    print(f"solution is optimal: {model.solution.is_optimal}")
     print(f"bset bound: {model.solution.best_bound}")
 ```
 
@@ -47,7 +47,7 @@ bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 > str4: ----i-g--------e--v-az--------gb-r-ddbcsvrvnn-----g----------f
 > 
 > solution is feasible: True
-> solution status: True
+> solution is optimal: True
 > bset bound: 62
 > ```
 
@@ -79,7 +79,7 @@ bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 > str8: --------------r---x-wxqkrdr---l-c--------t----------------o---dtm-------------p-------r-p---x--w--d
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 56
 > ```
 
@@ -127,7 +127,7 @@ bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 > str16: --------x----u---s-------f--------c-f----z----------p-e--------ec---v--------wa-----n-t-f----------mg----------q-----z------------------------u------
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 49
 > ```
 
@@ -163,7 +163,7 @@ bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 > str10: b---d---a------bdb-ea----ad
 > 
 > solution is feasible: True
-> solution status: True
+> solution is optimal: True
 > bset bound: 27
 > ```
 
@@ -279,7 +279,7 @@ bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 > str50: d--b-d-ab-c----e--cb---b----------
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 24
 > ```
 
@@ -315,7 +315,7 @@ bench(scsp.example.load("nucleotide_n010k010.txt"))
 > str10: T-CT--A----AA-C-GA----A-
 > 
 > solution is feasible: True
-> solution status: True
+> solution is optimal: True
 > bset bound: 24
 > ```
 
@@ -431,7 +431,7 @@ bench(scsp.example.load("nucleotide_n050k050.txt"))
 > str50: ATGA--G------C--ACTA--A-GC-----G-A----A-G-A---AC--CA--A---A----AA-GC-A-G--AC--A--A---T--A---CA--AC--C-CG--C--T--A--T----T--AC--------
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 84
 > ```
 
@@ -467,7 +467,7 @@ bench(scsp.example.load("protein_n010k010.txt"))
 > str10: M------E-SL--------V--------PG-FNE----------
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 29
 > ```
 
@@ -583,6 +583,6 @@ bench(scsp.example.load("protein_n050k050.txt"))
 > str50: M--------A---------N---------Y-------S--K--------------P-F-----L--------L------D-----------I-------------V----------------F--------N---K---D-I---------K----------C--I-----------N--------D------------S-----C----S----------H-S--------D---------C-------------------R----------------Y---Q---------S-----N-----------------------S--------Y----------V---------------------E----------------L---------R---------------R----------N-----------------------Q----A------------LN--K--------------------------NL---------
 > 
 > solution is feasible: True
-> solution status: False
+> solution is optimal: False
 > bset bound: 93
 > ```
