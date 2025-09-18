@@ -18,7 +18,7 @@
 
 import marimo
 
-__generated_with = "0.15.3"
+__generated_with = "0.15.5"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -50,7 +50,7 @@ def _(mo):
     これは `Alphabet` アルゴリズムにおいてアルファベットを並べる順序が固定されているからであり, アルファベットの並びをブロックごとに可変にしたら改善するんじゃないかと考えた. 
 
     ただしアルファベットの並びを可変にすれば最適解を実行可能領域に含むようになるかは証明していない. 
-    従って改良モデルにおける dual bound は (あくまで最初に用意した大きな配列の部分配列の中での dual bound なため) 実際には最適解より大きくなってしまう可能性がある. 
+    従って改良モデルにおける dual bound は (あくまで最初に用意した大きな配列の部分配列の中での dual bound なため) 実際には最適解より大きくなってしまう可能性がある.
     """
     )
     return
@@ -64,28 +64,32 @@ class Model:
 
         cpmodel = cp_model.CpModel()
 
-        cvars = [
-            cpmodel.new_int_var(lb=0, ub=len(chars) - 1, name="") for _ in range(max_len)
-        ]
+        if perm:
+            cvars = [
+                cpmodel.new_int_var(lb=0, ub=len(chars) - 1, name="") for _ in range(max_len)
+            ]
+        else:
+            cvars = [
+                cpmodel.new_constant(idx % len(chars)) for idx in range(max_len)
+            ]
+
         valids = [cpmodel.new_bool_var("") for _ in cvars]
         transition_expressions = [
             cpmodel.new_int_var(lb=0, ub=len(chars), name="") for _ in range(max_len)
         ]
 
         # 初期解としてアルファベットアルゴリズムを設定
+        if perm:
+            for idx, cvar in enumerate(cvars):
+                cpmodel.add_hint(cvar, idx % len(chars))
         for valid in valids:
             cpmodel.add_hint(valid, 1)
-        for idx, cvar in enumerate(cvars):
-            cpmodel.add_hint(cvar, idx % len(chars))
-        for texp in transition_expressions:
+        for idx, texp in enumerate(transition_expressions):
             cpmodel.add_hint(texp, idx % len(chars) + 1)
 
         if perm:
             for t in range(max(len(s) for s in instance)):
                 cpmodel.add_all_different(cvars[t * len(chars) : (t + 1) * len(chars)])
-        else:
-            for idx, cvar in enumerate(cvars):
-                cpmodel.add(cvar == idx % len(chars))
 
         for cvar, valid, texp in zip(cvars, valids, transition_expressions):
             cpmodel.add(texp == 0).only_enforce_if(~valid)
@@ -178,7 +182,7 @@ def _(mo):
     mo.md(
         r"""
     最初に示した例で計算してみよう. 
-    `ba`, `cb` に対する最短共通超配列を `AUTOMATON_CPSAT` モデルで求めると最適解 (の 1 つ) は `cba` だとわかる. 
+    `ba`, `cb` に対する最短共通超配列を `AUTOMATON_CPSAT` モデルで求めると最適解 (の 1 つ) は `cba` だとわかる.
     """
     )
     return
@@ -192,7 +196,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""一方順番を固定した改良法だとこの最適解は出ない. """)
+    mo.md(r"""一方順番を固定した改良法だとこの最適解は出ない.""")
     return
 
 
@@ -204,7 +208,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""アルファベットの順番を可変にすると元の最適解が出るようになる. """)
+    mo.md(r"""アルファベットの順番を可変にすると元の最適解が出るようになる.""")
     return
 
 
@@ -294,7 +298,7 @@ def _(instance03):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""アルファベットの順番を可変にすると解が悪化した. """)
+    mo.md(r"""アルファベットの順番を可変にすると解が悪化した.""")
     return
 
 
@@ -420,7 +424,7 @@ def _(mo):
     例えば `protein_n050k050.txt` で 497 は `WMM_HEXALY` を 1 だけ上回っている. 
 
     一方で巨大なインスタンスでは presolve に時間がかかりすぎていて初期解をちょっと改善して終わりみたいになったりする. 
-    DNA 配列の長さ 100 を 100 個用意して計算してみると... 
+    DNA 配列の長さ 100 を 100 個用意して計算してみると...
     """
     )
     return
@@ -442,7 +446,7 @@ def _(instance_large1):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""presolve が終わらなかった... """)
+    mo.md(r"""presolve が終わらなかった...　""")
     return
 
 
