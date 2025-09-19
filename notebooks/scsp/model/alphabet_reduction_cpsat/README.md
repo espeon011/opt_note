@@ -19,7 +19,7 @@
 
 **決定変数**
 
-- $x^{(i)}_j \in mathbb{Z}$: 文字列 $s_i$ の $j$ 番目の文字 $c^{(i)}_j$ が解 $\mathrm{sol}$ において何番目に位置するか
+- $x^{(i)}_j \in \mathbb{Z}$: 文字列 $s_i$ の $j$ 番目の文字 $c^{(i)}_j$ が解 $\mathrm{sol}$ において何番目に位置するか
 - $u_l \in \lbrace 0, 1 \rbrace \ (l = 1, \dots, kq)$: $\mathrm{sol}$ の $l$ 番目の文字 $c_l$ が使われたか否か
 
 **制約条件**
