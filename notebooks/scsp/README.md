@@ -30,6 +30,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/wmm_hexaly_init))
 - `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([概要](./model/didp))
+- `ALPHABET_REDUCTION_CPSAT` アルファベットアルゴリズムで構築した解の部分配列の中を探索(CP-SAT) ([概要](./model/alphabet_reduction_cpsat))
 
 ## ベンチマーク
 
@@ -37,19 +38,21 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `ALPHABET`        | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
-| `MM`              | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
-| `WMM`             | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
-| `LA_SH`           | 70 | 132 | 170 | 31 | 38 | 28 | 144 | 51 | 497 |
-| `IBS_SCS`         | 73 | 119 | 163 | 28 | **34** 🥇 | **24** 🥇 | 135 | 49 | 876 |
-| `DESCENDING`      | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | 458 |
-| `LINEAR_SCIP`     | 70 | 175 | - | 45 | - | 42 | - | 70 | - |
-| `LINEAR_HIGHS`    | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
-| `LINEAR_CPSAT`    | 66 | 135 | 293 | 29 | 226 | **24** 🥇 | - | 51 | - |
-| `AUTOMATON_CPSAT` | 67 | 135 | 242 | 29 | 40 | 25 | - | 46 | - |
-| `WMM_HEXALY`      | **62** 🥇 | 102 | 156 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
-| `WMM_HEXALY_INIT` | 64 | 105 | 150 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | **454** 🥇 |
-| `DIDP`            | **62*** 🥇 | **99** 🥇 | **149** 🥇 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 503 |
+| `DP`                       | **62*** 🥇 | - | - | - | - | - | - | - | - |
+| `ALPHABET`                 | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
+| `MM`                       | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
+| `WMM`                      | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
+| `LA_SH`                    | 70 | 132 | 170 | 31 | 38 | 28 | 144 | 51 | 497 |
+| `IBS_SCS`                  | 73 | 119 | 163 | 28 | **34** 🥇 | **24** 🥇 | 135 | 49 | 876 |
+| `DESCENDING`               | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | 458 |
+| `LINEAR_SCIP`              | 70 | 175 | - | 45 | - | 42 | - | 70 | - |
+| `LINEAR_HIGHS`             | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
+| `LINEAR_CPSAT`             | 66 | 135 | 293 | 29 | 226 | **24** 🥇 | - | 51 | - |
+| `AUTOMATON_CPSAT`          | 67 | 135 | 242 | 29 | 40 | 25 | - | 46 | - |
+| `WMM_HEXALY`               | **62** 🥇 | 102 | 156 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
+| `WMM_HEXALY_INIT`          | 64 | 105 | 150 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | 454 |
+| `DIDP`                     | **62*** 🥇 | **99** 🥇 | 149 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 503 |
+| `ALPHABET_REDUCTION_CPSAT` | **62** 🥇 | 103 | **146** 🥇 | 29 | **34** 🥇 | **24** 🥇 | 136 | 46 | **447** 🥇 |
 | | | | | | | | | | |
 
 - Hexaly を使ったものはライセンスされた別の PC で実行. 
@@ -57,8 +60,6 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - パラメータを持つアルゴリズムについては下記の設定で実行
   - `IBS_SCS` $\beta = 100$, $\kappa = 7$. 
   - `LA_SH` $m = 3$, $l = 1$.
-- 下記モデルは性能の問題により表から除外.
-  - `DP`
 - TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
 
 ## 解法の分類
@@ -66,21 +67,22 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
+- 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION_CPSAT`
 - その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
 - 貪欲 ... `ALPHABET`, `MM`, `WMM`, `LA_SH`, `DESCENDING`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
+- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `ALPHABET_REDUCTION_CPSAT`
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`
 
-| 探索法\解の構築法 | 前から1文字ずつ取ってくる | その他 |
-| --- | --- | --- |
-| 貪欲 | `MM`, `WMM`, `LA_SH` | `ALPHABET`, `DESCENDING` |
-| ビームサーチ | `IBS_SCS`, `DIDP` | |
-| 全探索 | `DP`, `DIDP` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
-| アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | |
+| 探索法\解の構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
+| --- | --- | --- | --- |
+| 貪欲 | `MM`, `WMM`, `LA_SH` | | `ALPHABET`, `DESCENDING` |
+| ビームサーチ | `IBS_SCS`, `DIDP` | | |
+| 全探索 | `DP`, `DIDP` | `ALPHABET_REDUCTION_CPSAT` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
+| アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | | |
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.

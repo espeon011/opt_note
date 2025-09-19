@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>opt_note.scsp.model.descending API documentation</title>
-<meta name="description" content="長い方から 2 つの SCS を順次求めていく方法 …">
+<title>opt_note.scsp.model.alphabet_reduction_cpsat API documentation</title>
+<meta name="description" content="アルファベットアルゴリズムで作成したものを削り出す …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -35,106 +35,174 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>opt_note.scsp.model.descending</code></h1>
+<h1 class="title">Module <code>opt_note.scsp.model.alphabet_reduction_cpsat</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="2-scs">長い方から 2 つの SCS を順次求めていく方法</h1>
+<h1 id="_1">アルファベットアルゴリズムで作成したものを削り出す</h1>
 <ul>
-<li>計算量: $O(nk^2)$</li>
-<li>近似精度: ?</li>
+<li>計算量: ?</li>
+<li>近似精度: $q$</li>
 </ul>
-<p>2 つの文字列の shortest common supersequence は動的計画法で計算することができる.
-ここでは与えられた文字列を長さが長い順にソートし,
-最初の 2 つを shortest common supersequence で置き換える操作を文字列が 1 つになるまで繰り返す.</p>
-<p>文字列の集合 $S = \lbrace s_1, s_2, \dots, s_n \rbrace$ はソート済みで $|s_1| \geq |s_2| \geq \dots \geq |s_n|$ を満たしているとする.</p>
+<p>アルファベットアルゴリズムで求めた解を $\mathrm{sol} = c_1 c_2 \dots, c_{kq}$ とする.
+この解の部分配列のなかで問題インスタンスの文字列全ての共通超配列であるものの中で最短のものを求める. </p>
+<p>ただしアルファベットアルゴリズムで求めた解の部分列には本当の最短共通超配列は存在しない場合がある.
+たとえば <code>ba</code>, <code>cb</code> の最短共通超配列は <code>cba</code> だが,
+アルファベットアルゴリズムで構築した解 <code>abcabc</code> の部分配列の中で最短な共通超配列は例えば <code>bcab</code> である. </p>
+<p><strong>表記</strong></p>
 <ul>
-<li>$n_0 = n$ とする.</li>
-<li>$l$ ステップ目において文字列集合が $\lbrace s_1, s_2, \dots, s_{n_l} \rbrace$ であるとする.</li>
-<li>$s_1$ と $s_2$ の shortest common supersequence を求め, $s_1$ をそれで置き換える.
-$s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $\lbrace s_1, s_2, \dots, s_{n_l - 1}\rbrace$ とする.</li>
-<li>文字列集合が 1 元集合 $\lbrace s_1 \rbrace$ になったら終了.</li>
+<li>$\Sigma = \lbrace \sigma_1, \dots, \sigma_q \rbrace$: 文字集合</li>
+<li>$S = \lbrace s_1, \dots, s_n \rbrace$: 問題インスタンス</li>
+<li>$s_i = c^{(i)}<em _s_i_="|s_i|">0 \dots c^{(i)}</em>$: 各文字列</li>
+<li>$k = \max_{i=1, \dots, n} |s_i|$: 文字列長の最大値</li>
 </ul>
-<p>この方法が common supersequence を与えるのは $s'$ が $s$ の supersequence であるという 2 項関係 $s \preceq s'$ が推移的 (さらにいえば半順序) であることからいえる.
-一方でこの順序関係によって順序集合となった文字配列全体の集合には圏論的な余積 (最小上界) は存在しない.
-したがって 2 つずつ shortest common supersequence を取るこの方法では基本的には最適解は得られない.</p>
+<p><strong>決定変数</strong></p>
+<ul>
+<li>$x^{(i)}_j \in mathbb{Z}$: 文字列 $s_i$ の $j$ 番目の文字 $c^{(i)}_j$ が解 $\mathrm{sol}$ において何番目に位置するか</li>
+<li>$u_l \in \lbrace 0, 1 \rbrace \ (l = 1, \dots, kq)$: $\mathrm{sol}$ の $l$ 番目の文字 $c_l$ が使われたか否か</li>
+</ul>
+<p><strong>制約条件</strong></p>
+<ul>
+<li>$x^{(i)}<em 1 _="+" j>{j} &lt; x^{(i)}</em> \ (j = 1, \dots, |s_i| - 1)$</li>
+<li>$u_{x^{(i)}_{j}} = 1$</li>
+</ul>
+<p><strong>目的関数</strong></p>
+<ul>
+<li>minimize $\sum_{l = 1}^{kq} u_l$</li>
+</ul>
 </section>
 <section>
 </section>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="opt_note.scsp.model.descending.scs2"><code class="name flex">
-<span>def <span class="ident">scs2</span></span>(<span>s1: str, s2: str) ‑> str</span>
+<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str])</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def scs2(s1: str, s2: str) -&gt; str:
-    &#34;&#34;&#34;
-    2 つの文字列の shortest common supersequence の 1 つを返す.
+<pre><code class="python">class Model:
+    def __init__(self, instance: list[str]):
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
+        max_len = len(chars) * max(len(s) for s in instance)
 
-    Args:
-        s1(str): 文字列 1
-        s2(str): 文字列 2
-    &#34;&#34;&#34;
+        cpmodel = cp_model.CpModel()
 
-    len1, len2 = len(s1), len(s2)
+        valids = [cpmodel.new_bool_var(&#34;&#34;) for _ in range(max_len)]
+        cvars = [
+            [cpmodel.new_int_var(0, max(len(s) for s in instance) - 1, &#34;&#34;) for c in s]
+            for s in instance
+        ]
 
-    dp = [[&#34;&#34; for _ in range(len2 + 1)] for _ in range(len1 + 1)]
+        for sidx, s in enumerate(instance):
+            for cidx, c in enumerate(s):
+                if cidx == 0:
+                    continue
+                cpmodel.add(
+                    len(chars) * cvars[sidx][cidx - 1] + chars.index(s[cidx - 1])
+                    &lt; len(chars) * cvars[sidx][cidx] + chars.index(s[cidx])
+                )
 
-    for idx1 in range(len1 + 1):
-        for idx2 in range(len2 + 1):
-            if idx1 == 0:
-                dp[idx1][idx2] = s2[:idx2]
-            elif idx2 == 0:
-                dp[idx1][idx2] = s1[:idx1]
-            elif s1[idx1 - 1] == s2[idx2 - 1]:
-                dp[idx1][idx2] = dp[idx1 - 1][idx2 - 1] + s1[idx1 - 1]
-            else:
-                if len(dp[idx1 - 1][idx2]) &lt;= len(dp[idx1][idx2 - 2]):
-                    dp[idx1][idx2] = dp[idx1 - 1][idx2] + s1[idx1 - 1]
-                else:
-                    dp[idx1][idx2] = dp[idx1][idx2 - 1] + s2[idx2 - 1]
+        for sidx, s in enumerate(instance):
+            for cidx, c in enumerate(s):
+                cpmodel.add_element(
+                    len(chars) * cvars[sidx][cidx] + chars.index(c),
+                    valids,
+                    1,
+                )
 
-    return dp[-1][-1]</code></pre>
+        cpmodel.minimize(sum(valids))
+
+        self.instance = instance
+        self.chars = chars
+        self.cpmodel = cpmodel
+        self.cpsolver = cp_model.CpSolver()
+        self.valids = valids
+        self.status: cp_model.cp_model_pb2.CpSolverStatus | None = None
+
+    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+        self.cpsolver.parameters.log_search_progress = log
+        if time_limit is not None:
+            self.cpsolver.parameters.max_time_in_seconds = time_limit
+        self.status = self.cpsolver.solve(self.cpmodel)
+
+        return self
+
+    def to_solution(self) -&gt; str | None:
+        if self.status not in {
+            cp_model.cp_model_pb2.OPTIMAL,
+            cp_model.cp_model_pb2.FEASIBLE,
+        }:
+            return None
+
+        solution = &#34;&#34;
+        for idx, valid in enumerate(self.valids):
+            if self.cpsolver.boolean_value(valid):
+                solution += self.chars[idx % len(self.chars)]
+
+        return solution</code></pre>
 </details>
-<div class="desc"><p>2 つの文字列の shortest common supersequence の 1 つを返す.</p>
-<h2 id="args">Args</h2>
-<p>s1(str): 文字列 1
-s2(str): 文字列 2</p></div>
-</dd>
-<dt id="opt_note.scsp.model.descending.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str]) ‑> str</span>
+<div class="desc"></div>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model">Model</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(instance: list[str]) -&gt; str:
-    instance_sorted = sorted(instance, key=lambda s: len(s), reverse=True)
+<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+    self.cpsolver.parameters.log_search_progress = log
+    if time_limit is not None:
+        self.cpsolver.parameters.max_time_in_seconds = time_limit
+    self.status = self.cpsolver.solve(self.cpmodel)
 
-    solution = instance_sorted[0]
-    for s in instance_sorted[1:]:
-        solution = scs2(solution, s)
+    return self</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution"><code class="name flex">
+<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_solution(self) -&gt; str | None:
+    if self.status not in {
+        cp_model.cp_model_pb2.OPTIMAL,
+        cp_model.cp_model_pb2.FEASIBLE,
+    }:
+        return None
+
+    solution = &#34;&#34;
+    for idx, valid in enumerate(self.valids):
+        if self.cpsolver.boolean_value(valid):
+            solution += self.chars[idx % len(self.chars)]
 
     return solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
 <div class="toc">
 <ul>
-<li><a href="#2-scs">長い方から 2 つの SCS を順次求めていく方法</a></li>
+<li><a href="#_1">アルファベットアルゴリズムで作成したものを削り出す</a></li>
 </ul>
 </div>
 <ul id="index">
@@ -143,10 +211,15 @@ s2(str): 文字列 2</p></div>
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model">Model</a></code></h4>
 <ul class="">
-<li><code><a title="opt_note.scsp.model.descending.scs2" href="#opt_note.scsp.model.descending.scs2">scs2</a></code></li>
-<li><code><a title="opt_note.scsp.model.descending.solve" href="#opt_note.scsp.model.descending.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution">to_solution</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

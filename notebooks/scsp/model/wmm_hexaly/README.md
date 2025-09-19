@@ -42,7 +42,7 @@ class Model:
         # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
         # 初期重みが与えられなかった場合は文字種数とする.
         max_weight = (
-            max(2 * w for ws in initial_weights for w in ws)
+            max(max(w, len(s)) for s, ws in zip(instance, initial_weights) for w in ws)
             if initial_weights
             else len(chars)
         )
