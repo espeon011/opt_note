@@ -1,0 +1,34 @@
+# Deposition and Reduction アルゴリズム[^1]
+
+- 計算量: Deposition プロセス, Reduction プロセスに採用したアルゴリズムに依存. 
+- 近似精度: Deposition プロセスに採用したアルゴリズムに近似精度があればそれがこのアルゴリズムの近似精度となる. 
+
+Deposition and Reduction アルゴリズムでは Deposition プロセスでテンプレートを生成した後,
+Reduction プロセスでテンプレートの部分配列を求めることでより短い共通超配列を求める. 
+
+## Deposition プロセス
+
+Deposition プロセスでは何かしらのアルゴリズムで共通超配列を 1 つ以上与える. 
+
+元論文ではアルファベットアルゴリズムと Look-Ahead Sum-Height アルゴリズムの 2 つによって 2 つのテンプレートを作成していた. 
+しかしこれは近似精度をアルファベットアルゴリズムの $q$ で上から抑えるためであり,
+実質的には Deposition プロセスに採用するアルゴリズムを変更して 2 回実行していたにすぎない. 
+この実装では Deposition プロセスに採用できるアルゴリズムは 1 つであるとし,
+デフォルトは $(3, 1)$-LA-SH とする. 
+
+## Reduction プロセス
+
+Reduction プロセスでは Deposition プロセスで作成した共通超配列を以下のように削減する. 
+
+- $\mathrm{sol}$ を Deposition プロセスで作成した解, $m$ をその長さとする. 
+- $i = 1, \dots, m$ に対して下記を調べる. 
+  - 解を $\mathrm{sol}_l = \mathrm{sol}[0 .. i]$, $\mathrm{sol}_r = \mathrm{sol}[i .. m]$ の 2 つに分割する. 
+  - インスタンス内の各文字列 $s \in S$ に対して $s[j_s .. |s|]$ が $\mathrm{sol}_r$ の部分配列となる最小の $j_s$ を求める. 
+  - Reduction プロセスに採用したアルゴリズムで $\lbrace s_1[j_1 .. |s_1|], \dots, s_n[j_n .. |s_n|] \rbrace$ に対する共通超配列 $\mathrm{sol}_l'$ を求め,
+    $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもので置き換える. 
+- 上記を更新が無くなるまで繰り返す. 
+
+この実装ではタイムリミットが設定できるようにし,
+タイムリミットを超えている場合は更新があった場合でも Reduction プロセスを終了する. 
+
+[^1]: Ning, K., Leong, H.W. Towards a better solution to the shortest common supersequence problem: the deposition and reduction algorithm. BMC Bioinformatics 7 (Suppl 4), S12 (2006). https://doi.org/10.1186/1471-2105-7-S4-S12

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>opt_note.scsp.model API documentation</title>
-<meta name="description" content="SCSP を解くアルゴリズム, ヒューリスティック, 数理最適化モデル.">
+<title>opt_note.scsp.model.dr API documentation</title>
+<meta name="description" content="Deposition and Reduction アルゴリズム[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -35,120 +35,151 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>opt_note.scsp.model</code></h1>
+<h1 class="title">Module <code>opt_note.scsp.model.dr</code></h1>
 </header>
 <section id="section-intro">
-<p>SCSP を解くアルゴリズム, ヒューリスティック, 数理最適化モデル.</p>
+<h1 id="deposition-and-reduction">Deposition and Reduction アルゴリズム<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
+<ul>
+<li>計算量: Deposition プロセス, Reduction プロセスに採用したアルゴリズムに依存. </li>
+<li>近似精度: Deposition プロセスに採用したアルゴリズムに近似精度があればそれがこのアルゴリズムの近似精度となる. </li>
+</ul>
+<p>Deposition and Reduction アルゴリズムでは Deposition プロセスでテンプレートを生成した後,
+Reduction プロセスでテンプレートの部分配列を求めることでより短い共通超配列を求める. </p>
+<h2 id="deposition">Deposition プロセス</h2>
+<p>Deposition プロセスでは何かしらのアルゴリズムで共通超配列を 1 つ以上与える. </p>
+<p>元論文ではアルファベットアルゴリズムと Look-Ahead Sum-Height アルゴリズムの 2 つによって 2 つのテンプレートを作成していた.
+しかしこれは近似精度をアルファベットアルゴリズムの $q$ で上から抑えるためであり,
+実質的には Deposition プロセスに採用するアルゴリズムを変更して 2 回実行していたにすぎない.
+この実装では Deposition プロセスに採用できるアルゴリズムは 1 つであるとし,
+デフォルトは $(3, 1)$-LA-SH とする. </p>
+<h2 id="reduction">Reduction プロセス</h2>
+<p>Reduction プロセスでは Deposition プロセスで作成した共通超配列を以下のように削減する. </p>
+<ul>
+<li>$\mathrm{sol}$ を Deposition プロセスで作成した解, $m$ をその長さとする. </li>
+<li>$i = 1, \dots, m$ に対して下記を調べる. </li>
+<li>解を $\mathrm{sol}_l = \mathrm{sol}[0 .. i]$, $\mathrm{sol}_r = \mathrm{sol}[i .. m]$ の 2 つに分割する. </li>
+<li>インスタンス内の各文字列 $s \in S$ に対して $s[j_s .. |s|]$ が $\mathrm{sol}_r$ の部分配列となる最小の $j_s$ を求める. </li>
+<li>Reduction プロセスに採用したアルゴリズムで $\lbrace s_1[j_1 .. |s_1|], \dots, s_n[j_n .. |s_n|] \rbrace$ に対する共通超配列 $\mathrm{sol}_l'$ を求め,
+$\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもので置き換える. </li>
+<li>上記を更新が無くなるまで繰り返す. </li>
+</ul>
+<p>この実装ではタイムリミットが設定できるようにし,
+タイムリミットを超えている場合は更新があった場合でも Reduction プロセスを終了する. </p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Ning, K., Leong, H.W. Towards a better solution to the shortest common supersequence problem: the deposition and reduction algorithm. BMC Bioinformatics 7 (Suppl 4), S12 (2006). <a href="https://doi.org/10.1186/1471-2105-7-S4-S12">https://doi.org/10.1186/1471-2105-7-S4-S12</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="opt_note.scsp.model.alphabet" href="alphabet/index.html">opt_note.scsp.model.alphabet</a></code></dt>
+<dt id="opt_note.scsp.model.dr.longest_suffix_index"><code class="name flex">
+<span>def <span class="ident">longest_suffix_index</span></span>(<span>s1: str, s2: str) ‑> int</span>
+</code></dt>
 <dd>
-<div class="desc"><p>アルファベットアルゴリズム[^1] …</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def longest_suffix_index(s1: str, s2: str) -&gt; int:
+    &#34;&#34;&#34;
+    `s1[idx:]` が `s2` の部分配列となるもののうち最小の idx を返す.
+    (つまり `s1[idx]` が最長となるようにする. )
+    &#34;&#34;&#34;
+
+    next = len(s1) - 1
+    for c in reversed(s2):
+        if next == -1:
+            break
+        if s1[next] == c:
+            next -= 1
+
+    return next + 1</code></pre>
+</details>
+<div class="desc"><p><code>s1[idx:]</code> が <code>s2</code> の部分配列となるもののうち最小の idx を返す.
+(つまり <code>s1[idx]</code> が最長となるようにする. )</p></div>
 </dd>
-<dt><code class="name"><a title="opt_note.scsp.model.alphabet_reduction_cpsat" href="alphabet_reduction_cpsat/index.html">opt_note.scsp.model.alphabet_reduction_cpsat</a></code></dt>
+<dt id="opt_note.scsp.model.dr.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>instance: list[str],<br>time_limit: int | None = 60,<br>deposition: Callable[[list[str]], str | None] = &lt;function solve&gt;,<br>reduction: Callable[[list[str]], str | None] = &lt;function solve&gt;) ‑> str | None</span>
+</code></dt>
 <dd>
-<div class="desc"><p>アルファベットアルゴリズムで作成したものを削り出す …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.automaton_cpsat" href="automaton_cpsat/index.html">opt_note.scsp.model.automaton_cpsat</a></code></dt>
-<dd>
-<div class="desc"><p>オートマトン制約を用いた数理計画モデル …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.descending" href="descending/index.html">opt_note.scsp.model.descending</a></code></dt>
-<dd>
-<div class="desc"><p>長い方から 2 つの SCS を順次求めていく方法 …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.didp" href="didp/index.html">opt_note.scsp.model.didp</a></code></dt>
-<dd>
-<div class="desc"><p>DIDP を用いたモデル …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.didp_scs3" href="didp_scs3/index.html">opt_note.scsp.model.didp_scs3</a></code></dt>
-<dd>
-<div class="desc"><p>DIDP with other bounds …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.dp" href="dp/index.html">opt_note.scsp.model.dp</a></code></dt>
-<dd>
-<div class="desc"><p>動的計画法[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.dr" href="dr/index.html">opt_note.scsp.model.dr</a></code></dt>
-<dd>
-<div class="desc"><p>Deposition and Reduction アルゴリズム[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.ibs_scs" href="ibs_scs/index.html">opt_note.scsp.model.ibs_scs</a></code></dt>
-<dd>
-<div class="desc"><p><code>IBS_SCS</code> アルゴリズム[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.la_sh" href="la_sh/index.html">opt_note.scsp.model.la_sh</a></code></dt>
-<dd>
-<div class="desc"><p>Look-Ahead Sum-Height アルゴリズム[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.linear_cpsat" href="linear_cpsat/index.html">opt_note.scsp.model.linear_cpsat</a></code></dt>
-<dd>
-<div class="desc"><p>MILP 定式化 (CP-SAT) …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.linear_highs" href="linear_highs/index.html">opt_note.scsp.model.linear_highs</a></code></dt>
-<dd>
-<div class="desc"><p>MILP 定式化 (HiGHS) …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.linear_scip" href="linear_scip/index.html">opt_note.scsp.model.linear_scip</a></code></dt>
-<dd>
-<div class="desc"><p>MILP 定式化 (SCIP) …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.mm" href="mm/index.html">opt_note.scsp.model.mm</a></code></dt>
-<dd>
-<div class="desc"><p>Majority Merge アルゴリズム[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.wmm" href="wmm/index.html">opt_note.scsp.model.wmm</a></code></dt>
-<dd>
-<div class="desc"><p>Weighted Majority Merge アルゴリズム[^1] …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.wmm_hexaly" href="wmm_hexaly/index.html">opt_note.scsp.model.wmm_hexaly</a></code></dt>
-<dd>
-<div class="desc"><p>Weighted Majority Merge をパラメータ化し, Hexaly で探索 …</p></div>
-</dd>
-<dt><code class="name"><a title="opt_note.scsp.model.wmm_hexaly_init" href="wmm_hexaly_init/index.html">opt_note.scsp.model.wmm_hexaly_init</a></code></dt>
-<dd>
-<div class="desc"><p>WMM + Hexaly モデルに初期重みを追加 …</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(
+    instance: list[str],
+    time_limit: int | None = 60,
+    deposition: Callable[[list[str]], str | None] = la_sh.solve,
+    reduction: Callable[[list[str]], str | None] = la_sh.solve,
+) -&gt; str | None:
+    start = datetime.datetime.now()
+    if time_limit is not None:
+        limit = start + datetime.timedelta(seconds=time_limit)
+    else:
+        limit = None
+
+    template = deposition(instance)
+    if template is None:
+        return None
+
+    solution = template
+
+    update = True
+    while update:
+        update = False
+        for i in range(len(solution)):
+            now = datetime.datetime.now()
+            if limit is not None and now &gt;= limit:
+                break
+            right = solution[i + 1 :]
+            left = reduction([s[: longest_suffix_index(s, right)] for s in instance])
+            if left is None:
+                break
+            if len(left) &lt; i + 1:
+                update = True
+                solution = left + right
+                break
+        if not update:
+            break
+
+    return solution</code></pre>
+</details>
+<div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
 </article>
 <nav id="sidebar">
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#deposition-and-reduction">Deposition and Reduction アルゴリズム</a><ul>
+<li><a href="#deposition">Deposition プロセス</a></li>
+<li><a href="#reduction">Reduction プロセス</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="opt_note.scsp" href="../index.html">opt_note.scsp</a></code></li>
+<li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="opt_note.scsp.model.alphabet" href="alphabet/index.html">opt_note.scsp.model.alphabet</a></code></li>
-<li><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat" href="alphabet_reduction_cpsat/index.html">opt_note.scsp.model.alphabet_reduction_cpsat</a></code></li>
-<li><code><a title="opt_note.scsp.model.automaton_cpsat" href="automaton_cpsat/index.html">opt_note.scsp.model.automaton_cpsat</a></code></li>
-<li><code><a title="opt_note.scsp.model.descending" href="descending/index.html">opt_note.scsp.model.descending</a></code></li>
-<li><code><a title="opt_note.scsp.model.didp" href="didp/index.html">opt_note.scsp.model.didp</a></code></li>
-<li><code><a title="opt_note.scsp.model.didp_scs3" href="didp_scs3/index.html">opt_note.scsp.model.didp_scs3</a></code></li>
-<li><code><a title="opt_note.scsp.model.dp" href="dp/index.html">opt_note.scsp.model.dp</a></code></li>
-<li><code><a title="opt_note.scsp.model.dr" href="dr/index.html">opt_note.scsp.model.dr</a></code></li>
-<li><code><a title="opt_note.scsp.model.ibs_scs" href="ibs_scs/index.html">opt_note.scsp.model.ibs_scs</a></code></li>
-<li><code><a title="opt_note.scsp.model.la_sh" href="la_sh/index.html">opt_note.scsp.model.la_sh</a></code></li>
-<li><code><a title="opt_note.scsp.model.linear_cpsat" href="linear_cpsat/index.html">opt_note.scsp.model.linear_cpsat</a></code></li>
-<li><code><a title="opt_note.scsp.model.linear_highs" href="linear_highs/index.html">opt_note.scsp.model.linear_highs</a></code></li>
-<li><code><a title="opt_note.scsp.model.linear_scip" href="linear_scip/index.html">opt_note.scsp.model.linear_scip</a></code></li>
-<li><code><a title="opt_note.scsp.model.mm" href="mm/index.html">opt_note.scsp.model.mm</a></code></li>
-<li><code><a title="opt_note.scsp.model.wmm" href="wmm/index.html">opt_note.scsp.model.wmm</a></code></li>
-<li><code><a title="opt_note.scsp.model.wmm_hexaly" href="wmm_hexaly/index.html">opt_note.scsp.model.wmm_hexaly</a></code></li>
-<li><code><a title="opt_note.scsp.model.wmm_hexaly_init" href="wmm_hexaly_init/index.html">opt_note.scsp.model.wmm_hexaly_init</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.dr.longest_suffix_index" href="#opt_note.scsp.model.dr.longest_suffix_index">longest_suffix_index</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.solve" href="#opt_note.scsp.model.dr.solve">solve</a></code></li>
 </ul>
 </li>
 </ul>

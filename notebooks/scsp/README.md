@@ -21,6 +21,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `MM` Majority Merge アルゴリズム[^1] ([概要](./model/mm))
 - `WMM` Weighted Majority Merge アルゴリズム[^4] ([概要](./model/wmm))
 - `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([概要](./model/la_sh))
+- `DR` Deposition and Reduction アルゴリズム[^9] ([概要](./model/dr))
 - `IBS_SCS` IBS_SCS アルゴリズム[^2] ([概要](./model/ibs_scs))
 - `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([概要](./model/descending))
 - `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([概要](./model/linear_scip))
@@ -38,21 +39,22 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `DP`                       | **62*** 🥇 | - | - | - | - | - | - | - | - |
-| `ALPHABET`                 | 79 | 155 | 256 | 45 | 50 | 39 | 201 | 71 | 782 |
-| `MM`                       | 74 | 148 | 198 | 32 | 36 | 27 | 150 | 62 | 536 |
-| `WMM`                      | 75 | 128 | 176 | 32 | 37 | 26 | 146 | 57 | 475 |
-| `LA_SH`                    | 70 | 132 | 170 | 31 | 38 | 28 | 144 | 51 | 497 |
-| `IBS_SCS`                  | 73 | 119 | 163 | 28 | **34** 🥇 | **24** 🥇 | 135 | 49 | 876 |
-| `DESCENDING`               | 64 | 108 | 157 | 37 | 71 | 35 | 185 | 53 | 458 |
-| `LINEAR_SCIP`              | 70 | 175 | - | 45 | - | 42 | - | 70 | - |
-| `LINEAR_HIGHS`             | 75 | 148 | - | 52 | - | 32 | - | 66 | - |
-| `LINEAR_CPSAT`             | 66 | 135 | 293 | 29 | 226 | **24** 🥇 | - | 51 | - |
-| `AUTOMATON_CPSAT`          | 67 | 135 | 242 | 29 | 40 | 25 | - | 46 | - |
-| `WMM_HEXALY`               | **62** 🥇 | 102 | 156 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 136 | **44** 🥇 | 498 |
-| `WMM_HEXALY_INIT`          | 64 | 105 | 150 | **27** 🥇 | **34** 🥇 | **24** 🥇 | 138 | 45 | 454 |
-| `DIDP`                     | **62*** 🥇 | **99** 🥇 | 149 | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 503 |
-| `ALPHABET_REDUCTION_CPSAT` | **62** 🥇 | 103 | **146** 🥇 | 29 | **34** 🥇 | **24** 🥇 | 136 | 46 | **447** 🥇 |
+| `DP`                       | **62*** 🥇 | -         | -          | -          | -         | -          | -          | -         | -          |
+| `ALPHABET`                 | 79         | 155       | 256        | 45         | 50        | 39         | 201        | 71        | 782        |
+| `MM`                       | 74         | 148       | 198        | 32         | 36        | 27         | 150        | 62        | 536        |
+| `WMM`                      | 75         | 128       | 176        | 32         | 37        | 26         | 146        | 57        | 475        |
+| `LA_SH`                    | 70         | 132       | 170        | 31         | 38        | 28         | 144        | 51        | 497        |
+| `DR`                       | 68         | 127       | 168        | 30         | 36        | 27         | 141        | 50        | 491        |
+| `IBS_SCS`                  | 73         | 119       | 163        | 28         | **34** 🥇 | **24** 🥇  | 135        | 49        | 876        |
+| `DESCENDING`               | 64         | 108       | 157        | 37         | 71        | 35         | 185        | 53        | 458        |
+| `LINEAR_SCIP`              | 70         | 175       | -          | 45         | -         | 42         | -          | 70        | -          |
+| `LINEAR_HIGHS`             | 75         | 148       | -          | 52         | -         | 32         | -          | 66        | -          |
+| `LINEAR_CPSAT`             | 66         | 135       | 293        | 29         | 226       | **24** 🥇  | -          | 51        | -          |
+| `AUTOMATON_CPSAT`          | 67         | 135       | 242        | 29         | 40        | 25         | -          | 46        | -          |
+| `WMM_HEXALY`               | **62** 🥇  | 102       | 156        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 136        | **44** 🥇 | 498        |
+| `WMM_HEXALY_INIT`          | 64         | 105       | 150        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 138        | 45        | 454        |
+| `DIDP`                     | **62*** 🥇 | **99** 🥇 | 149        | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 503        |
+| `ALPHABET_REDUCTION_CPSAT` | **62** 🥇  | 103       | **146** 🥇 | 29         | **34** 🥇 | **24** 🥇  | 136        | 46        | **447** 🥇 |
 | | | | | | | | | | |
 
 - Hexaly を使ったものはライセンスされた別の PC で実行. 
@@ -60,26 +62,26 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - パラメータを持つアルゴリズムについては下記の設定で実行
   - `IBS_SCS` $\beta = 100$, $\kappa = 7$. 
   - `LA_SH` $m = 3$, $l = 1$.
-- TODO: ベンチマーク用インスタンスを増やしてカテゴリ分けする. 
+  - `DR` Deposition プロセス, Reduction プロセスは両方とも $(3, 1)$-LA-SH を採用. 
 
 ## 解法の分類
 
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
-- 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION_CPSAT`
+- 大きい解から不要なものを削減 ... `DR`, `ALPHABET_REDUCTION_CPSAT`
 - その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
-- 貪欲 ... `ALPHABET`, `MM`, `WMM`, `LA_SH`, `DESCENDING`
+- 貪欲 ... `ALPHABET`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
 - 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `ALPHABET_REDUCTION_CPSAT`
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`
 
 | 探索法\解の構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
 | --- | --- | --- | --- |
-| 貪欲 | `MM`, `WMM`, `LA_SH` | | `ALPHABET`, `DESCENDING` |
+| 貪欲 | `MM`, `WMM`, `LA_SH` | `DR`| `ALPHABET`, `DESCENDING` |
 | ビームサーチ | `IBS_SCS`, `DIDP` | | |
 | 全探索 | `DP`, `DIDP` | `ALPHABET_REDUCTION_CPSAT` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
 | アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | | |
@@ -92,3 +94,4 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 [^6]: https://github.com/okaduki/opt100, 2025-09-09 アクセス. 
 [^7]: Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
 [^8]: https://zenn.dev/okaduki/articles/7f9a3f3c54bc98, 2025-09-09 アクセス. 
+[^9]: Ning, K., Leong, H.W. Towards a better solution to the shortest common supersequence problem: the deposition and reduction algorithm. BMC Bioinformatics 7 (Suppl 4), S12 (2006). https://doi.org/10.1186/1471-2105-7-S4-S12
