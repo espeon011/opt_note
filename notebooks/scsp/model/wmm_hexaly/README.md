@@ -130,9 +130,7 @@ class Model:
         return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]
 
     def objective(self, priorities1d: list[int]) -> int:
-        priorities2d = self.priorities_1d_to_2d(
-            [priorities1d[i] for i in range(len(priorities1d))]
-        )
+        priorities2d = self.priorities_1d_to_2d(priorities1d)
         solution = self.wmm(priorities2d)
         return len(solution)
 
