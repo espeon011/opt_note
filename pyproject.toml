@@ -14,7 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "marimo[docs,lsp]>=0.16.3",
+    "marimo[lsp]>=0.17.8",
     "pdoc3>=0.11.6",
     "taskipy>=1.14.1",
 ]
@@ -28,7 +28,7 @@ explicit = true
 hexaly = { index = "hexaly" }
 
 [build-system]
-requires = ["uv_build>=0.8.14,<0.9.0"]
+requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.marimo.runtime]
