@@ -9,7 +9,7 @@ dependencies = [
     "hexaly>=14.0.20250915",
     "highspy>=1.11.0",
     "ortools>=9.14.6206",
-    "pyscipopt>=5.6.0",
+    "pyscipopt>=5.7.1",
 ]
 
 [dependency-groups]
