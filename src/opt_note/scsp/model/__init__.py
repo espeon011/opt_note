@@ -19,7 +19,7 @@ from . import (
     didp_scs3,
     wmm_hexaly,
     wmm_hexaly_init,
-    alphabet_reduction_cpsat,
+    dr_alphabet_cpsat,
 )
 
 __all__ = [
@@ -39,5 +39,5 @@ __all__ = [
     "didp_scs3",
     "wmm_hexaly",
     "wmm_hexaly_init",
-    "alphabet_reduction_cpsat",
+    "dr_alphabet_cpsat",
 ]

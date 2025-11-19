@@ -2,11 +2,11 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "didppy==0.10.0",
-#     "highspy==1.11.0",
-#     "hexaly>=14.0.20250915",
-#     "nbformat==5.10.4",
+#     "highspy==1.12.0",
 #     "ortools==9.14.6206",
-#     "pyscipopt==5.6.0",
+#     "pyscipopt==5.7.1",
+#     "hexaly>=14.0.20251112",
+#     "nbformat==5.10.4",
 # ]
 # [[tool.uv.index]]
 # name ="hexaly"
@@ -18,7 +18,7 @@
 
 import marimo
 
-__generated_with = "0.16.0"
+__generated_with = "0.17.8"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
@@ -34,36 +34,29 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# ベンチマーク""")
+    mo.md(r"""
+    # ベンチマーク
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## 注意点""")
+    mo.md(r"""
+    ## 注意点
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
-    Dual bound を表示しているが, これはアルファベットアルゴリズムで構築した解の部分配列の中で最短のものを求める問題の dual bound であり, 与えられた SCSP に対する dual bound ではない事に注意. 
+    mo.md(r"""
+    Dual bound を表示しているが, これはアルファベットアルゴリズムで構築した解の部分配列の中で最短のものを求める問題の dual bound であり, 与えられた SCSP に対する dual bound ではない事に注意.
 
-    最適性に関しても同様で, `OPTIMAL` と出ている場合はアルファベットアルゴリズムで構築した解の部分列の中では最短であるというだけであり, 実際に最短とは限らない. 
-    """
-    )
-    return
+    最適性に関しても同様で, `OPTIMAL` と出ている場合はアルファベットアルゴリズムで構築した解の部分列の中では最短であるというだけであり, 実際に最短とは限らない.
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        r"""
-    実際に簡単なケースで実験をする. 
-    `ba`, `cb` の最短共通超配列は `cba` である: 
-    """
-    )
+    実際に簡単なケースで実験をする. `ba`, `cb` の最短共通超配列は `cba` である:
+    """)
     return
 
 
@@ -82,20 +75,16 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""一方, この方法では長さが 4 の共通超配列が最適となってしまう: """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""## 本題""")
+    mo.md(r"""
+    一方, この方法では長さが 4 の共通超配列が最適となってしまう:
+    """)
     return
 
 
 @app.cell
 def _():
     _instance = ["ba", "cb"]
-    _model = scsp.model.alphabet_reduction_cpsat.Model(_instance).solve()
+    _model = scsp.model.dr_alphabet_cpsat.Model(_instance).solve()
     _solution = _model.to_solution()
     scsp.util.show(_instance)
     scsp.util.show(_instance, _solution)
@@ -105,9 +94,17 @@ def _():
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## 本題
+    """)
+    return
+
+
 @app.function
 def bench(instance: list[str]) -> None:
-    model = scsp.model.alphabet_reduction_cpsat.Model(instance).solve()
+    model = scsp.model.dr_alphabet_cpsat.Model(instance).solve()
     solution = model.to_solution()
     scsp.util.show(instance)
     if solution is not None:
@@ -117,6 +114,7 @@ def bench(instance: list[str]) -> None:
         print("--- Solution not found ---\n")
 
     print(f"solution status: {model.cpsolver.status_name()}")
+    print(f"best objective: {model.cpsolver.objective_value}")
     print(f"best bound: {model.cpsolver.best_objective_bound}")
 
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>opt_note.scsp.model.alphabet_reduction_cpsat API documentation</title>
+<title>opt_note.scsp.model.dr_alphabet_cpsat API documentation</title>
 <meta name="description" content="アルファベットアルゴリズムで作成したものを削り出す …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
@@ -35,7 +35,7 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>opt_note.scsp.model.alphabet_reduction_cpsat</code></h1>
+<h1 class="title">Module <code>opt_note.scsp.model.dr_alphabet_cpsat</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="_1">アルファベットアルゴリズムで作成したものを削り出す</h1>
@@ -75,11 +75,29 @@ el.replaceWith(d);
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(
+    instance: list[str], time_limit: int | None = 60, log: bool = False
+) -&gt; str | None:
+    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model"><code class="flex name class">
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model"><code class="flex name class">
 <span>class <span class="ident">Model</span></span>
 <span>(</span><span>instance: list[str])</span>
 </code></dt>
@@ -105,10 +123,11 @@ el.replaceWith(d);
             for cidx, c in enumerate(s):
                 if cidx == 0:
                     continue
-                cpmodel.add(
-                    len(chars) * cvars[sidx][cidx - 1] + chars.index(s[cidx - 1])
-                    &lt; len(chars) * cvars[sidx][cidx] + chars.index(s[cidx])
-                )
+                prev_c = s[cidx - 1]
+                if chars.index(prev_c) &lt; chars.index(c):
+                    cpmodel.add(cvars[sidx][cidx - 1] &lt;= cvars[sidx][cidx])
+                else:
+                    cpmodel.add(cvars[sidx][cidx - 1] &lt; cvars[sidx][cidx])
 
         for sidx, s in enumerate(instance):
             for cidx, c in enumerate(s):
@@ -152,8 +171,8 @@ el.replaceWith(d);
 <div class="desc"></div>
 <h3>Methods</h3>
 <dl>
-<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model">Model</a></span>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.dr_alphabet_cpsat.Model" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model">Model</a></span>
 </code></dt>
 <dd>
 <details class="source">
@@ -170,7 +189,7 @@ el.replaceWith(d);
 </details>
 <div class="desc"></div>
 </dd>
-<dt id="opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution"><code class="name flex">
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution"><code class="name flex">
 <span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
@@ -211,13 +230,18 @@ el.replaceWith(d);
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.solve" href="#opt_note.scsp.model.dr_alphabet_cpsat.solve">solve</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model">Model</a></code></h4>
+<h4><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model">Model</a></code></h4>
 <ul class="">
-<li><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model.solve">solve</a></code></li>
-<li><code><a title="opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution" href="#opt_note.scsp.model.alphabet_reduction_cpsat.Model.to_solution">to_solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.solve" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution">to_solution</a></code></li>
 </ul>
 </li>
 </ul>
