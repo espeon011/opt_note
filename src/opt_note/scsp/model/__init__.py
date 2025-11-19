@@ -20,6 +20,7 @@ from . import (
     wmm_hexaly,
     wmm_hexaly_init,
     dr_alphabet_cpsat,
+    dr_alphabet_hexaly,
 )
 
 __all__ = [
@@ -40,4 +41,5 @@ __all__ = [
     "wmm_hexaly",
     "wmm_hexaly_init",
     "dr_alphabet_cpsat",
+    "dr_alphabet_hexaly",
 ]
