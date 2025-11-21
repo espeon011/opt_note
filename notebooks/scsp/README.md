@@ -72,10 +72,10 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 | 探索法\構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
 | --- | --- | --- | --- |
-| 貪欲 | `MM`, `WMM`, `LA_SH` | `ALPHABET_REDUCTION`, `DR`| `ALPHABET`, `DESCENDING` |
-| ビームサーチ | `IBS_SCS`, `DIDP` | | |
-| 全探索 | `DP`, `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
-| アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
+| 貪欲 | `MM` <br> `WMM` <br> `LA_SH` | `ALPHABET_REDUCTION` <br> `DR`| `ALPHABET` <br> `DESCENDING` |
+| ビームサーチ | `IBS_SCS` <br> `DIDP` | | |
+| 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP` <br> `LINEAR_HIGHS` <br> `LINEAR_CPSAT` <br> `AUTOMATON_CPSAT` |
+| アニーリング? | `WMM_HEXALY` <br> `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
 
 ### 解の構成法
 
@@ -91,7 +91,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` (制限), `DR_ALPHABET_CPSAT` (制限)
+- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
