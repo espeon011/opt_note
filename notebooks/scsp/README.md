@@ -91,7 +91,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` (制限), `DR_ALPHABET_CPSAT` (制限)
+- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
