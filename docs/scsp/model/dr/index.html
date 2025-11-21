@@ -92,7 +92,7 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
 <pre><code class="python">def longest_suffix_index(s1: str, s2: str) -&gt; int:
     &#34;&#34;&#34;
     `s1[idx:]` が `s2` の部分配列となるもののうち最小の idx を返す.
-    (つまり `s1[idx]` が最長となるようにする. )
+    (つまり `s1[idx:]` が最長となるようにする. )
     &#34;&#34;&#34;
 
     next = len(s1) - 1
@@ -105,10 +105,66 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
     return next + 1</code></pre>
 </details>
 <div class="desc"><p><code>s1[idx:]</code> が <code>s2</code> の部分配列となるもののうち最小の idx を返す.
-(つまり <code>s1[idx]</code> が最長となるようにする. )</p></div>
+(つまり <code>s1[idx:]</code> が最長となるようにする. )</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr.original_reduction"><code class="name flex">
+<span>def <span class="ident">original_reduction</span></span>(<span>instance: list[str],<br>template: str,<br>time_limit: int | None = 60,<br>solve_func: Callable[[list[str]], str | None] = &lt;function solve&gt;) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def original_reduction(
+    instance: list[str],
+    template: str,
+    time_limit: int | None = 60,
+    solve_func: Callable[[list[str]], str | None] = la_sh.solve,
+) -&gt; str | None:
+    start = datetime.datetime.now()
+    if time_limit is not None:
+        limit = start + datetime.timedelta(seconds=time_limit)
+    else:
+        limit = None
+
+    update = True
+    while update:
+        update = False
+        for i in range(len(template)):
+            now = datetime.datetime.now()
+            if limit is not None and now &gt;= limit:
+                break
+
+            right = template[i + 1 :]
+
+            remaining_prefixes = list(
+                filter(
+                    lambda s: len(s) &gt; 0,
+                    [s[: longest_suffix_index(s, right)] for s in instance],
+                )
+            )
+            if len(remaining_prefixes) == 0:
+                left = &#34;&#34;
+            else:
+                left = solve_func(remaining_prefixes)
+
+            if left is None:
+                break
+
+            if len(left) &lt; i + 1:
+                update = True
+                template = left + right
+                break
+
+        if not update:
+            break
+
+    return template</code></pre>
+</details>
+<div class="desc"></div>
 </dd>
 <dt id="opt_note.scsp.model.dr.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str],<br>time_limit: int | None = 60,<br>deposition: Callable[[list[str]], str | None] = &lt;function solve&gt;,<br>reduction: Callable[[list[str]], str | None] = &lt;function solve&gt;) ‑> str | None</span>
+<span>def <span class="ident">solve</span></span>(<span>instance: list[str],<br>time_limit: int | None = 60,<br>deposition: <a title="opt_note.scsp.model.dr.DepositionFuncType" href="#opt_note.scsp.model.dr.DepositionFuncType">DepositionFuncType</a> = &lt;function solve&gt;,<br>reduction: <a title="opt_note.scsp.model.dr.ReductionFuncType" href="#opt_note.scsp.model.dr.ReductionFuncType">ReductionFuncType</a> = &lt;function original_reduction&gt;) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -118,46 +174,116 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
 <pre><code class="python">def solve(
     instance: list[str],
     time_limit: int | None = 60,
-    deposition: Callable[[list[str]], str | None] = la_sh.solve,
-    reduction: Callable[[list[str]], str | None] = la_sh.solve,
+    deposition: DepositionFuncType = la_sh.solve,
+    reduction: ReductionFuncType = original_reduction,
 ) -&gt; str | None:
-    start = datetime.datetime.now()
-    if time_limit is not None:
-        limit = start + datetime.timedelta(seconds=time_limit)
-    else:
-        limit = None
-
     template = deposition(instance)
     if template is None:
         return None
 
-    solution = template
-
-    update = True
-    while update:
-        update = False
-        for i in range(len(solution)):
-            now = datetime.datetime.now()
-            if limit is not None and now &gt;= limit:
-                break
-            right = solution[i + 1 :]
-            left = reduction([s[: longest_suffix_index(s, right)] for s in instance])
-            if left is None:
-                break
-            if len(left) &lt; i + 1:
-                update = True
-                solution = left + right
-                break
-        if not update:
-            break
-
-    return solution</code></pre>
+    return reduction(instance, template, time_limit)</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="opt_note.scsp.model.dr.DepositionFuncType"><code class="flex name class">
+<span>class <span class="ident">DepositionFuncType</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DepositionFuncType(Protocol):
+    def __call__(self, instance: list[str]) -&gt; str | None: ...</code></pre>
+</details>
+<div class="desc"><p>Base class for protocol classes.</p>
+<p>Protocol classes are defined as::</p>
+<pre><code>class Proto(Protocol):
+    def meth(self) -&gt; int:
+        ...
+</code></pre>
+<p>Such classes are primarily used with static type checkers that recognize
+structural subtyping (static duck-typing).</p>
+<p>For example::</p>
+<pre><code>class C:
+    def meth(self) -&gt; int:
+        return 0
+
+def func(x: Proto) -&gt; int:
+    return x.meth()
+
+func(C())  # Passes static type check
+</code></pre>
+<p>See PEP 544 for details. Protocol classes decorated with
+@typing.runtime_checkable act as simple-minded runtime protocols that check
+only the presence of given attributes, ignoring their type signatures.
+Protocol classes can be generic, they are defined as::</p>
+<pre><code>class GenProto[T](Protocol):
+    def meth(self) -&gt; T:
+        ...
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+</dd>
+<dt id="opt_note.scsp.model.dr.ReductionFuncType"><code class="flex name class">
+<span>class <span class="ident">ReductionFuncType</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ReductionFuncType(Protocol):
+    def __call__(
+        self,
+        instance: list[str],
+        template: str,
+        time_limit: int | None = 60,
+    ) -&gt; str | None: ...</code></pre>
+</details>
+<div class="desc"><p>Base class for protocol classes.</p>
+<p>Protocol classes are defined as::</p>
+<pre><code>class Proto(Protocol):
+    def meth(self) -&gt; int:
+        ...
+</code></pre>
+<p>Such classes are primarily used with static type checkers that recognize
+structural subtyping (static duck-typing).</p>
+<p>For example::</p>
+<pre><code>class C:
+    def meth(self) -&gt; int:
+        return 0
+
+def func(x: Proto) -&gt; int:
+    return x.meth()
+
+func(C())  # Passes static type check
+</code></pre>
+<p>See PEP 544 for details. Protocol classes decorated with
+@typing.runtime_checkable act as simple-minded runtime protocols that check
+only the presence of given attributes, ignoring their type signatures.
+Protocol classes can be generic, they are defined as::</p>
+<pre><code>class GenProto[T](Protocol):
+    def meth(self) -&gt; T:
+        ...
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -179,7 +305,18 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="opt_note.scsp.model.dr.longest_suffix_index" href="#opt_note.scsp.model.dr.longest_suffix_index">longest_suffix_index</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.original_reduction" href="#opt_note.scsp.model.dr.original_reduction">original_reduction</a></code></li>
 <li><code><a title="opt_note.scsp.model.dr.solve" href="#opt_note.scsp.model.dr.solve">solve</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.dr.DepositionFuncType" href="#opt_note.scsp.model.dr.DepositionFuncType">DepositionFuncType</a></code></h4>
+</li>
+<li>
+<h4><code><a title="opt_note.scsp.model.dr.ReductionFuncType" href="#opt_note.scsp.model.dr.ReductionFuncType">ReductionFuncType</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>
