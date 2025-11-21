@@ -18,6 +18,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - `DP` 動的計画法[^5] ([概要](./model/dp))
 - `ALPHABET` アルファベットアルゴリズム[^3] ([概要](./model/alphabet))
+- `ALPHABET_REDUCTION` アルファベットアルゴリズム + 後処理 ([概要](./model/alphabet_reduction))
 - `MM` Majority Merge アルゴリズム[^1] ([概要](./model/mm))
 - `WMM` Weighted Majority Merge アルゴリズム[^4] ([概要](./model/wmm))
 - `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([概要](./model/la_sh))
@@ -41,7 +42,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `DP`                 | **62*** 🥇 | -         | -          | -          | -         | -          | -          | -         | -          |
-| `ALPHABET`           | 625        | 650       | 650        | 50         | 50        | 40         | 250        | 190       | 190        |
+| `ALPHABET`           | 625        | 650       | 650        | 50         | 50        | 40         | 250        | 190       | 1000       |
 | `ALPHABET_REDUCTION` | 79         | 155       | 256        | 45         | 50        | 39         | 201        | 71        | 782        |
 | `MM`                 | 74         | 148       | 198        | 32         | 36        | 27         | 150        | 62        | 536        |
 | `WMM`                | 75         | 128       | 176        | 32         | 37        | 26         | 146        | 57        | 475        |
@@ -69,25 +70,29 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 ## 解法の分類
 
+| 探索法\解の構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
+| --- | --- | --- | --- |
+| 貪欲 | `MM`, `WMM`, `LA_SH` | `ALPHABET_REDUCTION`, `DR`| `ALPHABET`, `DESCENDING` |
+| ビームサーチ | `IBS_SCS`, `DIDP` | | |
+| 全探索 | `DP`, `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
+| アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
+
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
-- 大きい解から不要なものを削減 ... `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_HEXALY`
+- 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION`, `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_HEXALY`
 - その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
-- 貪欲 ... `ALPHABET`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
-- ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT`
-- アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
+解を直接構成する方法で他に分類できないものは貪欲に分類している.
+また, 全探索に分類されるモデルは理論的に最適解に到達できるものだが,
+(制限) とあるものは探索範囲がより狭いため本来の問題の最適解に到達できない可能性がある. 
 
-| 探索法\解の構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
-| --- | --- | --- | --- |
-| 貪欲 | `MM`, `WMM`, `LA_SH` | `DR`| `ALPHABET`, `DESCENDING` |
-| ビームサーチ | `IBS_SCS`, `DIDP` | | |
-| 全探索 | `DP`, `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` |
-| アニーリング? | `WMM_HEXALY`, `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
+- 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
+- ビームサーチ ... `IBS_SCS`, `DIDP`
+- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT` (制限), `DR_ALPHABET_CPSAT` (制限)
+- アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
