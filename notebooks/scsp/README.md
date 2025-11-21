@@ -70,7 +70,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 ## 解法の分類
 
-| 探索法\解の構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
+| 探索法\構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
 | --- | --- | --- | --- |
 | 貪欲 | `MM`, `WMM`, `LA_SH` | `ALPHABET_REDUCTION`, `DR`| `ALPHABET`, `DESCENDING` |
 | ビームサーチ | `IBS_SCS`, `DIDP` | | |
