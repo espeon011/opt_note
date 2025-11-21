@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.6">
-<title>opt_note.scsp.model.alphabet API documentation</title>
-<meta name="description" content="アルファベットアルゴリズム[^1] …">
+<title>opt_note.scsp.model.alphabet_reduction API documentation</title>
+<meta name="description" content="アルファベットアルゴリズムから不要なものを削る[^1] …">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
@@ -35,23 +35,16 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>opt_note.scsp.model.alphabet</code></h1>
+<h1 class="title">Module <code>opt_note.scsp.model.alphabet_reduction</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="_1">アルファベットアルゴリズム<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
-<ul>
-<li>計算量: $O(qk)$</li>
-<li>近似精度: $q$</li>
-</ul>
-<p>文字種全体を $\Sigma = \lbrace c_1, \dots, c_q \rbrace$ とする.
-与えられた文字列の中で最大の長さ $k$ に対して下記は与えられた文字列全ての supersequence になる: </p>
-<p><span><span class="MathJax_Preview">
-(c_1 c_2 \dots c_q)^k
-</span><script type="math/tex; mode=display">
-(c_1 c_2 \dots c_q)^k
-</script></span></p>
-<p>これを解とすることで長さ $qk$ の common supersequence を出力する.
-この長さは文字列の数に直接は依存しない. </p>
+<h1 id="_1">アルファベットアルゴリズムから不要なものを削る<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></h1>
+<p>アルファベットアルゴリズムで作成した解を $(c_1 c_2 \dots c_q)^k$ とする.
+各文字列 $s_i$ の $j$ 番目の文字はこの $(c_1 c_2 \dots c_q)^k$ の中の $j$ 番目のブロック ($1 \leq j \leq k$) がカバーすることになるが,
+アルファベットアルゴリズムで構築した解において各ブロックはインスタンスに出現する全ての文字を並べて作られているため,
+$j$ 番目のブロックにはどの文字列の $j$ 番目の文字でもない文字が含まれている可能性がある.
+このような文字は捨てることで解を少し改善する.
+しかし文字列の数が増えると削れる文字が少なくなり, 長さ $qk$ に近づく. </p>
 <div class="footnote">
 <hr>
 <ol>
@@ -68,7 +61,7 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="opt_note.scsp.model.alphabet.solve"><code class="name flex">
+<dt id="opt_note.scsp.model.alphabet_reduction.solve"><code class="name flex">
 <span>def <span class="ident">solve</span></span>(<span>instance: list[str]) ‑> str</span>
 </code></dt>
 <dd>
@@ -78,7 +71,20 @@ el.replaceWith(d);
 </summary>
 <pre><code class="python">def solve(instance: list[str]) -&gt; str:
     chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
-    return chars * max([len(s) for s in instance])</code></pre>
+    solution = &#34;&#34;
+
+    for i in range(max([len(s) for s in instance])):
+        used = [False for _ in chars]
+        for s in instance:
+            if i &gt;= len(s):
+                continue
+            used[chars.index(s[i])] = True
+
+        for c, u in zip(chars, used):
+            if u:
+                solution += c
+
+    return solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -90,7 +96,7 @@ el.replaceWith(d);
 <nav id="sidebar">
 <div class="toc">
 <ul>
-<li><a href="#_1">アルファベットアルゴリズム</a></li>
+<li><a href="#_1">アルファベットアルゴリズムから不要なものを削る</a></li>
 </ul>
 </div>
 <ul id="index">
@@ -101,7 +107,7 @@ el.replaceWith(d);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="opt_note.scsp.model.alphabet.solve" href="#opt_note.scsp.model.alphabet.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.alphabet_reduction.solve" href="#opt_note.scsp.model.alphabet_reduction.solve">solve</a></code></li>
 </ul>
 </li>
 </ul>

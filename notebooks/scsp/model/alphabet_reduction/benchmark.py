@@ -42,7 +42,7 @@ def _(mo):
 
 @app.function
 def bench(instance: list[str]) -> None:
-    solution = scsp.model.alphabet.solve(instance)
+    solution = scsp.model.alphabet_reduction.solve(instance)
     scsp.util.show(instance)
     scsp.util.show(instance, solution)
     print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")

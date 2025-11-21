@@ -4,6 +4,7 @@ SCSP を解くアルゴリズム, ヒューリスティック, 数理最適化�
 
 from . import (
     alphabet,
+    alphabet_reduction,
     dp,
     mm,
     wmm,
@@ -25,6 +26,7 @@ from . import (
 
 __all__ = [
     "alphabet",
+    "alphabet_reduction",
     "dp",
     "mm",
     "wmm",

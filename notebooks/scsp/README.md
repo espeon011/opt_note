@@ -41,7 +41,8 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | モデル名 | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=4$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=8$ | UNIFORM <br> $q=26$ <br> $15 \leq k \leq 25$ <br> $n=16$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=10$ | UNIFORM <br> $q=5$ <br> $k=10$ <br> $n=50$ | NUCLEOTIDE <br> $k=10$ <br> $n=10$ | NUCLEOTIDE <br> $k=50$ <br> $n=50$ | PROTEIN <br> $k=10$ <br> $n=10$ | PROTEIN <br> $k=50$ <br> $n=50$ |
 | :---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `DP`                 | **62*** 🥇 | -         | -          | -          | -         | -          | -          | -         | -          |
-| `ALPHABET`           | 79         | 155       | 256        | 45         | 50        | 39         | 201        | 71        | 782        |
+| `ALPHABET`           | 625        | 650       | 650        | 50         | 50        | 40         | 250        | 190       | 190        |
+| `ALPHABET_REDUCTION` | 79         | 155       | 256        | 45         | 50        | 39         | 201        | 71        | 782        |
 | `MM`                 | 74         | 148       | 198        | 32         | 36        | 27         | 150        | 62        | 536        |
 | `WMM`                | 75         | 128       | 176        | 32         | 37        | 26         | 146        | 57        | 475        |
 | `LA_SH`              | 70         | 132       | 170        | 31         | 38        | 28         | 144        | 51        | 497        |
