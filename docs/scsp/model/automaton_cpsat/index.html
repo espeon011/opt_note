@@ -69,49 +69,39 @@ $\lbrace x_i \rbrace_i$ が受理されるという制約を課す.</li>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="opt_note.scsp.model.automaton_cpsat.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -&gt; str | None:
-    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="opt_note.scsp.model.automaton_cpsat.Model"><code class="flex name class">
 <span>class <span class="ident">Model</span></span>
-<span>(</span><span>instance: list[str])</span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Model:
-    def __init__(self, instance: list[str]):
-        max_len = sum(len(s) for s in instance)
-        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -&gt; str | None:
+        max_len = sum(len(s) for s in self.instance)
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
 
         cpmodel = cp_model.CpModel()
+        cpsolver = cp_model.CpSolver()
 
         cvars = [
             cpmodel.new_int_var(lb=0, ub=len(chars), name=&#34;&#34;) for _ in range(max_len)
         ]
 
-        for s in instance:
+        for s in self.instance:
             transition_triples = (
                 [
                     (idx, jdx + 1, (idx + 1 if c == next_char else idx))
@@ -134,79 +124,109 @@ $\lbrace x_i \rbrace_i$ が受理されるという制約を課す.</li>
             cpmodel.add(cvar == 0).only_enforce_if(~valid)
         cpmodel.minimize(sum(valids))
 
-        self.instance = instance
-        self.chars = chars
-        self.cpmodel = cpmodel
-        self.cpsolver = cp_model.CpSolver()
-        self.cvars = cvars
-        self.status: cp_model.cp_model_pb2.CpSolverStatus | None = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-        self.cpsolver.parameters.log_search_progress = log
+        cpsolver.parameters.log_search_progress = log
         if time_limit is not None:
-            self.cpsolver.parameters.max_time_in_seconds = time_limit
-        self.status = self.cpsolver.solve(self.cpmodel)
+            cpsolver.parameters.max_time_in_seconds = time_limit
+        status = cpsolver.solve(cpmodel)
+        self.best_bound = cpsolver.best_objective_bound
 
-        return self
-
-    def to_solution(self) -&gt; str | None:
-        if self.status not in {
+        if status in {
             cp_model.cp_model_pb2.OPTIMAL,
             cp_model.cp_model_pb2.FEASIBLE,
         }:
-            return None
+            solution = &#34;&#34;
+            for cvar in cvars:
+                cidx = cpsolver.value(cvar) - 1
+                if cidx &gt;= 0:
+                    solution += chars[cidx]
+            self.solution = solution
+        else:
+            self.solution = None
 
-        solution = &#34;&#34;
-        for cvar in self.cvars:
-            cidx = self.cpsolver.value(cvar) - 1
-            if cidx &gt;= 0:
-                solution += self.chars[cidx]
-
-        return solution</code></pre>
+        return self.solution</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.automaton_cpsat.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.automaton_cpsat.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.automaton_cpsat.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="opt_note.scsp.model.automaton_cpsat.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.automaton_cpsat.Model" href="#opt_note.scsp.model.automaton_cpsat.Model">Model</a></span>
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False, *args, **kwargs) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-    self.cpsolver.parameters.log_search_progress = log
-    if time_limit is not None:
-        self.cpsolver.parameters.max_time_in_seconds = time_limit
-    self.status = self.cpsolver.solve(self.cpmodel)
+<pre><code class="python">def solve(
+    self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+) -&gt; str | None:
+    max_len = sum(len(s) for s in self.instance)
+    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
 
-    return self</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-<dt id="opt_note.scsp.model.automaton_cpsat.Model.to_solution"><code class="name flex">
-<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_solution(self) -&gt; str | None:
-    if self.status not in {
+    cpmodel = cp_model.CpModel()
+    cpsolver = cp_model.CpSolver()
+
+    cvars = [
+        cpmodel.new_int_var(lb=0, ub=len(chars), name=&#34;&#34;) for _ in range(max_len)
+    ]
+
+    for s in self.instance:
+        transition_triples = (
+            [
+                (idx, jdx + 1, (idx + 1 if c == next_char else idx))
+                for idx, next_char in enumerate(s)
+                for jdx, c in enumerate(chars)
+            ]
+            + [(idx, 0, idx) for idx, _ in enumerate(s)]
+            + [(len(s), 0, len(s))]
+            + [(len(s), jdx + 1, len(s)) for jdx, _ in enumerate(chars)]
+        )
+        cpmodel.add_automaton(
+            transition_expressions=cvars,
+            starting_state=0,
+            final_states=[len(s)],
+            transition_triples=transition_triples,
+        )
+
+    valids = [cpmodel.new_bool_var(&#34;&#34;) for _ in cvars]
+    for cvar, valid in zip(cvars, valids):
+        cpmodel.add(cvar == 0).only_enforce_if(~valid)
+    cpmodel.minimize(sum(valids))
+
+    cpsolver.parameters.log_search_progress = log
+    if time_limit is not None:
+        cpsolver.parameters.max_time_in_seconds = time_limit
+    status = cpsolver.solve(cpmodel)
+    self.best_bound = cpsolver.best_objective_bound
+
+    if status in {
         cp_model.cp_model_pb2.OPTIMAL,
         cp_model.cp_model_pb2.FEASIBLE,
     }:
-        return None
+        solution = &#34;&#34;
+        for cvar in cvars:
+            cidx = cpsolver.value(cvar) - 1
+            if cidx &gt;= 0:
+                solution += chars[cidx]
+        self.solution = solution
+    else:
+        self.solution = None
 
-    solution = &#34;&#34;
-    for cvar in self.cvars:
-        cidx = self.cpsolver.value(cvar) - 1
-        if cidx &gt;= 0:
-            solution += self.chars[cidx]
-
-    return solution</code></pre>
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -227,18 +247,15 @@ $\lbrace x_i \rbrace_i$ が受理されるという制約を課す.</li>
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="opt_note.scsp.model.automaton_cpsat.solve" href="#opt_note.scsp.model.automaton_cpsat.solve">solve</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="opt_note.scsp.model.automaton_cpsat.Model" href="#opt_note.scsp.model.automaton_cpsat.Model">Model</a></code></h4>
 <ul class="">
+<li><code><a title="opt_note.scsp.model.automaton_cpsat.Model.best_bound" href="#opt_note.scsp.model.automaton_cpsat.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.automaton_cpsat.Model.instance" href="#opt_note.scsp.model.automaton_cpsat.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.automaton_cpsat.Model.solution" href="#opt_note.scsp.model.automaton_cpsat.Model.solution">solution</a></code></li>
 <li><code><a title="opt_note.scsp.model.automaton_cpsat.Model.solve" href="#opt_note.scsp.model.automaton_cpsat.Model.solve">solve</a></code></li>
-<li><code><a title="opt_note.scsp.model.automaton_cpsat.Model.to_solution" href="#opt_note.scsp.model.automaton_cpsat.Model.to_solution">to_solution</a></code></li>
 </ul>
 </li>
 </ul>

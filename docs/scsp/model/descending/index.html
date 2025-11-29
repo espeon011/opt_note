@@ -107,28 +107,77 @@ $s_2$ は削除し, $s_3$ 以降は番号を前に 1 つずらして更新し, $
 <p>s1(str): 文字列 1
 s2(str): 文字列 2</p></div>
 </dd>
-<dt id="opt_note.scsp.model.descending.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str]) ‑> str</span>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="opt_note.scsp.model.descending.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(instance: list[str]) -&gt; str:
-    instance_sorted = sorted(instance, key=lambda s: len(s), reverse=True)
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(self, *args, **kwargs) -&gt; str | None:
+        instance_sorted = sorted(self.instance, key=lambda s: len(s), reverse=True)
+
+        solution = instance_sorted[0]
+        for s in instance_sorted[1:]:
+            solution = scs2(solution, s)
+
+        self.solution = solution
+        return self.solution</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.descending.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.descending.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.descending.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.descending.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, *args, **kwargs) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(self, *args, **kwargs) -&gt; str | None:
+    instance_sorted = sorted(self.instance, key=lambda s: len(s), reverse=True)
 
     solution = instance_sorted[0]
     for s in instance_sorted[1:]:
         solution = scs2(solution, s)
 
-    return solution</code></pre>
+    self.solution = solution
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -146,7 +195,19 @@ s2(str): 文字列 2</p></div>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="opt_note.scsp.model.descending.scs2" href="#opt_note.scsp.model.descending.scs2">scs2</a></code></li>
-<li><code><a title="opt_note.scsp.model.descending.solve" href="#opt_note.scsp.model.descending.solve">solve</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.descending.Model" href="#opt_note.scsp.model.descending.Model">Model</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.descending.Model.best_bound" href="#opt_note.scsp.model.descending.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.descending.Model.instance" href="#opt_note.scsp.model.descending.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.descending.Model.solution" href="#opt_note.scsp.model.descending.Model.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.descending.Model.solve" href="#opt_note.scsp.model.descending.Model.solve">solve</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

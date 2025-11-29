@@ -2,86 +2,40 @@
 .. include:: ./README.md
 """
 
+from dataclasses import dataclass
+from functools import cached_property
 import hexaly.optimizer
 
 
+@dataclass
 class Model:
-    def __init__(
-        self, instance: list[str], initial_weights: list[list[int]] | None = None
-    ):
-        chars = "".join(sorted(list(set("".join(instance)))))
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
-        hxoptimizer = hexaly.optimizer.HexalyOptimizer()
-        hxmodel = hxoptimizer.model
-        assert isinstance(hxoptimizer, hexaly.optimizer.HexalyOptimizer)
-        assert isinstance(hxmodel, hexaly.optimizer.HxModel)
+    @cached_property
+    def chars(self) -> str:
+        return "".join(sorted(list(set("".join(self.instance)))))
 
-        # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
-        # 初期重みが与えられなかった場合は文字種数とする.
-        max_weight = (
-            max(max(w, len(s)) for s, ws in zip(instance, initial_weights) for w in ws)
-            if initial_weights
-            else len(chars)
-        )
-        priorities1d = [
-            hxmodel.int(1, max_weight) for s in instance for cidx, _ in enumerate(s)
-        ]
-
-        func = hxmodel.create_int_external_function(self.objective)
-        func.external_context.lower_bound = 0
-        func.external_context.upper_bound = sum(len(s) for s in instance)
-
-        indices_1d_to_2d: list[tuple[int, int]] = []
+    @cached_property
+    def indices_1d_to_2d(self) -> list[tuple[int, int]]:
+        ans: list[tuple[int, int]] = []
         counter = 0
-        for s in instance:
-            indices_1d_to_2d.append((counter, counter + len(s)))
+        for s in self.instance:
+            ans.append((counter, counter + len(s)))
             counter += len(s)
+        return ans
 
-        self.instance = instance
-        self.chars = chars
-        self.hxoptimizer = hxoptimizer
-        self.hxmodel = hxmodel
-        self.priorities1d = priorities1d
-        self.indices_1d_to_2d = indices_1d_to_2d
-
-        # これらが実行される時点で self.* が必要になるため初期化の最後に移動
-
-        hxmodel.minimize(func(*priorities1d))
-        hxmodel.close()
-
-        if initial_weights:
-            priorities2d = self.priorities_1d_to_2d(priorities1d)
-            for ps, ws in zip(priorities2d, initial_weights):
-                for p, w in zip(ps, ws):
-                    p.set_value(w)
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        assert isinstance(self.hxoptimizer.param, hexaly.optimizer.HxParam)
-        if time_limit is not None:
-            self.hxoptimizer.param.time_limit = time_limit
-        self.hxoptimizer.param.verbosity = 1 if log else 0
-        self.hxoptimizer.solve()
-        return self
-
-    def to_solution(self) -> str | None:
-        assert isinstance(self.hxoptimizer.solution, hexaly.optimizer.HxSolution)
-        status = self.hxoptimizer.solution.status
-        if status not in {
-            hexaly.optimizer.HxSolutionStatus.OPTIMAL,
-            hexaly.optimizer.HxSolutionStatus.FEASIBLE,
-        }:
-            return None
-
-        priorities1d_value: list[int] = [p.value for p in self.priorities1d]
-        priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
-        return self.wmm(priorities2d_value)
+    def priorities_1d_to_2d[T](self, priorities1d: list[T]) -> list[list[T]]:
+        return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]
 
     def wmm(self, priorities2d: list[list[int]]) -> str:
+        max_len = len(self.instance) * max(len(s) for s in self.instance)
         indices = tuple(0 for _ in self.instance)
         solution = ""
 
         # while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
-        for _ in range(len(self.instance) * max(len(s) for s in self.instance)):
+        for _ in range(max_len):
             if all(idx == len(s) for idx, s in zip(indices, self.instance)):
                 break
 
@@ -103,9 +57,6 @@ class Model:
 
         return solution
 
-    def priorities_1d_to_2d[T](self, priorities1d: list[T]) -> list[list[T]]:
-        return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]
-
     def objective(self, priorities1d: list[int]) -> int:
         priorities2d = self.priorities_1d_to_2d(
             [priorities1d[i] for i in range(len(priorities1d))]
@@ -113,8 +64,68 @@ class Model:
         solution = self.wmm(priorities2d)
         return len(solution)
 
+    def solve(
+        self,
+        time_limit: int | None = 60,
+        log: bool = False,
+        initial_weights: list[list[int]] | None = None,
+        *args,
+        **kwargs,
+    ) -> str | None:
+        with hexaly.optimizer.HexalyOptimizer() as hxoptimizer:
+            assert isinstance(hxoptimizer.model, hexaly.optimizer.HxModel)
+            assert isinstance(hxoptimizer.param, hexaly.optimizer.HxParam)
+            hxmodel: hexaly.optimizer.HxModel = hxoptimizer.model
+            hxparam: hexaly.optimizer.HxParam = hxoptimizer.param
 
-def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str | None:
-    return Model(instance).solve(time_limit, log).to_solution()
+            chars = "".join(sorted(list(set("".join(self.instance)))))
+
+            # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
+            # 初期重みが与えられなかった場合は文字種数とする.
+            max_weight = (
+                max(
+                    max(w, len(s))
+                    for s, ws in zip(self.instance, initial_weights)
+                    for w in ws
+                )
+                if initial_weights
+                else len(chars)
+            )
+
+            priorities1d = [
+                hxmodel.int(1, max_weight)
+                for s in self.instance
+                for cidx, _ in enumerate(s)
+            ]
+
+            func = hxmodel.create_int_external_function(self.objective)
+            func.external_context.lower_bound = 0
+            func.external_context.upper_bound = sum(len(s) for s in self.instance)
+
+            hxmodel.minimize(func(*priorities1d))
+            hxmodel.close()
+
+            if initial_weights is not None:
+                priorities2d = self.priorities_1d_to_2d(priorities1d)
+                for ps, ws in zip(priorities2d, initial_weights):
+                    for p, w in zip(ps, ws):
+                        p.set_value(w)
+
+            if time_limit is not None:
+                hxparam.time_limit = time_limit
+            hxparam.verbosity = 1 if log else 0
+            hxoptimizer.solve()
+
+            assert isinstance(hxoptimizer.solution, hexaly.optimizer.HxSolution)
+            solution: hexaly.optimizer.HxSolution = hxoptimizer.solution
+            assert isinstance(solution.status, hexaly.optimizer.HxSolutionStatus)
+            status = solution.status
+            if status in {
+                hexaly.optimizer.HxSolutionStatus.OPTIMAL,
+                hexaly.optimizer.HxSolutionStatus.FEASIBLE,
+            }:
+                priorities1d_value: list[int] = [p.value for p in priorities1d]
+                priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
+                self.solution = self.wmm(priorities2d_value)
+
+            return self.solution

@@ -47,6 +47,97 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="opt_note.scsp.util.bench"><code class="name flex">
+<span>def <span class="ident">bench</span></span>(<span>Model: type[<a title="opt_note.scsp.util.ScspModel" href="#opt_note.scsp.util.ScspModel">ScspModel</a>],<br>*,<br>instance: list[str] | None = None,<br>example_filename: Literal['nucleotide_n005k010.txt', 'nucleotide_n010k010.txt', 'nucleotide_n010k050.txt', 'nucleotide_n050k010.txt', 'nucleotide_n050k050.txt', 'nucleotide_n050k100.txt', 'nucleotide_n100k050.txt', 'nucleotide_n100k100.txt', 'nucleotide_n100k500.txt', 'protein_n005k010.txt', 'protein_n010k010.txt', 'protein_n010k050.txt', 'protein_n050k010.txt', 'protein_n050k050.txt', 'protein_n050k100.txt', 'protein_n100k050.txt', 'protein_n100k100.txt', 'protein_n100k500.txt', 'uniform_q05n010k010-010.txt', 'uniform_q05n010k020-020.txt', 'uniform_q05n050k010-010.txt', 'uniform_q05n050k020-020.txt', 'uniform_q05n100k010-010.txt', 'uniform_q05n100k020-020.txt', 'uniform_q05n500k010-010.txt', 'uniform_q05n500k020-020.txt', 'uniform_q26n002k015-025.txt', 'uniform_q26n004k015-025.txt', 'uniform_q26n008k015-025.txt', 'uniform_q26n016k015-025.txt', 'uniform_q26n032k015-025.txt', 'uniform_q26n064k015-025.txt'] | None = None,<br>time_limit: int | None = 60,<br>log: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bench(
+    Model: type[ScspModel],
+    *,
+    instance: list[str] | None = None,
+    example_filename: example.ExampleFileName | None = None,
+    time_limit: int | None = 60,
+    log: bool = False,
+) -&gt; None:
+    &#34;&#34;&#34;
+    与えられたモデルで与えられたインスタンスに対して最適化計算をし, 結果情報を出力する.
+    `instance` と `example_filename` はどちらかだけを指定する必要がある.
+
+    以下の情報を出力する.
+
+    - 問題インスタンス.
+    - 解があれば問題インスタンスと共に表示. なければその旨表示.
+    - サンプルインスタンスファイル名が指定されている場合はその名前.
+    - 目的関数値.
+    - Dual Bound. 情報がなければ `0.0` と表示される.
+    - サブモデルの dual bound があれば表示する. `inner_bound` という名前の属性の有無で判定する.
+
+    Args:
+        Model(type[ScspModel]): 最適化モデルクラス. 指定された属性やメソッドを持つ必要がある.
+        instance(list[str] | None): 問題インスタンス.
+        example_filename(ExampleFileName | None): サンプルインスタンスファイル名.
+        time_limit(int): 計算時間上限.
+        log(bool): 最適化モデルのログ出力を有効にするか.
+    &#34;&#34;&#34;
+
+    if (instance is None and example_filename is None) or (
+        instance is not None and example_filename is not None
+    ):
+        raise RuntimeError(
+            &#34;インスタンスとサンプルインスタンスファイル名は必ずどちらか一方のみを指定してください. &#34;
+        )
+
+    instance_inner = None
+    if instance is not None:
+        instance_inner = instance
+    if example_filename is not None:
+        instance_inner = example.load(example_filename)
+    assert instance_inner is not None
+
+    model = Model(instance_inner)
+
+    start = datetime.datetime.now()
+    solution = model.solve(time_limit=time_limit, log=log)
+    end = datetime.datetime.now()
+
+    show(instance_inner)
+    if solution is not None:
+        show(instance_inner, solution)
+    else:
+        print(&#34;--- Solution not found ---\n&#34;)
+
+    if example_filename is not None:
+        print(f&#34;example file name: &#39;{example_filename}&#39;&#34;)
+    print(
+        f&#34;best objective: {len(model.solution) if model.solution is not None else None}&#34;
+    )
+    print(f&#34;best bound: {model.best_bound}&#34;)
+    if hasattr(model, &#34;inner_bound&#34;):
+        print(f&#34;best submodel bound: {model.inner_bound}&#34;)
+    print(f&#34;wall time: {(end - start).total_seconds()}s&#34;)</code></pre>
+</details>
+<div class="desc"><p>与えられたモデルで与えられたインスタンスに対して最適化計算をし, 結果情報を出力する.
+<code>instance</code> と <code>example_filename</code> はどちらかだけを指定する必要がある.</p>
+<p>以下の情報を出力する.</p>
+<ul>
+<li>問題インスタンス.</li>
+<li>解があれば問題インスタンスと共に表示. なければその旨表示.</li>
+<li>サンプルインスタンスファイル名が指定されている場合はその名前.</li>
+<li>目的関数値.</li>
+<li>Dual Bound. 情報がなければ <code>0.0</code> と表示される.</li>
+<li>サブモデルの dual bound があれば表示する. <code>inner_bound</code> という名前の属性の有無で判定する.</li>
+</ul>
+<h2 id="args">Args</h2>
+<p>Model(type[ScspModel]): 最適化モデルクラス. 指定された属性やメソッドを持つ必要がある.
+instance(list[str] | None): 問題インスタンス.
+example_filename(ExampleFileName | None): サンプルインスタンスファイル名.
+time_limit(int): 計算時間上限.
+log(bool): 最適化モデルのログ出力を有効にするか.</p></div>
+</dd>
 <dt id="opt_note.scsp.util.is_feasible"><code class="name flex">
 <span>def <span class="ident">is_feasible</span></span>(<span>instance: list[str], solution: str) ‑> bool</span>
 </code></dt>
@@ -202,6 +293,88 @@ solution(str | None): 共通超配列(文字列)</p></div>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="opt_note.scsp.util.ScspModel"><code class="flex name class">
+<span>class <span class="ident">ScspModel</span></span>
+<span>(</span><span>instance: list[str])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ScspModel(Protocol):
+    instance: list[str]
+    solution: str | None
+    best_bound: float
+
+    def __init__(self, instance: list[str]): ...
+    def solve(self, time_limit: int | None, log: bool) -&gt; str | None: ...</code></pre>
+</details>
+<div class="desc"><p>Base class for protocol classes.</p>
+<p>Protocol classes are defined as::</p>
+<pre><code>class Proto(Protocol):
+    def meth(self) -&gt; int:
+        ...
+</code></pre>
+<p>Such classes are primarily used with static type checkers that recognize
+structural subtyping (static duck-typing).</p>
+<p>For example::</p>
+<pre><code>class C:
+    def meth(self) -&gt; int:
+        return 0
+
+def func(x: Proto) -&gt; int:
+    return x.meth()
+
+func(C())  # Passes static type check
+</code></pre>
+<p>See PEP 544 for details. Protocol classes decorated with
+@typing.runtime_checkable act as simple-minded runtime protocols that check
+only the presence of given attributes, ignoring their type signatures.
+Protocol classes can be generic, they are defined as::</p>
+<pre><code>class GenProto[T](Protocol):
+    def meth(self) -&gt; T:
+        ...
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="opt_note.scsp.util.ScspModel.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.util.ScspModel.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.util.ScspModel.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.util.ScspModel.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None, log: bool) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(self, time_limit: int | None, log: bool) -&gt; str | None: ...</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -216,10 +389,24 @@ solution(str | None): 共通超配列(文字列)</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="opt_note.scsp.util.bench" href="#opt_note.scsp.util.bench">bench</a></code></li>
 <li><code><a title="opt_note.scsp.util.is_feasible" href="#opt_note.scsp.util.is_feasible">is_feasible</a></code></li>
 <li><code><a title="opt_note.scsp.util.parse" href="#opt_note.scsp.util.parse">parse</a></code></li>
 <li><code><a title="opt_note.scsp.util.save" href="#opt_note.scsp.util.save">save</a></code></li>
 <li><code><a title="opt_note.scsp.util.show" href="#opt_note.scsp.util.show">show</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.util.ScspModel" href="#opt_note.scsp.util.ScspModel">ScspModel</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.util.ScspModel.best_bound" href="#opt_note.scsp.util.ScspModel.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.util.ScspModel.instance" href="#opt_note.scsp.util.ScspModel.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.util.ScspModel.solution" href="#opt_note.scsp.util.ScspModel.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.util.ScspModel.solve" href="#opt_note.scsp.util.ScspModel.solve">solve</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

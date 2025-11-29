@@ -60,54 +60,44 @@ $s_{i_1}[j_1] \ne s_{i_2}[j_2]$ ならば $x_{i_1, j_1} \ne x_{i_2, j_2}$.</li>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="opt_note.scsp.model.linear_scip.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -&gt; str | None:
-    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="opt_note.scsp.model.linear_scip.Model"><code class="flex name class">
 <span>class <span class="ident">Model</span></span>
-<span>(</span><span>instance: list[str])</span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Model:
-    def __init__(self, instance: list[str]):
-        max_len = sum(len(s) for s in instance)
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -&gt; str | None:
         scip: pyscipopt.Model = pyscipopt.Model()
 
+        max_len = sum(len(s) for s in self.instance)
         seqs = [
-            [scip.addVar(vtype=&#34;I&#34;, lb=0, ub=max_len - 1) for _ in s] for s in instance
+            [scip.addVar(vtype=&#34;I&#34;, lb=0, ub=max_len - 1) for _ in s]
+            for s in self.instance
         ]
+
         for seq in seqs:
             for idx, _ in enumerate(seq):
                 if idx == 0:
                     continue
                 scip.addCons(seq[idx - 1] + 1 &lt;= seq[idx])
 
-        for idx1, (s1, seq1) in enumerate(zip(instance, seqs)):
-            for idx2, (s2, seq2) in enumerate(zip(instance, seqs)):
+        for idx1, (s1, seq1) in enumerate(zip(self.instance, seqs)):
+            for idx2, (s2, seq2) in enumerate(zip(self.instance, seqs)):
                 if idx1 &gt;= idx2:
                     continue
 
@@ -125,31 +115,113 @@ $s_{i_1}[j_1] \ne s_{i_2}[j_2]$ ならば $x_{i_1, j_1} \ne x_{i_2, j_2}$.</li>
             scip.addCons(obj &gt;= seq[-1])
         scip.setObjective(obj + 1, sense=&#34;minimize&#34;)
 
-        self.instance = instance
-        self.scip = scip
-        self.seqs = seqs
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
         if time_limit is not None:
-            self.scip.setParam(&#34;limits/time&#34;, time_limit)
+            scip.setParam(&#34;limits/time&#34;, time_limit)
         if not log:
-            self.scip.hideOutput()
-        self.scip.optimize()
+            scip.hideOutput()
+        scip.optimize()
 
-        return self
+        self.best_bound = scip.getDualbound()
 
-    def to_solution(self) -&gt; str | None:
-        if self.scip.getNLimSolsFound() == 0:
-            return None
+        if scip.getNLimSolsFound() &gt; 0:
+            objval = int(round(scip.getObjVal()))
+            sol_char_idx = 0
+            solution = &#34;&#34;
+            while sol_char_idx &lt;= objval:
+                found = False
+                for idx, (s, seq) in enumerate(zip(self.instance, seqs)):
+                    for c_idx, cvar in enumerate(seq):
+                        if int(round(scip.getVal(cvar))) == sol_char_idx:
+                            solution += s[c_idx]
+                            found = True
+                            sol_char_idx += 1
+                    if found:
+                        break
+                if not found:
+                    sol_char_idx += 1
+                self.solution = solution
 
-        objval = int(round(self.scip.getObjVal()))
+        return self.solution</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.linear_scip.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.linear_scip.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.linear_scip.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.linear_scip.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False, *args, **kwargs) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(
+    self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+) -&gt; str | None:
+    scip: pyscipopt.Model = pyscipopt.Model()
+
+    max_len = sum(len(s) for s in self.instance)
+    seqs = [
+        [scip.addVar(vtype=&#34;I&#34;, lb=0, ub=max_len - 1) for _ in s]
+        for s in self.instance
+    ]
+
+    for seq in seqs:
+        for idx, _ in enumerate(seq):
+            if idx == 0:
+                continue
+            scip.addCons(seq[idx - 1] + 1 &lt;= seq[idx])
+
+    for idx1, (s1, seq1) in enumerate(zip(self.instance, seqs)):
+        for idx2, (s2, seq2) in enumerate(zip(self.instance, seqs)):
+            if idx1 &gt;= idx2:
+                continue
+
+            for cidx1, (c1, cvar1) in enumerate(zip(s1, seq1)):
+                for cidx2, (c2, cvar2) in enumerate(zip(s2, seq2)):
+                    if c1 != c2:
+                        lt = scip.addVar(vtype=&#34;B&#34;)
+                        gt = scip.addVar(vtype=&#34;B&#34;)
+                        scip.addCons(lt + gt == 1)
+                        scip.addConsIndicator(cvar1 + 1 &lt;= cvar2, binvar=lt)
+                        scip.addConsIndicator(cvar1 &gt;= cvar2 + 1, binvar=gt)
+
+    obj = scip.addVar(vtype=&#34;C&#34;, lb=0, ub=max_len)
+    for seq in seqs:
+        scip.addCons(obj &gt;= seq[-1])
+    scip.setObjective(obj + 1, sense=&#34;minimize&#34;)
+
+    if time_limit is not None:
+        scip.setParam(&#34;limits/time&#34;, time_limit)
+    if not log:
+        scip.hideOutput()
+    scip.optimize()
+
+    self.best_bound = scip.getDualbound()
+
+    if scip.getNLimSolsFound() &gt; 0:
+        objval = int(round(scip.getObjVal()))
         sol_char_idx = 0
         solution = &#34;&#34;
         while sol_char_idx &lt;= objval:
             found = False
-            for idx, (s, seq) in enumerate(zip(self.instance, self.seqs)):
+            for idx, (s, seq) in enumerate(zip(self.instance, seqs)):
                 for c_idx, cvar in enumerate(seq):
-                    if int(round(self.scip.getVal(cvar))) == sol_char_idx:
+                    if int(round(scip.getVal(cvar))) == sol_char_idx:
                         solution += s[c_idx]
                         found = True
                         sol_char_idx += 1
@@ -157,60 +229,9 @@ $s_{i_1}[j_1] \ne s_{i_2}[j_2]$ ならば $x_{i_1, j_1} \ne x_{i_2, j_2}$.</li>
                     break
             if not found:
                 sol_char_idx += 1
+            self.solution = solution
 
-        return solution</code></pre>
-</details>
-<div class="desc"></div>
-<h3>Methods</h3>
-<dl>
-<dt id="opt_note.scsp.model.linear_scip.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.linear_scip.Model" href="#opt_note.scsp.model.linear_scip.Model">Model</a></span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-    if time_limit is not None:
-        self.scip.setParam(&#34;limits/time&#34;, time_limit)
-    if not log:
-        self.scip.hideOutput()
-    self.scip.optimize()
-
-    return self</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-<dt id="opt_note.scsp.model.linear_scip.Model.to_solution"><code class="name flex">
-<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_solution(self) -&gt; str | None:
-    if self.scip.getNLimSolsFound() == 0:
-        return None
-
-    objval = int(round(self.scip.getObjVal()))
-    sol_char_idx = 0
-    solution = &#34;&#34;
-    while sol_char_idx &lt;= objval:
-        found = False
-        for idx, (s, seq) in enumerate(zip(self.instance, self.seqs)):
-            for c_idx, cvar in enumerate(seq):
-                if int(round(self.scip.getVal(cvar))) == sol_char_idx:
-                    solution += s[c_idx]
-                    found = True
-                    sol_char_idx += 1
-            if found:
-                break
-        if not found:
-            sol_char_idx += 1
-
-    return solution</code></pre>
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -231,18 +252,15 @@ $s_{i_1}[j_1] \ne s_{i_2}[j_2]$ ならば $x_{i_1, j_1} \ne x_{i_2, j_2}$.</li>
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="opt_note.scsp.model.linear_scip.solve" href="#opt_note.scsp.model.linear_scip.solve">solve</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="opt_note.scsp.model.linear_scip.Model" href="#opt_note.scsp.model.linear_scip.Model">Model</a></code></h4>
 <ul class="">
+<li><code><a title="opt_note.scsp.model.linear_scip.Model.best_bound" href="#opt_note.scsp.model.linear_scip.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.linear_scip.Model.instance" href="#opt_note.scsp.model.linear_scip.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.linear_scip.Model.solution" href="#opt_note.scsp.model.linear_scip.Model.solution">solution</a></code></li>
 <li><code><a title="opt_note.scsp.model.linear_scip.Model.solve" href="#opt_note.scsp.model.linear_scip.Model.solve">solve</a></code></li>
-<li><code><a title="opt_note.scsp.model.linear_scip.Model.to_solution" href="#opt_note.scsp.model.linear_scip.Model.to_solution">to_solution</a></code></li>
 </ul>
 </li>
 </ul>

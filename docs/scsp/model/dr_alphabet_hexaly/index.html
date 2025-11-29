@@ -47,45 +47,29 @@ el.replaceWith(d);
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="opt_note.scsp.model.dr_alphabet_hexaly.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -&gt; str | None:
-    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model"><code class="flex name class">
 <span>class <span class="ident">Model</span></span>
-<span>(</span><span>instance: list[str])</span>
+<span>(</span><span>instance: list[str],<br>solution: str | None = None,<br>best_bound: float = 0.0,<br>inner_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Model:
-    def __init__(self, instance: list[str]):
-        self.instance: list[str] = instance
-        self.status: hexaly.optimizer.HxSolutionStatus | None = None
-        self.solution: str | None = None
-        self.best_bound: int = 0
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+    inner_bound: float = 0.0
 
-    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -&gt; str | None:
         with hexaly.optimizer.HexalyOptimizer() as hxoptimizer:
             assert isinstance(hxoptimizer.model, hexaly.optimizer.HxModel)
             assert isinstance(hxoptimizer.param, hexaly.optimizer.HxParam)
@@ -130,10 +114,9 @@ el.replaceWith(d);
             assert isinstance(hxoptimizer.solution, hexaly.optimizer.HxSolution)
             hxsolution: hexaly.optimizer.HxSolution = hxoptimizer.solution
 
-            self.status = hxsolution.status
-            self.best_bound = hxsolution.get_objective_bound(0)
+            self.inner_bound = float(hxsolution.get_objective_bound(0))
 
-            if self.status in {
+            if hxsolution.status in {
                 hexaly.optimizer.HxSolutionStatus.OPTIMAL,
                 hexaly.optimizer.HxSolutionStatus.FEASIBLE,
             }:
@@ -145,24 +128,47 @@ el.replaceWith(d);
                 for idx in sorted(list(set(sum(cvars_val, [])))):
                     solution += chars[idx % len(chars)]
                 self.solution = solution
+            else:
+                self.solution = None
 
-        return self
+        return self.solution
 
     def to_solution(self) -&gt; str | None:
         return self.solution</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0, inner_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model.inner_bound"><code class="name">var <span class="ident">inner_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="opt_note.scsp.model.dr_alphabet_hexaly.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.dr_alphabet_hexaly.Model" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model">Model</a></span>
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False, *args, **kwargs) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
+<pre><code class="python">def solve(
+    self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+) -&gt; str | None:
     with hexaly.optimizer.HexalyOptimizer() as hxoptimizer:
         assert isinstance(hxoptimizer.model, hexaly.optimizer.HxModel)
         assert isinstance(hxoptimizer.param, hexaly.optimizer.HxParam)
@@ -207,10 +213,9 @@ el.replaceWith(d);
         assert isinstance(hxoptimizer.solution, hexaly.optimizer.HxSolution)
         hxsolution: hexaly.optimizer.HxSolution = hxoptimizer.solution
 
-        self.status = hxsolution.status
-        self.best_bound = hxsolution.get_objective_bound(0)
+        self.inner_bound = float(hxsolution.get_objective_bound(0))
 
-        if self.status in {
+        if hxsolution.status in {
             hexaly.optimizer.HxSolutionStatus.OPTIMAL,
             hexaly.optimizer.HxSolutionStatus.FEASIBLE,
         }:
@@ -222,8 +227,10 @@ el.replaceWith(d);
             for idx in sorted(list(set(sum(cvars_val, [])))):
                 solution += chars[idx % len(chars)]
             self.solution = solution
+        else:
+            self.solution = None
 
-    return self</code></pre>
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -257,16 +264,15 @@ el.replaceWith(d);
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.solve" href="#opt_note.scsp.model.dr_alphabet_hexaly.solve">solve</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model">Model</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.best_bound" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.inner_bound" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.inner_bound">inner_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.instance" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.solution" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.solution">solution</a></code></li>
 <li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.solve" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.solve">solve</a></code></li>
 <li><code><a title="opt_note.scsp.model.dr_alphabet_hexaly.Model.to_solution" href="#opt_note.scsp.model.dr_alphabet_hexaly.Model.to_solution">to_solution</a></code></li>
 </ul>

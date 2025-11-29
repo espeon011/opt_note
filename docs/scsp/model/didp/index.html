@@ -57,8 +57,10 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def boundexpr_scs2len(
-    instance: list[str], dpmodel: didppy.Model, index_vars: list[didppy.ElementVar]
-) -&gt; didppy.IntExpr:
+    instance: list[str],
+    dpmodel: didppy.Model,  # pyrefly: ignore
+    index_vars: list[didppy.ElementVar],  # pyrefly: ignore
+) -&gt; didppy.IntExpr:  # pyrefly: ignore
     exprs = []
     for idx1, (s1, index_var1) in enumerate(zip(instance, index_vars)):
         for idx2, (s2, index_var2) in enumerate(zip(instance, index_vars)):
@@ -67,9 +69,9 @@ el.replaceWith(d);
             table_idx1_idx2 = dpmodel.add_int_table(boundtable_scs2(s1, s2))
             exprs.append(table_idx1_idx2[index_var1, index_var2])
 
-    bound = didppy.IntExpr(0)
+    bound = didppy.IntExpr(0)  # pyrefly: ignore
     for expr in exprs:
-        bound = didppy.max(bound, expr)
+        bound = didppy.max(bound, expr)  # pyrefly: ignore
 
     return bound</code></pre>
 </details>
@@ -104,21 +106,6 @@ el.replaceWith(d);
 </details>
 <div class="desc"></div>
 </dd>
-<dt id="opt_note.scsp.model.didp.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def solve(instance: list[str], time_limit: int | None = 60, log: bool = False) -&gt; str:
-    model = Model(instance)
-    model.solve(time_limit, log)
-    return model.to_solution()</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
 </dl>
 </section>
 <section>
@@ -126,49 +113,61 @@ el.replaceWith(d);
 <dl>
 <dt id="opt_note.scsp.model.didp.Model"><code class="flex name class">
 <span>class <span class="ident">Model</span></span>
-<span>(</span><span>instance: list[str],<br>extra_bounds: list[TypeBoundExprFunc] | None = None,<br>disable_default_bound: bool = False)</span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Model:
-    def __init__(
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(
         self,
-        instance: list[str],
+        time_limit: int | None = 60,
+        log: bool = False,
         extra_bounds: list[TypeBoundExprFunc] | None = None,
         disable_default_bound: bool = False,
-    ):
-        chars = sorted(list(set(&#34;&#34;.join(instance))))
+        *args,
+        **kwargs,
+    ) -&gt; str | None:
+        chars = sorted(list(set(&#34;&#34;.join(self.instance))))
 
+        # pyrefly: ignore
         dpmodel = didppy.Model(maximize=False, float_cost=False)
 
-        index_types = [dpmodel.add_object_type(number=len(s) + 1) for s in instance]
+        index_types = [
+            dpmodel.add_object_type(number=len(s) + 1) for s in self.instance
+        ]
         index_vars = [
             dpmodel.add_element_var(object_type=index_type, target=0)
             for index_type in index_types
         ]
 
         instance_table = dpmodel.add_element_table(
-            [[chars.index(c) for c in s] + [len(chars)] for s in instance]
+            [[chars.index(c) for c in s] + [len(chars)] for s in self.instance]
         )
 
         dpmodel.add_base_case(
-            [index_var == len(s) for s, index_var in zip(instance, index_vars)]
+            [index_var == len(s) for s, index_var in zip(self.instance, index_vars)]
         )
 
         # 文字 char に従って進む
         for id_char, char in enumerate(chars):
-            condition = didppy.Condition(False)
+            condition = didppy.Condition(False)  # pyrefly: ignore
             for sidx, index_var in enumerate(index_vars):
                 condition |= instance_table[sidx, index_var] == id_char
-            trans = didppy.Transition(
+            trans = didppy.Transition(  # pyrefly: ignore
                 name=f&#34;{char}&#34;,
-                cost=1 + didppy.IntExpr.state_cost(),
+                cost=1 + didppy.IntExpr.state_cost(),  # pyrefly: ignore
                 effects=[
                     (
                         index_var,
+                        # pyrefly: ignore
                         (instance_table[sidx, index_var] == id_char).if_then_else(
                             index_var + 1, index_var
                         ),
@@ -181,58 +180,137 @@ el.replaceWith(d);
 
         # 残っている文字列から 2 つを選んで SCS を取って長さが最大のものを Dual Bound とする.
         if not disable_default_bound:
-            dpmodel.add_dual_bound(boundexpr_scs2len(instance, dpmodel, index_vars))
+            dpmodel.add_dual_bound(
+                boundexpr_scs2len(self.instance, dpmodel, index_vars)
+            )
 
         # 追加の Dual Bound があれば.
         if extra_bounds:
             for bound_func in extra_bounds:
-                dpmodel.add_dual_bound(bound_func(instance, dpmodel, index_vars))
+                dpmodel.add_dual_bound(bound_func(self.instance, dpmodel, index_vars))
 
-        self.instance = instance
-        self.dpmodel = dpmodel
-        self.dpsolver = None
-        self.solution = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-        self.dpsolver = didppy.CABS(
-            self.dpmodel, threads=12, time_limit=time_limit, quiet=(not log)
+        dpsolver = didppy.CABS(  # pyrefly: ignore
+            dpmodel, threads=12, time_limit=time_limit, quiet=(not log)
         )
-        self.solution = self.dpsolver.search()
-        return self
+        didpsolution = dpsolver.search()
 
-    def to_solution(self) -&gt; str:
-        return &#34;&#34;.join([trans.name for trans in self.solution.transitions])</code></pre>
+        if not didpsolution.is_infeasible and len(didpsolution.transitions) &gt; 0:
+            self.solution = &#34;&#34;.join([trans.name for trans in didpsolution.transitions])
+        else:
+            self.solution = None
+
+        if didpsolution.best_bound is not None:
+            self.best_bound = float(didpsolution.best_bound)
+        else:
+            self.best_bound = 0.0
+
+        return self.solution</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.didp.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.didp.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.didp.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="opt_note.scsp.model.didp.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.didp.Model" href="#opt_note.scsp.model.didp.Model">Model</a></span>
+<span>def <span class="ident">solve</span></span>(<span>self,<br>time_limit: int | None = 60,<br>log: bool = False,<br>extra_bounds: list[TypeBoundExprFunc] | None = None,<br>disable_default_bound: bool = False,<br>*args,<br>**kwargs) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-    self.dpsolver = didppy.CABS(
-        self.dpmodel, threads=12, time_limit=time_limit, quiet=(not log)
+<pre><code class="python">def solve(
+    self,
+    time_limit: int | None = 60,
+    log: bool = False,
+    extra_bounds: list[TypeBoundExprFunc] | None = None,
+    disable_default_bound: bool = False,
+    *args,
+    **kwargs,
+) -&gt; str | None:
+    chars = sorted(list(set(&#34;&#34;.join(self.instance))))
+
+    # pyrefly: ignore
+    dpmodel = didppy.Model(maximize=False, float_cost=False)
+
+    index_types = [
+        dpmodel.add_object_type(number=len(s) + 1) for s in self.instance
+    ]
+    index_vars = [
+        dpmodel.add_element_var(object_type=index_type, target=0)
+        for index_type in index_types
+    ]
+
+    instance_table = dpmodel.add_element_table(
+        [[chars.index(c) for c in s] + [len(chars)] for s in self.instance]
     )
-    self.solution = self.dpsolver.search()
-    return self</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-<dt id="opt_note.scsp.model.didp.Model.to_solution"><code class="name flex">
-<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_solution(self) -&gt; str:
-    return &#34;&#34;.join([trans.name for trans in self.solution.transitions])</code></pre>
+
+    dpmodel.add_base_case(
+        [index_var == len(s) for s, index_var in zip(self.instance, index_vars)]
+    )
+
+    # 文字 char に従って進む
+    for id_char, char in enumerate(chars):
+        condition = didppy.Condition(False)  # pyrefly: ignore
+        for sidx, index_var in enumerate(index_vars):
+            condition |= instance_table[sidx, index_var] == id_char
+        trans = didppy.Transition(  # pyrefly: ignore
+            name=f&#34;{char}&#34;,
+            cost=1 + didppy.IntExpr.state_cost(),  # pyrefly: ignore
+            effects=[
+                (
+                    index_var,
+                    # pyrefly: ignore
+                    (instance_table[sidx, index_var] == id_char).if_then_else(
+                        index_var + 1, index_var
+                    ),
+                )
+                for sidx, index_var in enumerate(index_vars)
+            ],
+            preconditions=[condition],
+        )
+        dpmodel.add_transition(trans)
+
+    # 残っている文字列から 2 つを選んで SCS を取って長さが最大のものを Dual Bound とする.
+    if not disable_default_bound:
+        dpmodel.add_dual_bound(
+            boundexpr_scs2len(self.instance, dpmodel, index_vars)
+        )
+
+    # 追加の Dual Bound があれば.
+    if extra_bounds:
+        for bound_func in extra_bounds:
+            dpmodel.add_dual_bound(bound_func(self.instance, dpmodel, index_vars))
+
+    dpsolver = didppy.CABS(  # pyrefly: ignore
+        dpmodel, threads=12, time_limit=time_limit, quiet=(not log)
+    )
+    didpsolution = dpsolver.search()
+
+    if not didpsolution.is_infeasible and len(didpsolution.transitions) &gt; 0:
+        self.solution = &#34;&#34;.join([trans.name for trans in didpsolution.transitions])
+    else:
+        self.solution = None
+
+    if didpsolution.best_bound is not None:
+        self.best_bound = float(didpsolution.best_bound)
+    else:
+        self.best_bound = 0.0
+
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -257,7 +335,6 @@ el.replaceWith(d);
 <ul class="">
 <li><code><a title="opt_note.scsp.model.didp.boundexpr_scs2len" href="#opt_note.scsp.model.didp.boundexpr_scs2len">boundexpr_scs2len</a></code></li>
 <li><code><a title="opt_note.scsp.model.didp.boundtable_scs2" href="#opt_note.scsp.model.didp.boundtable_scs2">boundtable_scs2</a></code></li>
-<li><code><a title="opt_note.scsp.model.didp.solve" href="#opt_note.scsp.model.didp.solve">solve</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -265,8 +342,10 @@ el.replaceWith(d);
 <li>
 <h4><code><a title="opt_note.scsp.model.didp.Model" href="#opt_note.scsp.model.didp.Model">Model</a></code></h4>
 <ul class="">
+<li><code><a title="opt_note.scsp.model.didp.Model.best_bound" href="#opt_note.scsp.model.didp.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.didp.Model.instance" href="#opt_note.scsp.model.didp.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.didp.Model.solution" href="#opt_note.scsp.model.didp.Model.solution">solution</a></code></li>
 <li><code><a title="opt_note.scsp.model.didp.Model.solve" href="#opt_note.scsp.model.didp.Model.solve">solve</a></code></li>
-<li><code><a title="opt_note.scsp.model.didp.Model.to_solution" href="#opt_note.scsp.model.didp.Model.to_solution">to_solution</a></code></li>
 </ul>
 </li>
 </ul>

@@ -34,74 +34,90 @@
 ## Python Code
 
 ```python
+from dataclasses import dataclass
 from ortools.sat.python import cp_model
+from ..alphabet import Model as ModelAlphabet
 
 
-class Model:
-    def __init__(self, instance: list[str]):
-        chars = "".join(sorted(list(set("".join(instance)))))
-        max_len = len(chars) * max(len(s) for s in instance)
+@dataclass
+class ModelReduction:
+    instance: list[str]
+    template: str
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(self, time_limit: int | None = 60, log: bool = False) -> str | None:
+        chars = "".join(sorted(list(set("".join(self.instance + [self.template])))))
 
         cpmodel = cp_model.CpModel()
+        cpsolver = cp_model.CpSolver()
 
-        valids = [cpmodel.new_bool_var("") for _ in range(max_len)]
+        valids = [cpmodel.new_bool_var("") for _ in self.template]
         cvars = [
-            [cpmodel.new_int_var(0, max(len(s) for s in instance) - 1, "") for c in s]
-            for s in instance
+            [
+                cpmodel.new_int_var_from_domain(
+                    cp_model.Domain.from_values(
+                        [idx for idx, solc in enumerate(self.template) if c == solc]
+                    ),
+                    "",
+                )
+                for c in s
+            ]
+            for s in self.instance
         ]
 
-        for sidx, s in enumerate(instance):
+        for sidx, s in enumerate(self.instance):
             for cidx, c in enumerate(s):
                 if cidx == 0:
                     continue
-                prev_c = s[cidx - 1]
-                if chars.index(prev_c) < chars.index(c):
-                    cpmodel.add(cvars[sidx][cidx - 1] <= cvars[sidx][cidx])
-                else:
-                    cpmodel.add(cvars[sidx][cidx - 1] < cvars[sidx][cidx])
+                cpmodel.add(cvars[sidx][cidx - 1] < cvars[sidx][cidx])
 
-        for sidx, s in enumerate(instance):
+        for sidx, s in enumerate(self.instance):
             for cidx, c in enumerate(s):
-                cpmodel.add_element(
-                    len(chars) * cvars[sidx][cidx] + chars.index(c),
-                    valids,
-                    1,
-                )
+                cpmodel.add_element(cvars[sidx][cidx], valids, 1)
 
         cpmodel.minimize(sum(valids))
+        # cpmodel.minimize(cp_model.LinearExpr.sum(valids))
 
-        self.instance = instance
-        self.chars = chars
-        self.cpmodel = cpmodel
-        self.cpsolver = cp_model.CpSolver()
-        self.valids = valids
-        self.status: cp_model.cp_model_pb2.CpSolverStatus | None = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        self.cpsolver.parameters.log_search_progress = log
+        cpsolver.parameters.log_search_progress = log
         if time_limit is not None:
-            self.cpsolver.parameters.max_time_in_seconds = time_limit
-        self.status = self.cpsolver.solve(self.cpmodel)
+            cpsolver.parameters.max_time_in_seconds = time_limit
 
-        return self
+        status = cpsolver.solve(cpmodel)
 
-    def to_solution(self) -> str | None:
-        if self.status not in {
+        self.best_bound = cpsolver.best_objective_bound
+
+        if status in {
             cp_model.cp_model_pb2.OPTIMAL,
             cp_model.cp_model_pb2.FEASIBLE,
         }:
+            solution = ""
+            for idx, valid in enumerate(valids):
+                if cpsolver.boolean_value(valid):
+                    solution += chars[idx % len(chars)]
+            self.solution = solution
+        else:
+            self.solution = None
+
+        return self.solution
+
+
+@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+    inner_bound: float = 0.0
+
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -> str | None:
+        template = ModelAlphabet(self.instance).solve()
+        if template is None:
             return None
-
-        solution = ""
-        for idx, valid in enumerate(self.valids):
-            if self.cpsolver.boolean_value(valid):
-                solution += self.chars[idx % len(self.chars)]
-
-        return solution
-
-
-def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str | None:
-    return Model(instance).solve(time_limit, log).to_solution()
+        inner_model = ModelReduction(self.instance, template)
+        inner_model.solve(time_limit, log)
+        self.solution = inner_model.solution
+        self.inner_bound = inner_model.best_bound
+        return self.solution
 ```

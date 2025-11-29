@@ -2,17 +2,20 @@
 .. include:: ./README.md
 """
 
+from dataclasses import dataclass
 import hexaly.optimizer
 
 
+@dataclass
 class Model:
-    def __init__(self, instance: list[str]):
-        self.instance: list[str] = instance
-        self.status: hexaly.optimizer.HxSolutionStatus | None = None
-        self.solution: str | None = None
-        self.best_bound: int = 0
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+    inner_bound: float = 0.0
 
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -> str | None:
         with hexaly.optimizer.HexalyOptimizer() as hxoptimizer:
             assert isinstance(hxoptimizer.model, hexaly.optimizer.HxModel)
             assert isinstance(hxoptimizer.param, hexaly.optimizer.HxParam)
@@ -57,10 +60,9 @@ class Model:
             assert isinstance(hxoptimizer.solution, hexaly.optimizer.HxSolution)
             hxsolution: hexaly.optimizer.HxSolution = hxoptimizer.solution
 
-            self.status = hxsolution.status
-            self.best_bound = hxsolution.get_objective_bound(0)
+            self.inner_bound = float(hxsolution.get_objective_bound(0))
 
-            if self.status in {
+            if hxsolution.status in {
                 hexaly.optimizer.HxSolutionStatus.OPTIMAL,
                 hexaly.optimizer.HxSolutionStatus.FEASIBLE,
             }:
@@ -72,14 +74,10 @@ class Model:
                 for idx in sorted(list(set(sum(cvars_val, [])))):
                     solution += chars[idx % len(chars)]
                 self.solution = solution
+            else:
+                self.solution = None
 
-        return self
+        return self.solution
 
     def to_solution(self) -> str | None:
         return self.solution
-
-
-def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str | None:
-    return Model(instance).solve(time_limit, log).to_solution()

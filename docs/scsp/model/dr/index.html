@@ -107,8 +107,21 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
 <div class="desc"><p><code>s1[idx:]</code> が <code>s2</code> の部分配列となるもののうち最小の idx を返す.
 (つまり <code>s1[idx:]</code> が最長となるようにする. )</p></div>
 </dd>
+<dt id="opt_note.scsp.model.dr.original_deposition"><code class="name flex">
+<span>def <span class="ident">original_deposition</span></span>(<span>instance: list[str]) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def original_deposition(instance: list[str]) -&gt; str | None:
+    return la_sh.Model(instance).solve()</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
 <dt id="opt_note.scsp.model.dr.original_reduction"><code class="name flex">
-<span>def <span class="ident">original_reduction</span></span>(<span>instance: list[str],<br>template: str,<br>time_limit: int | None = 60,<br>solve_func: Callable[[list[str]], str | None] = &lt;function solve&gt;) ‑> str | None</span>
+<span>def <span class="ident">original_reduction</span></span>(<span>instance: list[str],<br>template: str,<br>time_limit: int | None = 60,<br>*args,<br>solve_func: Callable[[list[str]], str | None] = &lt;function solve_func_default&gt;,<br>**kwargs) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -119,7 +132,9 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
     instance: list[str],
     template: str,
     time_limit: int | None = 60,
-    solve_func: Callable[[list[str]], str | None] = la_sh.solve,
+    *args,
+    solve_func: Callable[[list[str]], str | None] = solve_func_default,
+    **kwargs,
 ) -&gt; str | None:
     start = datetime.datetime.now()
     if time_limit is not None:
@@ -163,25 +178,16 @@ $\mathrm{sol}$ を $\mathrm{sol}_l'$ と $\mathrm{sol}_r$ を結合したもの�
 </details>
 <div class="desc"></div>
 </dd>
-<dt id="opt_note.scsp.model.dr.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str],<br>time_limit: int | None = 60,<br>deposition: <a title="opt_note.scsp.model.dr.DepositionFuncType" href="#opt_note.scsp.model.dr.DepositionFuncType">DepositionFuncType</a> = &lt;function solve&gt;,<br>reduction: <a title="opt_note.scsp.model.dr.ReductionFuncType" href="#opt_note.scsp.model.dr.ReductionFuncType">ReductionFuncType</a> = &lt;function original_reduction&gt;) ‑> str | None</span>
+<dt id="opt_note.scsp.model.dr.solve_func_default"><code class="name flex">
+<span>def <span class="ident">solve_func_default</span></span>(<span>instance: list[str]) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(
-    instance: list[str],
-    time_limit: int | None = 60,
-    deposition: DepositionFuncType = la_sh.solve,
-    reduction: ReductionFuncType = original_reduction,
-) -&gt; str | None:
-    template = deposition(instance)
-    if template is None:
-        return None
-
-    return reduction(instance, template, time_limit)</code></pre>
+<pre><code class="python">def solve_func_default(instance: list[str]) -&gt; str | None:
+    return la_sh.Model(instance).solve()</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -234,6 +240,81 @@ Protocol classes can be generic, they are defined as::</p>
 <li>typing.Generic</li>
 </ul>
 </dd>
+<dt id="opt_note.scsp.model.dr.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(
+        self,
+        time_limit: int | None = 60,
+        log: bool = False,
+        deposition: DepositionFuncType = original_deposition,
+        reduction: ReductionFuncType = original_reduction,
+        *args,
+        **kwargs,
+    ) -&gt; str | None:
+        template = deposition(self.instance)
+        if template is None:
+            return None
+        self.solution = reduction(self.instance, template, time_limit, log)
+        return self.solution</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self,<br>time_limit: int | None = 60,<br>log: bool = False,<br>deposition: <a title="opt_note.scsp.model.dr.DepositionFuncType" href="#opt_note.scsp.model.dr.DepositionFuncType">DepositionFuncType</a> = &lt;function original_deposition&gt;,<br>reduction: <a title="opt_note.scsp.model.dr.ReductionFuncType" href="#opt_note.scsp.model.dr.ReductionFuncType">ReductionFuncType</a> = &lt;function original_reduction&gt;,<br>*args,<br>**kwargs) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(
+    self,
+    time_limit: int | None = 60,
+    log: bool = False,
+    deposition: DepositionFuncType = original_deposition,
+    reduction: ReductionFuncType = original_reduction,
+    *args,
+    **kwargs,
+) -&gt; str | None:
+    template = deposition(self.instance)
+    if template is None:
+        return None
+    self.solution = reduction(self.instance, template, time_limit, log)
+    return self.solution</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="opt_note.scsp.model.dr.ReductionFuncType"><code class="flex name class">
 <span>class <span class="ident">ReductionFuncType</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -249,6 +330,7 @@ Protocol classes can be generic, they are defined as::</p>
         instance: list[str],
         template: str,
         time_limit: int | None = 60,
+        log: bool = False,
     ) -&gt; str | None: ...</code></pre>
 </details>
 <div class="desc"><p>Base class for protocol classes.</p>
@@ -305,14 +387,24 @@ Protocol classes can be generic, they are defined as::</p>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="opt_note.scsp.model.dr.longest_suffix_index" href="#opt_note.scsp.model.dr.longest_suffix_index">longest_suffix_index</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.original_deposition" href="#opt_note.scsp.model.dr.original_deposition">original_deposition</a></code></li>
 <li><code><a title="opt_note.scsp.model.dr.original_reduction" href="#opt_note.scsp.model.dr.original_reduction">original_reduction</a></code></li>
-<li><code><a title="opt_note.scsp.model.dr.solve" href="#opt_note.scsp.model.dr.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.solve_func_default" href="#opt_note.scsp.model.dr.solve_func_default">solve_func_default</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="opt_note.scsp.model.dr.DepositionFuncType" href="#opt_note.scsp.model.dr.DepositionFuncType">DepositionFuncType</a></code></h4>
+</li>
+<li>
+<h4><code><a title="opt_note.scsp.model.dr.Model" href="#opt_note.scsp.model.dr.Model">Model</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.dr.Model.best_bound" href="#opt_note.scsp.model.dr.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.Model.instance" href="#opt_note.scsp.model.dr.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.Model.solution" href="#opt_note.scsp.model.dr.Model.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr.Model.solve" href="#opt_note.scsp.model.dr.Model.solve">solve</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="opt_note.scsp.model.dr.ReductionFuncType" href="#opt_note.scsp.model.dr.ReductionFuncType">ReductionFuncType</a></code></h4>

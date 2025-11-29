@@ -36,6 +36,7 @@ Reduction プロセスでは Deposition プロセスで作成した共通超配�
 ## Python Code
 
 ```python
+from dataclasses import dataclass
 from collections.abc import Callable
 from typing import Protocol
 import datetime
@@ -58,11 +59,21 @@ def longest_suffix_index(s1: str, s2: str) -> int:
     return next + 1
 
 
+def solve_func_default(instance: list[str]) -> str | None:
+    return la_sh.Model(instance).solve()
+
+
+def original_deposition(instance: list[str]) -> str | None:
+    return la_sh.Model(instance).solve()
+
+
 def original_reduction(
     instance: list[str],
     template: str,
     time_limit: int | None = 60,
-    solve_func: Callable[[list[str]], str | None] = la_sh.solve,
+    *args,
+    solve_func: Callable[[list[str]], str | None] = solve_func_default,
+    **kwargs,
 ) -> str | None:
     start = datetime.datetime.now()
     if time_limit is not None:
@@ -115,18 +126,28 @@ class ReductionFuncType(Protocol):
         instance: list[str],
         template: str,
         time_limit: int | None = 60,
+        log: bool = False,
     ) -> str | None: ...
 
 
-def solve(
-    instance: list[str],
-    time_limit: int | None = 60,
-    deposition: DepositionFuncType = la_sh.solve,
-    reduction: ReductionFuncType = original_reduction,
-) -> str | None:
-    template = deposition(instance)
-    if template is None:
-        return None
+@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
-    return reduction(instance, template, time_limit)
+    def solve(
+        self,
+        time_limit: int | None = 60,
+        log: bool = False,
+        deposition: DepositionFuncType = original_deposition,
+        reduction: ReductionFuncType = original_reduction,
+        *args,
+        **kwargs,
+    ) -> str | None:
+        template = deposition(self.instance)
+        if template is None:
+            return None
+        self.solution = reduction(self.instance, template, time_limit, log)
+        return self.solution
 ```

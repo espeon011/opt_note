@@ -30,6 +30,7 @@
 ```python
 import math
 import copy
+from dataclasses import dataclass
 
 
 def make_prob_table(num_chars: int, max_len: int) -> list[list[float]]:
@@ -92,46 +93,55 @@ class State:
         return ret
 
 
-def solve(instance: list[str], beta: int = 100, kappa: int = 7) -> str:
-    chars = "".join(sorted(list(set("".join(instance)))))
-    prob_table = make_prob_table(len(chars), max(len(s) for s in instance))
-    states: list[State] = [State(instance)]
+@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
-    while True:
-        # Step 1: Extension
-        new_states: list[State] = []
-        for state in states:
-            for char in chars:
-                if state.is_usable(char):
-                    new_state = state.use(char)
-                    if new_state.is_feasible():
-                        return new_state.solution
-                    else:
-                        new_states.append(new_state)
+    def solve(self, beta: int = 100, kappa: int = 7, *args, **kwargs) -> str | None:
+        chars = "".join(sorted(list(set("".join(self.instance)))))
+        prob_table = make_prob_table(len(chars), max(len(s) for s in self.instance))
+        states: list[State] = [State(self.instance)]
 
-        # Step 2: Evaluation of candidate solutions
-        k = math.ceil(
-            math.log2(len(chars))
-            * max(
-                len(s) - pos
-                for state in new_states
-                for s, pos in zip(instance, state.positions)
+        while True:
+            # Step 1: Extension
+            new_states: list[State] = []
+            for state in states:
+                for char in chars:
+                    if state.is_usable(char):
+                        new_state = state.use(char)
+                        if new_state.is_feasible():
+                            self.solution = new_state.solution
+                            return self.solution
+                        else:
+                            new_states.append(new_state)
+
+            # Step 2: Evaluation of candidate solutions
+            k = math.ceil(
+                math.log2(len(chars))
+                * max(
+                    len(s) - pos
+                    for state in new_states
+                    for s, pos in zip(self.instance, state.positions)
+                )
             )
-        )
-        # k は残りの部分の SCS 長さの推定値を表している.
-        # k をどのような値にセットするのがよいのかは Open Problem とされている.
+            # k は残りの部分の SCS 長さの推定値を表している.
+            # k をどのような値にセットするのがよいのかは Open Problem とされている.
 
-        # 元論文ではこの辺りに評価用ヒューリスティック関数値の計算があった.
+            # 元論文ではこの辺りに評価用ヒューリスティック関数値の計算があった.
 
-        # Step 3: Dominance pruning
-        new_states.sort(key=lambda state: state.heuristic(prob_table, k), reverse=True)
-        kappa_best_list = new_states[:kappa]
-        new_states = [
-            new_state
-            for new_state in new_states
-            if all(not better.dominate(new_state) for better in kappa_best_list)
-        ]
+            # Step 3: Dominance pruning
+            new_states.sort(
+                key=lambda state: state.heuristic(prob_table, k), reverse=True
+            )
+            kappa_best_list = new_states[:kappa]
+            new_states = [
+                new_state
+                for new_state in new_states
+                if all(not better.dominate(new_state) for better in kappa_best_list)
+            ]
 
-        # Step 4: Selection
-        states = new_states[:beta]
+            # Step 4: Selection
+            states = new_states[:beta]
 ```

@@ -66,40 +66,96 @@ el.replaceWith(d);
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="opt_note.scsp.model.mm.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str]) ‑> str</span>
+<dt id="opt_note.scsp.model.mm.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(instance: list[str]) -&gt; str:
-    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
-    indices = [0 for _ in instance]
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(self, *args, **kwargs) -&gt; str | None:
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
+        indices = [0 for _ in self.instance]
+        solution = &#34;&#34;
+
+        while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
+            fronts = [s[idx] for idx, s in zip(indices, self.instance) if idx &lt; len(s)]
+            counts = [fronts.count(c) for c in chars]
+            next_char = chars[counts.index(max(counts))]
+
+            solution += next_char
+            for jdx in range(len(self.instance)):
+                s = self.instance[jdx]
+                idx = indices[jdx]
+                if idx &lt; len(s) and s[idx] == next_char:
+                    indices[jdx] += 1
+
+        self.solution = solution
+        return self.solution</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.mm.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.mm.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.mm.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.mm.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, *args, **kwargs) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(self, *args, **kwargs) -&gt; str | None:
+    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
+    indices = [0 for _ in self.instance]
     solution = &#34;&#34;
 
-    while not all(idx == len(s) for idx, s in zip(indices, instance)):
-        fronts = [s[idx] for idx, s in zip(indices, instance) if idx &lt; len(s)]
+    while not all(idx == len(s) for idx, s in zip(indices, self.instance)):
+        fronts = [s[idx] for idx, s in zip(indices, self.instance) if idx &lt; len(s)]
         counts = [fronts.count(c) for c in chars]
         next_char = chars[counts.index(max(counts))]
 
         solution += next_char
-        for jdx in range(len(instance)):
-            s = instance[jdx]
+        for jdx in range(len(self.instance)):
+            s = self.instance[jdx]
             idx = indices[jdx]
             if idx &lt; len(s) and s[idx] == next_char:
                 indices[jdx] += 1
 
-    return solution</code></pre>
+    self.solution = solution
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -114,9 +170,17 @@ el.replaceWith(d);
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.mm.Model" href="#opt_note.scsp.model.mm.Model">Model</a></code></h4>
 <ul class="">
-<li><code><a title="opt_note.scsp.model.mm.solve" href="#opt_note.scsp.model.mm.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.mm.Model.best_bound" href="#opt_note.scsp.model.mm.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.mm.Model.instance" href="#opt_note.scsp.model.mm.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.mm.Model.solution" href="#opt_note.scsp.model.mm.Model.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.mm.Model.solve" href="#opt_note.scsp.model.mm.Model.solve">solve</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

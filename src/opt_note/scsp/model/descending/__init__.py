@@ -2,6 +2,8 @@
 .. include:: ./README.md
 """
 
+from dataclasses import dataclass
+
 
 def scs2(s1: str, s2: str) -> str:
     """
@@ -33,11 +35,18 @@ def scs2(s1: str, s2: str) -> str:
     return dp[-1][-1]
 
 
-def solve(instance: list[str]) -> str:
-    instance_sorted = sorted(instance, key=lambda s: len(s), reverse=True)
+@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
-    solution = instance_sorted[0]
-    for s in instance_sorted[1:]:
-        solution = scs2(solution, s)
+    def solve(self, *args, **kwargs) -> str | None:
+        instance_sorted = sorted(self.instance, key=lambda s: len(s), reverse=True)
 
-    return solution
+        solution = instance_sorted[0]
+        for s in instance_sorted[1:]:
+            solution = scs2(solution, s)
+
+        self.solution = solution
+        return self.solution

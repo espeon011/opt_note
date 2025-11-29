@@ -114,18 +114,102 @@ el.replaceWith(d);
 <div class="desc"><p>以下の値が入っている 2 次元配列 p を返す:
 p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ k の文字列 y に対して, w が y の subsequence になる確率</p></div>
 </dd>
-<dt id="opt_note.scsp.model.ibs_scs.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], beta: int = 100, kappa: int = 7) ‑> str</span>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="opt_note.scsp.model.ibs_scs.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str], solution: str | None = None, best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(instance: list[str], beta: int = 100, kappa: int = 7) -&gt; str:
-    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
-    prob_table = make_prob_table(len(chars), max(len(s) for s in instance))
-    states: list[State] = [State(instance)]
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(self, beta: int = 100, kappa: int = 7, *args, **kwargs) -&gt; str | None:
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
+        prob_table = make_prob_table(len(chars), max(len(s) for s in self.instance))
+        states: list[State] = [State(self.instance)]
+
+        while True:
+            # Step 1: Extension
+            new_states: list[State] = []
+            for state in states:
+                for char in chars:
+                    if state.is_usable(char):
+                        new_state = state.use(char)
+                        if new_state.is_feasible():
+                            self.solution = new_state.solution
+                            return self.solution
+                        else:
+                            new_states.append(new_state)
+
+            # Step 2: Evaluation of candidate solutions
+            k = math.ceil(
+                math.log2(len(chars))
+                * max(
+                    len(s) - pos
+                    for state in new_states
+                    for s, pos in zip(self.instance, state.positions)
+                )
+            )
+            # k は残りの部分の SCS 長さの推定値を表している.
+            # k をどのような値にセットするのがよいのかは Open Problem とされている.
+
+            # 元論文ではこの辺りに評価用ヒューリスティック関数値の計算があった.
+
+            # Step 3: Dominance pruning
+            new_states.sort(
+                key=lambda state: state.heuristic(prob_table, k), reverse=True
+            )
+            kappa_best_list = new_states[:kappa]
+            new_states = [
+                new_state
+                for new_state in new_states
+                if all(not better.dominate(new_state) for better in kappa_best_list)
+            ]
+
+            # Step 4: Selection
+            states = new_states[:beta]</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.ibs_scs.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.ibs_scs.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.ibs_scs.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.ibs_scs.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, beta: int = 100, kappa: int = 7, *args, **kwargs) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve(self, beta: int = 100, kappa: int = 7, *args, **kwargs) -&gt; str | None:
+    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance)))))
+    prob_table = make_prob_table(len(chars), max(len(s) for s in self.instance))
+    states: list[State] = [State(self.instance)]
 
     while True:
         # Step 1: Extension
@@ -135,7 +219,8 @@ p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ 
                 if state.is_usable(char):
                     new_state = state.use(char)
                     if new_state.is_feasible():
-                        return new_state.solution
+                        self.solution = new_state.solution
+                        return self.solution
                     else:
                         new_states.append(new_state)
 
@@ -145,7 +230,7 @@ p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ 
             * max(
                 len(s) - pos
                 for state in new_states
-                for s, pos in zip(instance, state.positions)
+                for s, pos in zip(self.instance, state.positions)
             )
         )
         # k は残りの部分の SCS 長さの推定値を表している.
@@ -154,7 +239,9 @@ p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ 
         # 元論文ではこの辺りに評価用ヒューリスティック関数値の計算があった.
 
         # Step 3: Dominance pruning
-        new_states.sort(key=lambda state: state.heuristic(prob_table, k), reverse=True)
+        new_states.sort(
+            key=lambda state: state.heuristic(prob_table, k), reverse=True
+        )
         kappa_best_list = new_states[:kappa]
         new_states = [
             new_state
@@ -168,10 +255,7 @@ p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ 
 <div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
+</dd>
 <dt id="opt_note.scsp.model.ibs_scs.State"><code class="flex name class">
 <span>class <span class="ident">State</span></span>
 <span>(</span><span>instance: list[str])</span>
@@ -318,11 +402,19 @@ p[q][k] = 一様ランダムに生成された長さ q の文字列 w と長さ 
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="opt_note.scsp.model.ibs_scs.make_prob_table" href="#opt_note.scsp.model.ibs_scs.make_prob_table">make_prob_table</a></code></li>
-<li><code><a title="opt_note.scsp.model.ibs_scs.solve" href="#opt_note.scsp.model.ibs_scs.solve">solve</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="opt_note.scsp.model.ibs_scs.Model" href="#opt_note.scsp.model.ibs_scs.Model">Model</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.ibs_scs.Model.best_bound" href="#opt_note.scsp.model.ibs_scs.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.ibs_scs.Model.instance" href="#opt_note.scsp.model.ibs_scs.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.ibs_scs.Model.solution" href="#opt_note.scsp.model.ibs_scs.Model.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.ibs_scs.Model.solve" href="#opt_note.scsp.model.ibs_scs.Model.solve">solve</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="opt_note.scsp.model.ibs_scs.State" href="#opt_note.scsp.model.ibs_scs.State">State</a></code></h4>
 <ul class="">

@@ -28,21 +28,30 @@ CP-SAT 固有のオートマトン制約を用いて定式化してみる.
 ## Python Code
 
 ```python
+from dataclasses import dataclass
 from ortools.sat.python import cp_model
 
 
+@dataclass
 class Model:
-    def __init__(self, instance: list[str]):
-        max_len = sum(len(s) for s in instance)
-        chars = "".join(sorted(list(set("".join(instance)))))
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -> str | None:
+        max_len = sum(len(s) for s in self.instance)
+        chars = "".join(sorted(list(set("".join(self.instance)))))
 
         cpmodel = cp_model.CpModel()
+        cpsolver = cp_model.CpSolver()
 
         cvars = [
             cpmodel.new_int_var(lb=0, ub=len(chars), name="") for _ in range(max_len)
         ]
 
-        for s in instance:
+        for s in self.instance:
             transition_triples = (
                 [
                     (idx, jdx + 1, (idx + 1 if c == next_char else idx))
@@ -65,39 +74,24 @@ class Model:
             cpmodel.add(cvar == 0).only_enforce_if(~valid)
         cpmodel.minimize(sum(valids))
 
-        self.instance = instance
-        self.chars = chars
-        self.cpmodel = cpmodel
-        self.cpsolver = cp_model.CpSolver()
-        self.cvars = cvars
-        self.status: cp_model.cp_model_pb2.CpSolverStatus | None = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> "Model":
-        self.cpsolver.parameters.log_search_progress = log
+        cpsolver.parameters.log_search_progress = log
         if time_limit is not None:
-            self.cpsolver.parameters.max_time_in_seconds = time_limit
-        self.status = self.cpsolver.solve(self.cpmodel)
+            cpsolver.parameters.max_time_in_seconds = time_limit
+        status = cpsolver.solve(cpmodel)
+        self.best_bound = cpsolver.best_objective_bound
 
-        return self
-
-    def to_solution(self) -> str | None:
-        if self.status not in {
+        if status in {
             cp_model.cp_model_pb2.OPTIMAL,
             cp_model.cp_model_pb2.FEASIBLE,
         }:
-            return None
+            solution = ""
+            for cvar in cvars:
+                cidx = cpsolver.value(cvar) - 1
+                if cidx >= 0:
+                    solution += chars[cidx]
+            self.solution = solution
+        else:
+            self.solution = None
 
-        solution = ""
-        for cvar in self.cvars:
-            cidx = self.cpsolver.value(cvar) - 1
-            if cidx >= 0:
-                solution += self.chars[cidx]
-
-        return solution
-
-
-def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
-) -> str | None:
-    return Model(instance).solve(time_limit, log).to_solution()
+        return self.solution
 ```

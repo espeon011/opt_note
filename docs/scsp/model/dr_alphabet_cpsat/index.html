@@ -75,10 +75,62 @@ el.replaceWith(d);
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="opt_note.scsp.model.dr_alphabet_cpsat.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>instance: list[str], time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model"><code class="flex name class">
+<span>class <span class="ident">Model</span></span>
+<span>(</span><span>instance: list[str],<br>solution: str | None = None,<br>best_bound: float = 0.0,<br>inner_bound: float = 0.0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
+    inner_bound: float = 0.0
+
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -&gt; str | None:
+        template = ModelAlphabet(self.instance).solve()
+        if template is None:
+            return None
+        inner_model = ModelReduction(self.instance, template)
+        inner_model.solve(time_limit, log)
+        self.solution = inner_model.solution
+        self.inner_bound = inner_model.best_bound
+        return self.solution</code></pre>
+</details>
+<div class="desc"><p>Model(instance: list[str], solution: str | None = None, best_bound: float = 0.0, inner_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.inner_bound"><code class="name">var <span class="ident">inner_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False, *args, **kwargs) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -86,130 +138,176 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def solve(
-    instance: list[str], time_limit: int | None = 60, log: bool = False
+    self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
 ) -&gt; str | None:
-    return Model(instance).solve(time_limit, log).to_solution()</code></pre>
+    template = ModelAlphabet(self.instance).solve()
+    if template is None:
+        return None
+    inner_model = ModelReduction(self.instance, template)
+    inner_model.solve(time_limit, log)
+    self.solution = inner_model.solution
+    self.inner_bound = inner_model.best_bound
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model"><code class="flex name class">
-<span>class <span class="ident">Model</span></span>
-<span>(</span><span>instance: list[str])</span>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction"><code class="flex name class">
+<span>class <span class="ident">ModelReduction</span></span>
+<span>(</span><span>instance: list[str],<br>template: str,<br>solution: str | None = None,<br>best_bound: float = 0.0)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Model:
-    def __init__(self, instance: list[str]):
-        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(instance)))))
-        max_len = len(chars) * max(len(s) for s in instance)
+<pre><code class="python">@dataclass
+class ModelReduction:
+    instance: list[str]
+    template: str
+    solution: str | None = None
+    best_bound: float = 0.0
+
+    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; str | None:
+        chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance + [self.template])))))
 
         cpmodel = cp_model.CpModel()
+        cpsolver = cp_model.CpSolver()
 
-        valids = [cpmodel.new_bool_var(&#34;&#34;) for _ in range(max_len)]
+        valids = [cpmodel.new_bool_var(&#34;&#34;) for _ in self.template]
         cvars = [
-            [cpmodel.new_int_var(0, max(len(s) for s in instance) - 1, &#34;&#34;) for c in s]
-            for s in instance
+            [
+                cpmodel.new_int_var_from_domain(
+                    cp_model.Domain.from_values(
+                        [idx for idx, solc in enumerate(self.template) if c == solc]
+                    ),
+                    &#34;&#34;,
+                )
+                for c in s
+            ]
+            for s in self.instance
         ]
 
-        for sidx, s in enumerate(instance):
+        for sidx, s in enumerate(self.instance):
             for cidx, c in enumerate(s):
                 if cidx == 0:
                     continue
-                prev_c = s[cidx - 1]
-                if chars.index(prev_c) &lt; chars.index(c):
-                    cpmodel.add(cvars[sidx][cidx - 1] &lt;= cvars[sidx][cidx])
-                else:
-                    cpmodel.add(cvars[sidx][cidx - 1] &lt; cvars[sidx][cidx])
+                cpmodel.add(cvars[sidx][cidx - 1] &lt; cvars[sidx][cidx])
 
-        for sidx, s in enumerate(instance):
+        for sidx, s in enumerate(self.instance):
             for cidx, c in enumerate(s):
-                cpmodel.add_element(
-                    len(chars) * cvars[sidx][cidx] + chars.index(c),
-                    valids,
-                    1,
-                )
+                cpmodel.add_element(cvars[sidx][cidx], valids, 1)
 
         cpmodel.minimize(sum(valids))
+        # cpmodel.minimize(cp_model.LinearExpr.sum(valids))
 
-        self.instance = instance
-        self.chars = chars
-        self.cpmodel = cpmodel
-        self.cpsolver = cp_model.CpSolver()
-        self.valids = valids
-        self.status: cp_model.cp_model_pb2.CpSolverStatus | None = None
-
-    def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-        self.cpsolver.parameters.log_search_progress = log
+        cpsolver.parameters.log_search_progress = log
         if time_limit is not None:
-            self.cpsolver.parameters.max_time_in_seconds = time_limit
-        self.status = self.cpsolver.solve(self.cpmodel)
+            cpsolver.parameters.max_time_in_seconds = time_limit
 
-        return self
+        status = cpsolver.solve(cpmodel)
 
-    def to_solution(self) -&gt; str | None:
-        if self.status not in {
+        self.best_bound = cpsolver.best_objective_bound
+
+        if status in {
             cp_model.cp_model_pb2.OPTIMAL,
             cp_model.cp_model_pb2.FEASIBLE,
         }:
-            return None
+            solution = &#34;&#34;
+            for idx, valid in enumerate(valids):
+                if cpsolver.boolean_value(valid):
+                    solution += chars[idx % len(chars)]
+            self.solution = solution
+        else:
+            self.solution = None
 
-        solution = &#34;&#34;
-        for idx, valid in enumerate(self.valids):
-            if self.cpsolver.boolean_value(valid):
-                solution += self.chars[idx % len(self.chars)]
-
-        return solution</code></pre>
+        return self.solution</code></pre>
 </details>
-<div class="desc"></div>
+<div class="desc"><p>ModelReduction(instance: list[str], template: str, solution: str | None = None, best_bound: float = 0.0)</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.best_bound"><code class="name">var <span class="ident">best_bound</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.instance"><code class="name">var <span class="ident">instance</span> : list[str]</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solution"><code class="name">var <span class="ident">solution</span> : str | None</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.template"><code class="name">var <span class="ident">template</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The type of the None singleton.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
-<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> <a title="opt_note.scsp.model.dr_alphabet_cpsat.Model" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model">Model</a></span>
+<dt id="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solve"><code class="name flex">
+<span>def <span class="ident">solve</span></span>(<span>self, time_limit: int | None = 60, log: bool = False) ‑> str | None</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; &#34;Model&#34;:
-    self.cpsolver.parameters.log_search_progress = log
-    if time_limit is not None:
-        self.cpsolver.parameters.max_time_in_seconds = time_limit
-    self.status = self.cpsolver.solve(self.cpmodel)
+<pre><code class="python">def solve(self, time_limit: int | None = 60, log: bool = False) -&gt; str | None:
+    chars = &#34;&#34;.join(sorted(list(set(&#34;&#34;.join(self.instance + [self.template])))))
 
-    return self</code></pre>
-</details>
-<div class="desc"></div>
-</dd>
-<dt id="opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution"><code class="name flex">
-<span>def <span class="ident">to_solution</span></span>(<span>self) ‑> str | None</span>
-</code></dt>
-<dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_solution(self) -&gt; str | None:
-    if self.status not in {
+    cpmodel = cp_model.CpModel()
+    cpsolver = cp_model.CpSolver()
+
+    valids = [cpmodel.new_bool_var(&#34;&#34;) for _ in self.template]
+    cvars = [
+        [
+            cpmodel.new_int_var_from_domain(
+                cp_model.Domain.from_values(
+                    [idx for idx, solc in enumerate(self.template) if c == solc]
+                ),
+                &#34;&#34;,
+            )
+            for c in s
+        ]
+        for s in self.instance
+    ]
+
+    for sidx, s in enumerate(self.instance):
+        for cidx, c in enumerate(s):
+            if cidx == 0:
+                continue
+            cpmodel.add(cvars[sidx][cidx - 1] &lt; cvars[sidx][cidx])
+
+    for sidx, s in enumerate(self.instance):
+        for cidx, c in enumerate(s):
+            cpmodel.add_element(cvars[sidx][cidx], valids, 1)
+
+    cpmodel.minimize(sum(valids))
+    # cpmodel.minimize(cp_model.LinearExpr.sum(valids))
+
+    cpsolver.parameters.log_search_progress = log
+    if time_limit is not None:
+        cpsolver.parameters.max_time_in_seconds = time_limit
+
+    status = cpsolver.solve(cpmodel)
+
+    self.best_bound = cpsolver.best_objective_bound
+
+    if status in {
         cp_model.cp_model_pb2.OPTIMAL,
         cp_model.cp_model_pb2.FEASIBLE,
     }:
-        return None
+        solution = &#34;&#34;
+        for idx, valid in enumerate(valids):
+            if cpsolver.boolean_value(valid):
+                solution += chars[idx % len(chars)]
+        self.solution = solution
+    else:
+        self.solution = None
 
-    solution = &#34;&#34;
-    for idx, valid in enumerate(self.valids):
-        if self.cpsolver.boolean_value(valid):
-            solution += self.chars[idx % len(self.chars)]
-
-    return solution</code></pre>
+    return self.solution</code></pre>
 </details>
 <div class="desc"></div>
 </dd>
@@ -230,18 +328,26 @@ el.replaceWith(d);
 <li><code><a title="opt_note.scsp.model" href="../index.html">opt_note.scsp.model</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.solve" href="#opt_note.scsp.model.dr_alphabet_cpsat.solve">solve</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model">Model</a></code></h4>
 <ul class="">
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.best_bound" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.inner_bound" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.inner_bound">inner_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.instance" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.solution" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.solution">solution</a></code></li>
 <li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.solve" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.solve">solve</a></code></li>
-<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution" href="#opt_note.scsp.model.dr_alphabet_cpsat.Model.to_solution">to_solution</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction">ModelReduction</a></code></h4>
+<ul class="">
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.best_bound" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.best_bound">best_bound</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.instance" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.instance">instance</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solution" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solution">solution</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solve" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.solve">solve</a></code></li>
+<li><code><a title="opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.template" href="#opt_note.scsp.model.dr_alphabet_cpsat.ModelReduction.template">template</a></code></li>
 </ul>
 </li>
 </ul>

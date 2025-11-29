@@ -24,6 +24,9 @@ $l = m = 1$ としたとき, つまり $(1, 1)$-LA-SH は Majority Merge と同�
 ## Python Code
 
 ```python
+from dataclasses import dataclass
+
+
 def find_next_strategy(
     instance: list[str],
     chars: str,
@@ -57,19 +60,26 @@ def find_next_strategy(
     return (max_str_front, max_sum_height)
 
 
-def solve(instance: list[str], m: int = 3, ll: int = 1) -> str:
-    chars = "".join(sorted(list(set("".join(instance)))))
-    state = tuple(0 for _ in instance)
-    solution = ""
+@dataclass
+class Model:
+    instance: list[str]
+    solution: str | None = None
+    best_bound: float = 0.0
 
-    while not all(idx == len(s) for idx, s in zip(state, instance)):
-        next_str, _ = find_next_strategy(instance, chars, state, m)
-        solution += next_str[:ll]
-        for next_char in next_str[:ll]:
-            state = tuple(
-                idx + 1 if idx < len(s) and s[idx] == next_char else idx
-                for idx, s in zip(state, instance)
-            )
+    def solve(self, m: int = 3, ll: int = 1, *args, **kwargs) -> str:
+        chars = "".join(sorted(list(set("".join(self.instance)))))
+        state = tuple(0 for _ in self.instance)
+        solution = ""
 
-    return solution
+        while not all(idx == len(s) for idx, s in zip(state, self.instance)):
+            next_str, _ = find_next_strategy(self.instance, chars, state, m)
+            solution += next_str[:ll]
+            for next_char in next_str[:ll]:
+                state = tuple(
+                    idx + 1 if idx < len(s) and s[idx] == next_char else idx
+                    for idx, s in zip(state, self.instance)
+                )
+
+        self.solution = solution
+        return self.solution
 ```
