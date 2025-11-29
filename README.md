@@ -12,35 +12,25 @@ Marimo の Jupyter Export 機能を使って `.ipynb` 形式で `__marimo__` 配
 uv add "opt_note @ git+https://github.com/espeon011/opt_note"
 ```
 
-例えば以下のような Python ファイル `main.py` を用意し, 
+例えば次のように使用する. 
 
 ```python
-import opt_note.scsp as scsp
-
-if __name__ == "__main__":
-    instance = scsp.example.load("uniform_q26n008k015-025.txt")
-    solution = scsp.model.wmm.solve(instance)
-    scsp.util.show(instance, solution)
+>>> import opt_note.scsp as scsp
+>>> instance = scsp.example.load("uniform_q26n008k015-025.txt")
+>>> model = scsp.model.wmm.Model(instance)
+>>> solution = model.solve()
+>>> scsp.util.show(instance, solution)
+--- Solution (of length 128) ---
+ Sol: pioyjpbilrdeqtxfgknwzxubcevgolndcqkazbfpruvdghmpxjbrinqtvxcflcdgtdvyzscoebhmsrucdtqfzbrovpsviguimprvoxzpcqvxsdsbnnplbgiwxfdehops
+str1: -------------t---k---------g--n---k------u---hmpx----n--------------------h------tq----------g-------xz---vx----------i--------s
+str2: -io-j--i----q--f------------oln------b----------x--------xc-------v--s--------u---q------p-vi---------------s-sb--------xf------
+str3: ----------------------u------l--c-------------------in-------------y--co----s----------ov-----------o-zp----------pl----------p-
+str4: -i--------------g--------ev--------az-------g-----br----------d--d-------b-----c----------sv------rv------------nn---g---f------
+str5: p--y-p--lr----------zxu-c--------------p------m-------q-v------gtd-----------------f----------ui---v----c----dsb-------------o--
+str6: p-----b---de--------------v----dc---------vd---p-----------f--------zs-----ms--------bro-----------------qv----b----b-------h---
+str7: -----------e------n----bc-----------z-f----------j-----tvx--------------e----r------zbr-v---ig---p-----------------l-------e----
+str8: ---------r----x----w-x-----------qk-----r--d-------r--------lc--t------o--------dt--------------mpr----p---x-----------w--d-----
 ```
-
-次のように実行. 
-
-```shell
-uv run python main.py
-```
-
-> ```
-> --- Solution (of length 128) ---
->  Sol: pioyjpbilrdeqtxfgknwzxubcevgolndcqkazbfpruvdghmpxjbrinqtvxcflcdgtdvyzscoebhmsrucdtqfzbrovpsviguimprvoxzpcqvxsdsbnnplbgiwxfdehops
-> str1: -------------t---k---------g--n---k------u---hmpx----n--------------------h------tq----------g-------xz---vx----------i--------s
-> str2: -io-j--i----q--f------------oln------b----------x--------xc-------v--s--------u---q------p-vi---------------s-sb--------xf------
-> str3: ----------------------u------l--c-------------------in-------------y--co----s----------ov-----------o-zp----------pl----------p-
-> str4: -i--------------g--------ev--------az-------g-----br----------d--d-------b-----c----------sv------rv------------nn---g---f------
-> str5: p--y-p--lr----------zxu-c--------------p------m-------q-v------gtd-----------------f----------ui---v----c----dsb-------------o--
-> str6: p-----b---de--------------v----dc---------vd---p-----------f--------zs-----ms--------bro-----------------qv----b----b-------h---
-> str7: -----------e------n----bc-----------z-f----------j-----tvx--------------e----r------zbr-v---ig---p-----------------l-------e----
-> str8: ---------r----x----w-x-----------qk-----r--d-------r--------lc--t------o--------dt--------------mpr----p---x-----------w--d-----
-> ```
 
 ## Marimo 起動
 
