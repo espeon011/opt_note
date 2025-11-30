@@ -1,18 +1,20 @@
-# `IBS_SCS` アルゴリズム[^1]
+# IBS_SCS アルゴリズム
+
+## 概要
 
 - 計算量: $O(k^2 \log_2 q + L^* (n \kappa \beta q + \beta q \log_2 \left( \beta q \right)))$
     - (補足) $L^*$: このアルゴリズムによって返される解の長さ. $O(nk)$ で上からバウンドできる.
     - (補足) $\beta$, $\kappa$: ビームサーチのパラメータ.
 - 近似精度: ?
 
-`IBS_SCS` は基本的には残された文字列の先頭の文字の中から 1 つを採用して解を拡張していく手続きである.
+IBS_SCS は基本的には残された文字列の先頭の文字の中から 1 つを採用して解を拡張していく手続きである.
 1 つだけを選択して次の状態とする貪欲法と比較してビームサーチは以下のようにする:
 
 - 状態は複数保持しておき, その状態たちから残された文字列の先頭に現れる文字の 1 つを選択して解を拡張する操作で得られる状態を全て集める.
 - 保持している状態に対して適切な評価を実施して評価が低いものを保持数が基準値を下回るよう切り捨てる.
 - 保持している状態の中に残された文字列が全て空になったものがあれば終了する.
 
-この `IBS_SCS` アルゴリズムは以下の 4 ステップからなる.
+この IBS_SCS アルゴリズムは以下の 4 ステップからなる.
 
 1. 現在保持している状態から 1 手進めて得られる状態を集める.
 2. 残された文字列の SCS 長の推定値を計算し, 各状態に対し評価用のヒューリスティック関数値を計算する.
@@ -23,4 +25,6 @@
 ヒューリスティック関数値の計算には一様ランダムに生成された文字列に対する性質が用いられるため,
 規則性のある文字列に対する SCS を計算する場合は性能が悪くなるかもしれない.
 
-[^1]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.
+## 参考
+
+1. Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.

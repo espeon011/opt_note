@@ -1,4 +1,6 @@
-# Look-Ahead Sum-Height アルゴリズム[^1]
+# Look-Ahead Sum-Height アルゴリズム
+
+## 概要
 
 - 計算量: この実装では $O(n^2 k q m)$. 多分...
 - 近似精度: なし
@@ -19,7 +21,9 @@ Sum-Height アルゴリズムという手法がある.
 $l = m = 1$ としたとき, つまり $(1, 1)$-LA-SH は Majority Merge と同じ方法である.
 元論文では $(3, 1)$-LA-SH がちょうど良いとされていたのでデフォルトは $l = 1$, $m = 3$ とする.
 
-[^1]: Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
+## 参考
+
+1. Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
 
 ## Python Code
 

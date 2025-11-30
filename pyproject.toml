@@ -15,7 +15,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "marimo[lsp]>=0.18.1",
-    "pdoc3>=0.11.6",
+    "pdoc>=16.0.0",
     "taskipy>=1.14.1",
 ]
 
@@ -35,7 +35,7 @@ build-backend = "uv_build"
 pythonpath = ["src"]
 
 [tool.taskipy.tasks]
-doc = "rm -rf docs && pdoc opt_note --html -o docs --force --config latex_math=True && mv docs/opt_note/* docs/ && rm -rf docs/opt_note"
+doc = "rm -rf docs && pdoc opt_note --output-directory docs --math --docformat google"
 
 [tool.taskipy.settings]
 cwd = "."

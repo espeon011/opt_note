@@ -1,6 +1,13 @@
 # DIDP を用いたモデル
 
-考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)
+## 概要
+
+DIDP を用いて DP モデルを強化する.
+Dual bound には 2 文字の文字列の最短共通超配列の長さを全ての組合せに対して取ったものの最大値を採用する. 
+
+## 参考
+
+1. 考案者の解説記事: [動的計画法ベースの数理最適化ソルバDIDPPyで最短共通超配列問題を解く](https://zenn.dev/okaduki/articles/7f9a3f3c54bc98)
 
 ## Python Code
 

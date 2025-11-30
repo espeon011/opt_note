@@ -1,4 +1,6 @@
-# Weighted Majority Merge アルゴリズム[^1]
+# Weighted Majority Merge アルゴリズム
+
+## 概要
 
 - 計算量: ?
 - 近似精度: なし
@@ -12,4 +14,6 @@ Weighted Majority Merge では出現するか否かの代わりに残された�
 - 各文字列 $s_1, s_2, \dots, s_n$ に対し, 先頭の文字が $c$ である場合は先頭 1 文字を削除する.
 - $s_1, s_2, \dots, s_n$ が全て空文字列になれば終了.
 
-[^1]: Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528
+## 参考
+
+1. Branke, J., Middendorf, M. & Schneider, F. Improved heuristics and a genetic algorithm for finding short supersequences. OR Spektrum 20, 39–45 (1998). https://doi.org/10.1007/BF01545528

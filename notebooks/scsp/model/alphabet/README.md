@@ -1,4 +1,6 @@
-# アルファベットアルゴリズム[^1]
+# アルファベットアルゴリズム
+
+## 概要
 
 - 計算量: $O(qk)$
 - 近似精度: $q$
@@ -13,7 +15,9 @@ $$
 これを解とすることで長さ $qk$ の common supersequence を出力する. 
 この長さは文字列の数に直接は依存しない. 
 
-[^1]: Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
+## 参考
+
+1. Paolo Barone, Paola Bonizzoni, Gianluca Delta Vedova, and Giancarlo Mauri. 2001. An approximation algorithm for the shortest common supersequence problem: an experimental analysis. In Proceedings of the 2001 ACM symposium on Applied computing (SAC '01). Association for Computing Machinery, New York, NY, USA, 56–60. https://doi.org/10.1145/372202.372275
 
 ## Python Code
 

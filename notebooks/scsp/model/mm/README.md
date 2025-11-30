@@ -1,4 +1,6 @@
-# Majority Merge アルゴリズム[^1]
+# Majority Merge アルゴリズム
+
+## 概要
 
 - 計算量: $O(qkn)$. この実装ではもっとかかる.
 - 近似精度: なし
@@ -12,7 +14,9 @@
 - 各文字列 $s_1, s_2, \dots, s_n$ に対し, 先頭の文字が $c$ である場合は先頭 1 文字を削除する.
 - $s_1, s_2, \dots, s_n$ が全て空文字列になれば終了.
 
-[^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
+## 参考
+
+1. Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 
 ## Python Code
 

@@ -1,16 +1,17 @@
 # Weighted Majority Merge をパラメータ化し, Hexaly で探索
 
+## 概要
+
 Hexaly の外部関数最適化機能を用いた定式化を紹介する.
 Weighted Majority Merge アルゴリズムにおいて次の文字を選択する基準は各文字列に対する残長の和であった.
 その残長の部分を Hexaly の決定変数で置き換える.
 
-**決定変数**
+### 決定変数
 
 - $w_{ij} \in \mathbb{N}$: 文字列 $s_i$ の $j$ 文字目の重み. $(i \in \lbrace 1, \dots, n \rbrace, \ j \in \lbrace 1, \dots, |s_i| \rbrace)$
     - $w_i = \lbrace w_{i,1} \dots, w_{i,|s_i|} \rbrace$ とおく.
 
-
-**目的関数**
+### 目的関数
 
 下記のアルゴリズムに従って構築した共通超配列の長さを目的関数とする.
 
