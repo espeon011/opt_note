@@ -22,6 +22,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `MM` Majority Merge アルゴリズム[^1] ([概要](./model/mm))
 - `WMM` Weighted Majority Merge アルゴリズム[^4] ([概要](./model/wmm))
 - `LA_SH` Look-Ahead Sum-Height アルゴリズム[^7] ([概要](./model/la_sh))
+- `LA_SW` Look-Ahead Sum-Height を WMM を元に拡張してみた ([概要](./model/la_sw))
 - `DR` Deposition and Reduction アルゴリズム[^9] ([概要](./model/dr))
 - `IBS_SCS` IBS_SCS アルゴリズム[^2] ([概要](./model/ibs_scs))
 - `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([概要](./model/descending))
@@ -47,6 +48,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `MM`                 | 74         | 148       | 198        | 32         | 36        | 27         | 150        | 62        | 536        |
 | `WMM`                | 75         | 128       | 176        | 32         | 37        | 26         | 146        | 57        | 475        |
 | `LA_SH`              | 70         | 132       | 170        | 31         | 38        | 28         | 144        | 51        | 497        |
+| `LA_SW`              | 68         | 111       | 153        | 31         | 36        | 26         | 139        | 51        | **419** 🥇 |
 | `DR`                 | 68         | 127       | 168        | 30         | 36        | 27         | 141        | 50        | 491        |
 | `IBS_SCS`            | 73         | 119       | 163        | 28         | **34** 🥇 | **24** 🥇  | 135        | 49        | 876        |
 | `DESCENDING`         | 64         | 108       | 157        | 37         | 71        | 35         | 185        | 53        | 458        |
@@ -57,7 +59,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `WMM_HEXALY`         | **62** 🥇  | 102       | 156        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 136        | **44** 🥇 | 498        |
 | `WMM_HEXALY_INIT`    | 64         | 105       | 150        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 138        | 45        | 454        |
 | `DIDP`               | **62*** 🥇 | **99** 🥇 | 149        | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | **133** 🥇 | **44** 🥇 | 497        |
-| `DR_ALPHABET_CPSAT`  | **62** 🥇  | 102       | 143        | 29         | **34** 🥇 | **24** 🥇  | 136        | 46        | **438** 🥇 |
+| `DR_ALPHABET_CPSAT`  | **62** 🥇  | 102       | 143        | 29         | **34** 🥇 | **24** 🥇  | 136        | 46        | 438        |
 | `DR_ALPHABET_HEXALY` | **62** 🥇  | 100       | **137** 🥇 | 29         | 38        | **24** 🥇  | 144        | 46        | 459        |
 | | | | | | | | | | |
 
@@ -66,20 +68,21 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - パラメータを持つアルゴリズムについては下記の設定で実行
   - `IBS_SCS` $\beta = 100$, $\kappa = 7$. 
   - `LA_SH` $m = 3$, $l = 1$.
+  - `LA_SW` $m = 3$, $l = 1$.
   - `DR` Deposition プロセス, Reduction プロセスは両方とも $(3, 1)$-LA-SH を採用. 
 
 ## 解法の分類
 
 | 探索法\構築法 | 前から1文字ずつ取ってくる | 大きい解から削減 | その他 |
 | --- | --- | --- | --- |
-| 貪欲 | `MM` <br> `WMM` <br> `LA_SH` | `ALPHABET_REDUCTION` <br> `DR`| `ALPHABET` <br> `DESCENDING` |
+| 貪欲 | `MM` <br> `WMM` <br> `LA_SH` <br> `LA_SW` | `ALPHABET_REDUCTION` <br> `DR`| `ALPHABET` <br> `DESCENDING` |
 | ビームサーチ | `IBS_SCS` <br> `DIDP` | | |
 | 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP` <br> `LINEAR_HIGHS` <br> `LINEAR_CPSAT` <br> `AUTOMATON_CPSAT` |
 | アニーリング? | `WMM_HEXALY` <br> `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
 
 ### 解の構成法
 
-- 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
+- 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
 - 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION`, `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_HEXALY`
 - その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
 
@@ -89,7 +92,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 また, 全探索に分類されるモデルは理論的に最適解に到達できるものだが,
 (制限) とあるものは探索範囲がより狭いため本来の問題の最適解に到達できない可能性がある. 
 
-- 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `DESCENDING`, `DR`
+- 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
 - 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`

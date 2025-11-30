@@ -1,29 +1,33 @@
-# Look-Ahead Sum-Height アルゴリズム
+# Look-Ahead Sum-Weight
 
 ## 概要
 
-- 計算量: この実装では $O(n^2 k q^{m+1} / l)$. 多分...
-- 近似精度: なし
+LA-SH と WMM を組み合わせたもの. 
 
-Sum-Height アルゴリズムという手法がある.
-これは Majority Merge と完全に同じものだが,
-この Sum-Height 法に「数手先まで見て最も良い選択をする」という拡張を加える.
+- 計算量: $O(n^2 k q^{m+1} / l)$. 多分...
+- 近似精度: ?
 
-このアルゴリズムは整数パラメータ $m, l \ (l \leq m)$ を与えたうえで下記のようにする.
-この手法を $(m, l)$-LA-SH と書く.
+LA-SH では $m$ 手進めたときに最も良い選択の前から $l$ 文字を採用するプロセスを繰り返す. 
+しかし $m$ が小さい状況では近視眼的になってしまう.
+MM に対して WMM が有効であったように残りの長さが長ければ長いほど優先度を高くすることで効率化を図る. 
+
+### 記法
+
+文字列 $s_i$ の $j$ 文字目の重みを $w_{ij} = |s_i| - j + 1$ とする. 
+
+### 手続
+
+整数パラメータ $m, l \ (l \leq m)$ を与えたうえで下記のようにする.
+この手法を $(m, l)$-LA-SW と書く.
 
 - 解 $\mathrm{sol}$ を空文字列で初期化する.
-- 下記を $m$ 回繰り返すことで文字列たちの先頭の文字を削除できた数 (Sum-Height) が最大になる文字の取り方を探索する.
+- 下記を $m$ 回繰り返すことで削除できた文字に対する重みの和 (Sum-Weight) が最大になる文字の取り方を探索する.
     - 各文字列 $s_1, \dots, s_n$ の先頭の文字の中から 1 つ選び, 選んだ文字を文字列たちの先頭から削除する.
-- Sum-Height が最大になる文字の取り方に対して先頭の $l$ 文字を解の後ろに加え, 各文字列 $s_1, \dots, s_n$ の先頭から削除する.
+- 上記の取り方に対して先頭の $l$ 文字を $sol$ の後ろに加え, 各文字列 $s_1, \dots, s_n$ の先頭から順に削除する.
 - $s_1, \dots, s_n$ が全て空文字列になれば終了.
 
-$m = l = 1$ としたとき, つまり $(1, 1)$-LA-SH は Majority Merge と同じ方法である.
-元論文では $(3, 1)$-LA-SH がちょうど良いとされていたのでデフォルトは $m = 3$, $l = 1$ とする.
-
-## 参考
-
-1. Ning, K., Choi, K. P., Leong, H. W., & Zhang, L. (2005). A post-processing method for optimizing synthesis strategy for oligonucleotide microarrays. Nucleic acids research, 33(17), e144. https://doi.org/10.1093/nar/gni147
+$m = l = 1$ としたとき, つまり $(1, 1)$-LA-SW は Weighted Majority Merge と同じ方法である.
+LA-SH に倣ってデフォルトは $m = 3$, $l = 1$ とする.
 
 ## Python Code
 
@@ -38,15 +42,22 @@ def find_next_strategy(
     m: int,
 ) -> tuple[str, int]:
     """
-    現在の状態を受け取り, m 手進めたときに sum height が最大になる文字の選び方 (長さ m の文字列として表される) と sum-height の値を組みにして返す
+    現在の状態を受け取り, m 手進めたときに weight の和が最大になる文字の選び方 (長さ m の文字列として表される) と sum-weight の値を組みにして返す
     """
 
     if m == 0 or all(idx == len(s) for idx, s in zip(state, instance)):
         return ("", 0)
 
     fronts = [s[idx] for idx, s in zip(state, instance) if idx < len(s)]
-    counts = {char: fronts.count(char) for char in chars}
-    max_sum_height = 0
+    weights = {
+        char: sum(
+            len(s) - idx
+            for idx, s in zip(state, instance)
+            if idx < len(s) and s[idx] == char
+        )
+        for char in chars
+    }
+    max_sum_weight = 0
     max_str_front = ""
     explores = set()
     for char in chars:
@@ -58,10 +69,10 @@ def find_next_strategy(
             for idx, s in zip(state, instance)
         )
         str_ahead, sum_ahead = find_next_strategy(instance, chars, ahead_state, m - 1)
-        if sum_ahead + counts[char] > max_sum_height:
-            max_sum_height = sum_ahead + counts[char]
+        if sum_ahead + weights[char] > max_sum_weight:
+            max_sum_weight = sum_ahead + weights[char]
             max_str_front = char + str_ahead
-    return (max_str_front, max_sum_height)
+    return (max_str_front, max_sum_weight)
 
 
 @dataclass
