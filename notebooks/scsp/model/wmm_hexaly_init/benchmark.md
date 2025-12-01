@@ -1,7 +1,6 @@
 In [ ]:
 ```python
 import opt_note.scsp as scsp
-import hexaly.optimizer
 ```
 
 In [ ]:
@@ -14,23 +13,12 @@ import nbformat
 
 In [ ]:
 ```python
-def bench(instance: list[str]) -> None:
-    model = scsp.model.wmm_hexaly_init.create_model(instance).solve()
-    solution = model.to_solution()
-    scsp.util.show(instance)
-    if solution is not None:
-        scsp.util.show(instance, solution)
-        print(f"solution is feasible: {scsp.util.is_feasible(instance, solution)}")
-    else:
-        print("--- Solution not found ---\n")
-
-    print(f"solution is optimal: {model.hxoptimizer.solution.status == hexaly.optimizer.HxSolutionStatus.OPTIMAL}")
-    print(f"bset bound: {model.hxoptimizer.solution.get_objective_bound(0)}")
+Model = scsp.model.wmm_hexaly_init.Model
 ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("uniform_q26n004k015-025.txt"))
+scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 ```
 
 > ```
@@ -47,14 +35,15 @@ bench(scsp.example.load("uniform_q26n004k015-025.txt"))
 > str3: --------ulci-----ny-------------cosov--ozppl-----------p--------
 > str4: i----g----------e-----vazg-brddbc-s-vr------vnn--------------g-f
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'uniform_q26n004k015-025.txt'
+> best objective: 64
+> best bound: 0.0
+> wall time: 59.513814s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("uniform_q26n008k015-025.txt"))
+scsp.util.bench(Model, example_filename="uniform_q26n008k015-025.txt")
 ```
 
 > ```
@@ -79,14 +68,15 @@ bench(scsp.example.load("uniform_q26n008k015-025.txt"))
 > str7: --e----nb-c-------z---------------fjtv--xe-r---------------------z------brvi--g---pl-------------------e-
 > str8: -----------------r-xwxqkr-d----------------rlc-t-o--d-t--------------mp--r--------p-xw-d-----------------
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'uniform_q26n008k015-025.txt'
+> best objective: 105
+> best bound: 0.0
+> wall time: 60.000329s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("uniform_q26n016k015-025.txt"))
+scsp.util.bench(Model, example_filename="uniform_q26n016k015-025.txt")
 ```
 
 > ```
@@ -127,14 +117,15 @@ bench(scsp.example.load("uniform_q26n016k015-025.txt"))
 > str15: ----------ht----------------xx-------------qjz---------------------------q---b-----c--t-----------b--------a------kn----------------------------------
 > str16: ----x-------------------------usfc---f-------z----------------pe-----------e-------cv---------------------wa-------nt----------------------fmg-q--zu--
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'uniform_q26n016k015-025.txt'
+> best objective: 150
+> best bound: 0.0
+> wall time: 59.999843s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("uniform_q05n010k010-010.txt"))
+scsp.util.bench(Model, example_filename="uniform_q05n010k010-010.txt")
 ```
 
 > ```
@@ -163,14 +154,15 @@ bench(scsp.example.load("uniform_q05n010k010-010.txt"))
 > str09: -----c----cdee--d--a--d-cd-
 > str10: b---d----a-----bdbea---a-d-
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'uniform_q05n010k010-010.txt'
+> best objective: 27
+> best bound: 0.0
+> wall time: 59.97519s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("uniform_q05n050k010-010.txt"))
+scsp.util.bench(Model, example_filename="uniform_q05n050k010-010.txt")
 ```
 
 > ```
@@ -279,14 +271,15 @@ bench(scsp.example.load("uniform_q05n050k010-010.txt"))
 > str49: -a-e---e----e--b---bd-b-c--a------
 > str50: d---bda---b--c--ec-b--b-----------
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'uniform_q05n050k010-010.txt'
+> best objective: 34
+> best bound: 0.0
+> wall time: 59.999453s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("nucleotide_n010k010.txt"))
+scsp.util.bench(Model, example_filename="nucleotide_n010k010.txt")
 ```
 
 > ```
@@ -315,14 +308,15 @@ bench(scsp.example.load("nucleotide_n010k010.txt"))
 > str09: T-T-C---C-AC-A----AC-T--
 > str10: T---C-TA--A--A-CG-A---A-
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'nucleotide_n010k010.txt'
+> best objective: 24
+> best bound: 0.0
+> wall time: 59.988473s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("nucleotide_n050k050.txt"))
+scsp.util.bench(Model, example_filename="nucleotide_n050k050.txt")
 ```
 
 > ```
@@ -431,14 +425,15 @@ bench(scsp.example.load("nucleotide_n050k050.txt"))
 > str49: ----C-T---T---GT-A---G--A-T---C-T---G----T---TC----T-C-TA-A--A-C-G-A---A-C--T---T--T--A---A----A--ATC-T---G--T---G--T--G---G-CT-GTC-AC-T--
 > str50: ATGA-G--C--AC--T-A--AGC----GA-----A-GA--A-C---CA-A--A---A-AGCA---G-AC--A--A-T-A--CA---A-C--C--C--G--C-TA-T---TAC--------------------------
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'nucleotide_n050k050.txt'
+> best objective: 138
+> best bound: 0.0
+> wall time: 60.003615s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("protein_n010k010.txt"))
+scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 ```
 
 > ```
@@ -467,14 +462,15 @@ bench(scsp.example.load("protein_n010k010.txt"))
 > str09: M-SF------------VA----G---------------VT-A--Q
 > str10: MES-----L-------V---P-GF-NE------------------
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'protein_n010k010.txt'
+> best objective: 45
+> best bound: 0.0
+> wall time: 59.956092s
 > ```
 
 In [ ]:
 ```python
-bench(scsp.example.load("protein_n050k050.txt"))
+scsp.util.bench(Model, example_filename="protein_n050k050.txt")
 ```
 
 > ```
@@ -583,7 +579,8 @@ bench(scsp.example.load("protein_n050k050.txt"))
 > str49: MF---------------------------------------------Y---------------A---------------------H-A-FG---------G---------Y----D------E-------------N---LH--------------A-----------F-P-----------------G--I--S---ST-V--------------A----NDV-RK----------------------Y-------------S--------V---------------------------------V---S--V--------------------------------YN------------------K---------------K-------Y-------NI---VK------------NKYM------W--------------------------
 > str50: M-A---------N----------------------------------Y--S--K------------PF--L------L-----------------------D---I--------V--------------------------------F---------N-------------K-D-----------------I----K---------------------------------------C---------I-----------N----------D--------S--------------------------------C------S---------HS-D----------------------------C---R-------------Y------QSN-SYV-ELRR-N-----------------------------QAL----N---K-NL-----------
 > 
-> solution is feasible: True
-> solution is optimal: False
-> bset bound: 0
+> example file name: 'protein_n050k050.txt'
+> best objective: 454
+> best bound: 0.0
+> wall time: 60.047325s
 > ```

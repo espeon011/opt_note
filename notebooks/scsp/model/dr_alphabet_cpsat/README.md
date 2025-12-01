@@ -48,7 +48,9 @@ class ModelReduction:
     solution: str | None = None
     best_bound: float = 0.0
 
-    def solve(self, time_limit: int | None = 60, log: bool = False) -> str | None:
+    def solve(
+        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+    ) -> str | None:
         chars = "".join(sorted(list(set("".join(self.instance + [self.template])))))
 
         cpmodel = cp_model.CpModel()

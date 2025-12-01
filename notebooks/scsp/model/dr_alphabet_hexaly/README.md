@@ -84,7 +84,4 @@ class Model:
                 self.solution = None
 
         return self.solution
-
-    def to_solution(self) -> str | None:
-        return self.solution
 ```
