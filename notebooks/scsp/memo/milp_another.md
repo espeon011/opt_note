@@ -99,8 +99,7 @@ class Model:
 In [ ]:
 ```python
 scsp.util.bench(
-    scsp.model.linear_scip.Model,
-    example_filename="uniform_q26n004k015-025.txt"
+    scsp.model.linear_scip.Model, example_filename="uniform_q26n004k015-025.txt"
 )
 ```
 
@@ -111,16 +110,17 @@ scsp.util.bench(
 > str3: ulcinycosovozpplp
 > str4: igevazgbrddbcsvrvnngf
 > 
-> --- Solution (of length 70) ---
->  Sol: itkgojniqfeokulvahmcnzgpibxxrndycvhodstoqgubcvsoxzvqpzprvxininsgslpbxf
-> str1: -tkg--n-----ku---hm----p--x--n----h---t-qg------xzv------xi---s-------
-> str2: i---oj-iqf-o--l-----n----bxx----cv---s----u--------qp---v-i---s-s--bxf
-> str3: -------------ul----c----i----n-yc--o-s-o-----v-o-z--p-p----------lp---
-> str4: i--g------e----va----zg--b--r-d-----d------bc-s---v----rv--n-n-g-----f
+> --- Solution (of length 72) ---
+>  Sol: itgevazojgbrdkignkqfuhomlcpnibxnxyhctvqgdxobsucqovozpsviprvssxbinsnglxfp
+> str1: -t-----------k-gnk--uh-m--p---xn--h-t-qg-x---------z--v------x-i-s------
+> str2: i------oj-----i---qf--o-l--n-bx-x--c-v------su-q----p-vi---ss-b------xf-
+> str3: --------------------u---lc--i--n-y-c------o-s---ovozp---p-----------l--p
+> str4: i-gevaz--gbrd---------------------------d--b--c------sv--rv-----n-ng--f-
 > 
 > example file name: 'uniform_q26n004k015-025.txt'
-> best objective: 70
+> best objective: 72
 > best bound: 26.0
+> wall time: 60.172458s
 > ```
 
 In [ ]:
@@ -139,7 +139,8 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > 
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: None
-> best bound: 2.0238481492365534
+> best bound: 2.3850583312421074
+> wall time: 60.256086s
 > ```
 
 バイナリ定式化は解なし. dual bound も非常に悪い.
@@ -162,23 +163,23 @@ Model(instance01, relax=True).solve(log=True)
 
 > ```
 > presolving:
-> (round 1, fast)       0 del vars, 0 del conss, 0 add conss, 9156 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-> (round 2, fast)       0 del vars, 0 del conss, 0 add conss, 9240 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
+> (round 1, fast)       0 del vars, 0 del conss, 0 add conss, 9156 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
+> (round 2, fast)       0 del vars, 0 del conss, 0 add conss, 9240 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
 >    (0.1s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
 >    (0.1s) no symmetry present (symcode time: 0.00)
 > presolving (3 rounds: 3 fast, 1 medium, 1 exhaustive):
 >  0 deleted vars, 0 deleted constraints, 0 added constraints, 9240 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
->  0 implications, 0 cliques
-> presolved problem has 9240 variables (0 bin, 0 int, 0 impl, 9240 cont) and 14360 constraints
+>  0 implications, 0 cliques, 0 implied integral variables (0 bin, 0 int, 0 cont)
+> presolved problem has 9240 variables (0 bin, 0 int, 9240 cont) and 14360 constraints
 >   14360 constraints of type <linear>
 > Presolving Time: 0.12
 > 
 >  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
 > *17.0s|     1 |     0 | 28155 |     - |    LP  |   0 |9240 |  14k|  14k|   0 |  0 |   0 |   0 | 1.300235e+00 | 1.300235e+00 |   0.00%| unknown
->  17.0s|     1 |     0 | 28155 |     - |    96M |   0 |9240 |  14k|  14k|   0 |  0 |   0 |   0 | 1.300235e+00 | 1.300235e+00 |   0.00%| unknown
+>  17.0s|     1 |     0 | 28155 |     - |    98M |   0 |9240 |  14k|  14k|   0 |  0 |   0 |   0 | 1.300235e+00 | 1.300235e+00 |   0.00%| unknown
 > 
 > SCIP Status        : problem is solved [optimal solution found]
-> Solving Time (sec) : 16.96
+> Solving Time (sec) : 16.95
 > Solving Nodes      : 1
 > Primal Bound       : +1.30023465661643e+00 (1 solutions)
 > Dual Bound         : +1.30023465661643e+00
@@ -250,22 +251,22 @@ ModelMILPContinuous(instance01).solve(log=True)
 
 > ```
 > presolving:
-> (round 1, fast)       2527 del vars, 2527 del conss, 0 add conss, 82 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-> (round 2, fast)       2527 del vars, 2527 del conss, 0 add conss, 4391 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-> (round 3, fast)       2527 del vars, 2527 del conss, 0 add conss, 4494 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
-> (round 4, exhaustive) 2527 del vars, 5054 del conss, 0 add conss, 4494 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs
->    (0.1s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
+> (round 1, fast)       2527 del vars, 2527 del conss, 0 add conss, 82 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
+> (round 2, fast)       2527 del vars, 2527 del conss, 0 add conss, 4391 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
+> (round 3, fast)       2527 del vars, 2527 del conss, 0 add conss, 4494 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
+> (round 4, exhaustive) 2527 del vars, 5054 del conss, 0 add conss, 4494 chg bounds, 0 chg sides, 0 chg coeffs, 0 upgd conss, 0 impls, 0 clqs, 0 implints
+>    (0.0s) symmetry computation started: requiring (bin +, int +, cont +), (fixed: bin -, int -, cont -)
 >    (0.1s) no symmetry present (symcode time: 0.00)
 > presolving (5 rounds: 5 fast, 2 medium, 2 exhaustive):
 >  2527 deleted vars, 5054 deleted constraints, 0 added constraints, 4494 tightened bounds, 0 added holes, 0 changed sides, 0 changed coefficients
->  0 implications, 0 cliques
-> presolved problem has 2612 variables (0 bin, 0 int, 0 impl, 2612 cont) and 2611 constraints
+>  0 implications, 0 cliques, 0 implied integral variables (0 bin, 0 int, 0 cont)
+> presolved problem has 2612 variables (0 bin, 0 int, 2612 cont) and 2611 constraints
 >    2611 constraints of type <linear>
 > Presolving Time: 0.05
 > 
 >  time | node  | left  |LP iter|LP it/n|mem/heur|mdpt |vars |cons |rows |cuts |sepa|confs|strbr|  dualbound   | primalbound  |  gap   | compl. 
 > * 0.1s|     1 |     0 |    83 |     - |    LP  |   0 |2612 |2611 |2611 |   0 |  0 |   0 |   0 | 2.500000e+01 | 2.500000e+01 |   0.00%| unknown
->   0.1s|     1 |     0 |    83 |     - |    46M |   0 |2612 |2611 |2611 |   0 |  0 |   0 |   0 | 2.500000e+01 | 2.500000e+01 |   0.00%| unknown
+>   0.1s|     1 |     0 |    83 |     - |    47M |   0 |2612 |2611 |2611 |   0 |  0 |   0 |   0 | 2.500000e+01 | 2.500000e+01 |   0.00%| unknown
 > 
 > SCIP Status        : problem is solved [optimal solution found]
 > Solving Time (sec) : 0.06

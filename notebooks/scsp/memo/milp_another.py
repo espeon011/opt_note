@@ -6,7 +6,7 @@
 #     "hexaly>=14.0.20251112",
 #     "nbformat==5.10.4",
 #     "ortools==9.14.6206",
-#     "pyscipopt==5.7.1",
+#     "pyscipopt==6.0.0",
 # ]
 # [[tool.uv.index]]
 # name ="hexaly"
@@ -31,6 +31,7 @@ with app.setup:
 def _():
     import marimo as mo
     import nbformat
+
     return (mo,)
 
 
@@ -133,8 +134,7 @@ def _(mo):
 @app.cell
 def _():
     scsp.util.bench(
-        scsp.model.linear_scip.Model,
-        example_filename="uniform_q26n004k015-025.txt"
+        scsp.model.linear_scip.Model, example_filename="uniform_q26n004k015-025.txt"
     )
     return
 

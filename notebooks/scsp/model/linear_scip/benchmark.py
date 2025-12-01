@@ -5,7 +5,7 @@
 #     "highspy==1.12.0",
 #     "nbformat==5.10.4",
 #     "ortools==9.14.6206",
-#     "pyscipopt==5.7.1",
+#     "pyscipopt==6.0.0",
 #     "hexaly>=14.0.20251112",
 # ]
 # [[tool.uv.index]]
