@@ -26,9 +26,9 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `DR` Deposition and Reduction アルゴリズム[^9] ([概要](./model/dr))
 - `IBS_SCS` IBS_SCS アルゴリズム[^2] ([概要](./model/ibs_scs))
 - `DESCENDING` 2 つの文字列の SCS を DP で求める方法を用いて長い方から 2 個ずつマージする方法 ([概要](./model/descending))
-- `LINEAR_SCIP` 整数線形計画モデル(SCIP) ([概要](./model/linear_scip))
-- `LINEAR_HIGHS` 整数線形計画モデル(HiGHS) ([概要](./model/linear_highs))
-- `LINEAR_CPSAT` 整数線形計画モデル(CP-SAT) ([概要](./model/linear_cpsat))
+- `LINEAR1_SCIP` 整数線形計画モデル(SCIP) ([概要](./model/linear1_scip))
+- `LINEAR1_HIGHS` 整数線形計画モデル(HiGHS) ([概要](./model/linear1_highs))
+- `LINEAR1_CPSAT` 整数線形計画モデル(CP-SAT) ([概要](./model/linear1_cpsat))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([概要](./model/automaton_cpsat))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/wmm_hexaly_init))
@@ -52,9 +52,9 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `DR`                 | 68         | 127       | 168        | 30         | 36        | 27         | 141        | 50        | 491        |
 | `IBS_SCS`            | 73         | 119       | 163        | 28         | **34** 🥇 | **24** 🥇  | 135        | 49        | 876        |
 | `DESCENDING`         | 64         | 108       | 157        | 37         | 71        | 35         | 185        | 53        | 458        |
-| `LINEAR_SCIP`        | 72         | 175       | -          | 52         | -         | 42         | -          | 70        | -          |
-| `LINEAR_HIGHS`       | 75         | 148       | -          | 49         | -         | 30         | -          | 63        | -          |
-| `LINEAR_CPSAT`       | 65         | 127       | 287        | 29         | 87        | **24** 🥇  | -          | 49        | -          |
+| `LINEAR1_SCIP`       | 72         | 175       | -          | 52         | -         | 42         | -          | 70        | -          |
+| `LINEAR1_HIGHS`      | 75         | 148       | -          | 49         | -         | 30         | -          | 63        | -          |
+| `LINEAR1_CPSAT`      | 65         | 127       | 287        | 29         | 87        | **24** 🥇  | -          | 49        | -          |
 | `AUTOMATON_CPSAT`    | 67         | 135       | 242        | 29         | 40        | 25         | -          | 46        | -          |
 | `WMM_HEXALY`         | **62** 🥇  | 102       | 156        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 136        | **44** 🥇 | 498        |
 | `WMM_HEXALY_INIT`    | 64         | 105       | 150        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 138        | 45        | 454        |
@@ -77,14 +77,14 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | --- | --- | --- | --- |
 | 貪欲 | `MM` <br> `WMM` <br> `LA_SH` <br> `LA_SW` | `ALPHABET_REDUCTION` <br> `DR`| `ALPHABET` <br> `DESCENDING` |
 | ビームサーチ | `IBS_SCS` <br> `DIDP` | | |
-| 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR_SCIP` <br> `LINEAR_HIGHS` <br> `LINEAR_CPSAT` <br> `AUTOMATON_CPSAT` |
+| 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR1_SCIP` <br> `LINEAR1_HIGHS` <br> `LINEAR1_CPSAT` <br> `AUTOMATON_CPSAT` |
 | アニーリング? | `WMM_HEXALY` <br> `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
 
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
 - 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION`, `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_HEXALY`
-- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`
+- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
@@ -94,7 +94,7 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR_SCIP`, `LINEAR_HIGHS`, `LINEAR_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
+- 全探索 ... `DP`, `DIDP`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
 - アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
