@@ -57,10 +57,7 @@ class ModelReduction:
 
         self.best_bound = cpsolver.best_objective_bound
 
-        if status in {
-            cp_model.cp_model_pb2.OPTIMAL,
-            cp_model.cp_model_pb2.FEASIBLE,
-        }:
+        if status in {cp_model.OPTIMAL, cp_model.FEASIBLE}:
             solution = ""
             for idx, valid in enumerate(valids):
                 if cpsolver.boolean_value(valid):

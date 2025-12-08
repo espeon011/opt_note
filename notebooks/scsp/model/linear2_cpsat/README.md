@@ -78,10 +78,7 @@ class Model:
 
         self.best_bound = cpsolver.best_objective_bound
 
-        if status in {
-            cp_model.cp_model_pb2.OPTIMAL,
-            cp_model.cp_model_pb2.FEASIBLE,
-        }:
+        if status in {cp_model.OPTIMAL, cp_model.FEASIBLE}:
             solution = ""
             for v, cs in zip(sseq_valid, sseq_char):
                 if not cpsolver.boolean_value(v):

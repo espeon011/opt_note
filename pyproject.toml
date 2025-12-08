@@ -14,7 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "marimo[lsp]>=0.18.2",
+    "marimo[lsp]>=0.18.3",
     "pdoc>=16.0.0",
     "taskipy>=1.14.1",
 ]
@@ -36,6 +36,7 @@ pythonpath = ["src"]
 
 [tool.taskipy.tasks]
 doc = "rm -rf docs && pdoc opt_note --output-directory docs --math --docformat google"
+doc-serve = "pdoc opt_note --math --docformat google --host 0.0.0.0"
 
 [tool.taskipy.settings]
 cwd = "."
