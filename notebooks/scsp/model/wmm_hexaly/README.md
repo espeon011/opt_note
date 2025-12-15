@@ -102,8 +102,6 @@ class Model:
             hxmodel: hexaly.optimizer.HxModel = hxoptimizer.model
             hxparam: hexaly.optimizer.HxParam = hxoptimizer.param
 
-            chars = "".join(sorted(list(set("".join(self.instance)))))
-
             # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
             # 初期重みが与えられなかった場合は文字種数とする.
             max_weight = (
@@ -113,7 +111,7 @@ class Model:
                     for w in ws
                 )
                 if initial_weights
-                else len(chars)
+                else len(self.chars)
             )
 
             priorities1d = [
