@@ -1,18 +1,18 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "didppy==0.10.0",
-#     "highspy==1.11.0",
-#     "nbformat==5.10.4",
-#     "ortools==9.14.6206",
-#     "pyscipopt==5.6.0",
+#     "nbformat>=5.10.4",
+#     "opt-note",
 # ]
+#
+# [tool.uv.sources]
+# opt-note = { git = "https://github.com/espeon011/opt_note" }
 # ///
 
 import marimo
 
-__generated_with = "0.15.3"
-app = marimo.App(width="medium")
+__generated_with = "0.18.4"
+app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
     import random
@@ -31,20 +31,23 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# データ生成用""")
+    mo.md(r"""
+    # データ生成用
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## 一様ランダム文字列""")
+    mo.md(r"""
+    ## 一様ランダム文字列
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     与えられた文字列集合の中から一様ランダムに文字を抽出して並べることで文字列を生成する.
 
     - $q$: 使用文字種類数.
@@ -52,8 +55,7 @@ def _(mo):
     - $k_{\min}, k_{\max}$: 文字列超上下限. 実際の文字列超はこの範囲から一様ランダムに決める.
 
     低確率で全く同じ文字列が生成される可能性があることに注意.
-    """
-    )
+    """)
     return
 
 
@@ -119,14 +121,15 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## DNA 配列""")
+    mo.md(r"""
+    ## DNA 配列
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     実際の DNA 配列のデータから適当に切り出して作成する.
 
     [NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Nucleotide を選択して Download All Results をクリックし,
@@ -143,8 +146,7 @@ def _(mo):
     上記検索条件を保存した URL: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide&Completeness_s=complete&QualNum_i=0&SLen_i=500%20TO%203000000
 
     アクセス日付: 2025-08-25
-    """
-    )
+    """)
     return
 
 
@@ -202,7 +204,9 @@ def write_nucleotide_instance(n: int, k: int) -> None:
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### データの重複チェック""")
+    mo.md(r"""
+    ### データの重複チェック
+    """)
     return
 
 
@@ -221,7 +225,9 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### 保存""")
+    mo.md(r"""
+    ### 保存
+    """)
     return
 
 
@@ -243,14 +249,15 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## タンパク質配列""")
+    mo.md(r"""
+    ## タンパク質配列
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     実際のタンパク質配列からデータを適当に切り出して作成する.
 
     [NCBI Virus のページ](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus)から Nucleotide を選択して Download All Results をクリックし,
@@ -268,8 +275,7 @@ def _(mo):
     上記検索条件を保存した URL: https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Protein&SLen_i=500%20TO%203000000&Completeness_s=complete&QualNum_i=0
 
     アクセス日付: 2025-08-25
-    """
-    )
+    """)
     return
 
 
@@ -327,7 +333,9 @@ def write_protein_instance(n: int, k: int) -> None:
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### データの重複チェック""")
+    mo.md(r"""
+    ### データの重複チェック
+    """)
     return
 
 
@@ -346,7 +354,9 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### 保存""")
+    mo.md(r"""
+    ### 保存
+    """)
     return
 
 

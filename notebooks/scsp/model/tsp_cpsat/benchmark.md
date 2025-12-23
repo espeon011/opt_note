@@ -28,17 +28,17 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > str3: ulcinycosovozpplp
 > str4: igevazgbrddbcsvrvnngf
 > 
-> --- Solution (of length 65) ---
->  Sol: tkignkouhjimpxnhtqfgolnbexxcinvyazgbrddbcosovozuqrppvxninslsbxgfp
-> str1: tk-gnk-uh--mpxnhtq-g-----x-------z----------v--------x-i-s-------
-> str2: --i---o--ji------qf-olnb-xxc--v-----------s----uq-p-v--i-s-sbx-f-
-> str3: -------u-------------l-----cin-y--------cosovoz---pp------l-----p
-> str4: --ig--------------------e-----v-azgbrddbc-s-v----r--v-n-n-----gf-
+> --- Solution (of length 64) ---
+>  Sol: tuikogljcinyecqosovfaozlgnkbxrdxdbcsvrvsuhmpnpxnhltqgpxzvxissbxf
+> str1: t--k-g----n---------------k-------------uhmp--xnh-tqg-xzvxis----
+> str2: --i-o--j-i----q----f-o-l-n-bx--x--c-v--su----------q-p--v-issbxf
+> str3: -u----l-ciny-c-osov--oz--------------------p-p---l---p----------
+> str4: --i--g------e-----v-a-z-g--b-rd-dbcsvrv-----n--n----g----------f
 > 
 > example file name: 'uniform_q26n004k015-025.txt'
-> best objective: 65
-> best bound: 52.0
-> wall time: 60.336082s
+> best objective: 64
+> best bound: 55.0
+> wall time: 60.279375s
 > ```
 
 In [ ]:
@@ -57,21 +57,21 @@ scsp.util.bench(Model, example_filename="uniform_q26n008k015-025.txt")
 > str7: enbczfjtvxerzbrvigple
 > str8: rxwxqkrdrlctodtmprpxwd
 > 
-> --- Solution (of length 148) ---
->  Sol: igertivazkgbrxnkwuhxddojiqkrdrmpyplrfbxnhotqgxzxucsvrpmlnbqxvxcvsuqctpvinngtdfuivcdysbodcsfotmsovbozprpxlfwpbdenvdbcvdpfzsmsbroqvbzfjtvxerzbrvihgple
-> str1: ----t----kg---nk-uh-----------mp------xnh-tqgxz----v-------x-----------i------------s---------------------------------------------------------------
-> str2: i---------------------ojiq----------f----o-------------lnb-x-xcvsuq--pvi------------s----s-------b-----x-f------------------------------------------
-> str3: -----------------u----------------l--------------c---------------------in----------y----c--o--sov-ozp-p-l--p----------------------------------------
-> str4: ige---vaz-gbr-------dd---------------b-----------csvr-------v-----------nng--f----------------------------------------------------------------------
-> str5: -------------------------------pyplr----------zxuc---pm---q-v-------------gtdfuivcd-sbo-------------------------------------------------------------
-> str6: -------------------------------p-----b--------------------------------------d---------------------------------e-vd-cvdpfzsmsbroqvb---------b---h----
-> str7: --e-----------n----------------------b-----------c-------------------------------------------------z-----f--------------------------jtvxerzbrvi-gple
-> str8: ---r---------x--w--x-----qkrdr----l--------------c------------------t-----------------od----tm------prpx--w--d--------------------------------------
+> --- Solution (of length 143) ---
+>  Sol: tkgnkuhmpxnhtulcinyicosovozppblgenbczfqjtvazgbrdedbgcsvdcvdpzxucxfzspmevrsbroiqvbxwzfovlnbrbxxcvsuqpvigqssbpvngxqkrpdrlctodtmprpxwdfuivcdihesbo
+> str1: tkgnkuhmpxnht-------------------------q-----g----------------x----z----v---------x-------------------i--s--------------------------------------
+> str2: ----------------i----o-----------------j-------------------------------------iq-----fo-lnb--xxcvsuqpvi--ssb----x-------------------f-----------
+> str3: -----u--------lciny-cosovozpp-l----------------------------p-----------------------------------------------------------------------------------
+> str4: ----------------i--------------ge--------vazgbrd-db-csv-----------------r------v--------n--------------------ng--------------------f-----------
+> str5: --------p---------y--------p--l---------------r-------------zxuc----pm--------qv----------------------g-----------------t-d--------fuivcd---sbo
+> str6: --------p--------------------b-----------------de-----vdcvdp-----fzs-m---sbro-qvb--------b------------------------------------------------h----
+> str7: --------------------------------enbczf-jtv-------------------x--------e-r----------z-----br----v-----ig----p----------l--------------------e---
+> str8: ----------------------------------------------r--------------x--------------------w---------x-----q--------------kr-drlctodtmprpxwd------------
 > 
 > example file name: 'uniform_q26n008k015-025.txt'
-> best objective: 148
-> best bound: 61.0
-> wall time: 60.74474s
+> best objective: 143
+> best bound: 62.0
+> wall time: 60.743952s
 > ```
 
 In [ ]:
@@ -103,7 +103,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n016k015-025.txt")
 > example file name: 'uniform_q26n016k015-025.txt'
 > best objective: None
 > best bound: 70.0
-> wall time: 62.539455s
+> wall time: 62.764959s
 > ```
 
 In [ ]:
@@ -124,23 +124,23 @@ scsp.util.bench(Model, example_filename="uniform_q05n010k010-010.txt")
 > str09: ccdeedadcd
 > str10: bdabdbeaad
 > 
-> --- Solution (of length 43) ---
->   Sol: cbaecdedddbdaeeecaebcdaebedabdcbdcbeaadbcce
-> str01: -----d----------c--bc---------c-d-b-----cce
-> str02: -b---d-d--b--eee--eb-d---------------------
-> str03: c-a-cde------e--c-eb---e-------------------
-> str04: --ae-d-ddd---e-----b-d----d----------------
-> str05: --a-c-----b--ee-ca-bc--e-------------------
-> str06: -b--------b-a------b---eb-d---cb----a------
-> str07: -b--------b-ae---aeb--a---da---------------
-> str08: ---e--e------ee-c--b-d--be---------e-------
-> str09: c---cde------e-------da---d---c-d----------
-> str10: -b---d------a------b-d--be-a--------a-d----
+> --- Solution (of length 47) ---
+>   Sol: bdacbbabebdecabaccdedbeecaedeacedddecbdbeadcade
+> str01: -d-cb-------c---c-d--b--c-----ce---------------
+> str02: bd--------d---b----e--ee--e----------bd--------
+> str03: ---c--a-----c-----de--e-c-e----------b--e------
+> str04: --a-----e-d-------d-d------de--------bd---d----
+> str05: --acb---e--ecab-c--e---------------------------
+> str06: b---b-abebd-c-ba-------------------------------
+> str07: b---b-a-e----a-----e-b---a-d-a-----------------
+> str08: --------e--e-------e--e-c------------bdbe-----e
+> str09: ---c--------c-----de--e----d-a--d---c-d--------
+> str10: bda-b-----d---b----e-----a---a--d--------------
 > 
 > example file name: 'uniform_q05n010k010-010.txt'
-> best objective: 43
+> best objective: 47
 > best bound: 26.0
-> wall time: 60.323193s
+> wall time: 60.436837s
 > ```
 
 In [ ]:
@@ -206,7 +206,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n050k010-010.txt")
 > example file name: 'uniform_q05n050k010-010.txt'
 > best objective: None
 > best bound: 28.0
-> wall time: 66.70791s
+> wall time: 66.872798s
 > ```
 
 In [ ]:
@@ -227,23 +227,23 @@ scsp.util.bench(Model, example_filename="nucleotide_n010k010.txt")
 > str09: TTCCACAACT
 > str10: TCTAAACGAA
 > 
-> --- Solution (of length 42) ---
->   Sol: AGGTTAGACATAGGATACTTCCTAGGGAAGTGATAACGAACT
-> str01: A--T--G-----GGATAC------G-----------------
-> str02: A--T-A--C--------CTTCC--------------C-----
-> str03: --------CA-------C------G--AA-T--T---GA---
-> str04: ---T-A-A-A-A---T-CT-----G-----T-----------
-> str05: AGGT-A-ACA-A--A---------------------------
-> str06: ---TT---C--------CT----AGG----T-A---------
-> str07: ---TT-G---TAG-AT-CT-----------------------
-> str08: ---T--G-----GGA-A-------G-----T--T--C-----
-> str09: ---TT---C--------C-----A------------C-AACT
-> str10: ---T----C-TA--A-AC------G--AA-------------
+> --- Solution (of length 40) ---
+>   Sol: ATGGGATCCTTCTACGAATTGGGATATGACTAACGTAACA
+> str01: ATGGGAT------ACG------------------------
+> str02: AT---A-CCTTC--C--------------C----------
+> str03: -------C-----ACGAATTG--A----------------
+> str04: -T---A-------A--AAT----------CT---GT----
+> str05: A-GG--T------A--A------------C-AA---A---
+> str06: -T----TCCT---A-G----G---TA--------------
+> str07: -T----T--------G--T----A---GA-T--C-T----
+> str08: -TGGGA-------A-G--TT---------C----------
+> str09: -T----TCC----AC-AA-----------CT---------
+> str10: -T-----C-T---A--AA-----------C----G-AA--
 > 
 > example file name: 'nucleotide_n010k010.txt'
-> best objective: 42
+> best objective: 40
 > best bound: 20.0
-> wall time: 60.59658s
+> wall time: 60.646441s
 > ```
 
 In [ ]:
@@ -271,23 +271,23 @@ scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 > str09: MSFVAGVTAQ
 > str10: MESLVPGFNE
 > 
-> --- Solution (of length 59) ---
->   Sol: MPFMLYQMSYSAEEHAKQFHVAGVLNTFDAIELHGRNAQDLGNSRNPYLVCPQKGFTNE
-> str01: M----------A------------L------------------S---Y--CP-KG-T--
-> str02: M-----Q-S-S-------------LN---AI---------------P--V---------
-> str03: MP--L---SY-------Q-H-------F-------R-----------------K-----
-> str04: M-----------EEH-----V----N-----ELH-----D-------------------
-> str05: M-------S----------------N-FDAI----R-A--L------------------
-> str06: M-F--------------------------------RN-Q---NSRN--------G----
-> str07: M-F--Y-----A--HA--F---G-----------G------------Y-----------
-> str08: M-------S-------K-F-------T--------R--------R-PY----Q------
-> str09: M-------S---------F-VAGV--T--A--------Q--------------------
-> str10: M-----------E------------------------------S----LV-P--GF-NE
+> --- Solution (of length 58) ---
+>   Sol: MESQFYAPEHVAFGVGSLSNEKFYQLTRHRHNTDAIQNPFSYCDVRQALVPGFKNEGT
+> str01: M-----A----------LS----Y------------------C-------P--K--GT
+> str02: M--Q------------S-S------L-----N--AI--P-----V-------------
+> str03: M------P---------LS----YQ---H----------F-----R-------K----
+> str04: ME------EHV--------NE----L--H----D------------------------
+> str05: M-S----------------N--F----------DAI---------R-AL---------
+> str06: M---F----------------------R---N----QN--S----R--------N-G-
+> str07: M---FYA--H-AFG-G-------Y----------------------------------
+> str08: M-S------------------KF---TR-R--------P--Y----Q-----------
+> str09: M-S-F-----VA-GV-----------T-------A-Q---------------------
+> str10: MES--------------L--------------------------V-----PGF-NE--
 > 
 > example file name: 'protein_n010k010.txt'
-> best objective: 59
-> best bound: 34.0
-> wall time: 60.256631s
+> best objective: 58
+> best bound: 35.0
+> wall time: 60.266714s
 > ```
 
 In [ ]:

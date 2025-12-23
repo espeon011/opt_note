@@ -38,7 +38,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: 75
 > best bound: 0.0
-> wall time: 0.001414s
+> wall time: 0.00208s
 > ```
 
 In [ ]:
@@ -71,7 +71,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n008k015-025.txt")
 > example file name: 'uniform_q26n008k015-025.txt'
 > best objective: 128
 > best bound: 0.0
-> wall time: 0.003027s
+> wall time: 0.004691s
 > ```
 
 In [ ]:
@@ -120,7 +120,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n016k015-025.txt")
 > example file name: 'uniform_q26n016k015-025.txt'
 > best objective: 176
 > best bound: 0.0
-> wall time: 0.005835s
+> wall time: 0.008813s
 > ```
 
 In [ ]:
@@ -157,7 +157,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n010k010-010.txt")
 > example file name: 'uniform_q05n010k010-010.txt'
 > best objective: 32
 > best bound: 0.0
-> wall time: 0.000222s
+> wall time: 0.000243s
 > ```
 
 In [ ]:
@@ -274,7 +274,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n050k010-010.txt")
 > example file name: 'uniform_q05n050k010-010.txt'
 > best objective: 37
 > best bound: 0.0
-> wall time: 0.00071s
+> wall time: 0.000713s
 > ```
 
 In [ ]:
@@ -311,7 +311,7 @@ scsp.util.bench(Model, example_filename="nucleotide_n010k010.txt")
 > example file name: 'nucleotide_n010k010.txt'
 > best objective: 26
 > best bound: 0.0
-> wall time: 0.000162s
+> wall time: 0.000169s
 > ```
 
 In [ ]:
@@ -428,7 +428,7 @@ scsp.util.bench(Model, example_filename="nucleotide_n050k050.txt")
 > example file name: 'nucleotide_n050k050.txt'
 > best objective: 146
 > best bound: 0.0
-> wall time: 0.002805s
+> wall time: 0.00285s
 > ```
 
 In [ ]:
@@ -465,7 +465,7 @@ scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 > example file name: 'protein_n010k010.txt'
 > best objective: 57
 > best bound: 0.0
-> wall time: 0.001127s
+> wall time: 0.001318s
 > ```
 
 In [ ]:
@@ -582,5 +582,5 @@ scsp.util.bench(Model, example_filename="protein_n050k050.txt")
 > example file name: 'protein_n050k050.txt'
 > best objective: 475
 > best bound: 0.0
-> wall time: 0.028471s
+> wall time: 0.02793s
 > ```

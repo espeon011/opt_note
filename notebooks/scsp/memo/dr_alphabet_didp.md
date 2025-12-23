@@ -95,7 +95,7 @@ class ModelReduction:
 
         condition = didppy.Condition(False)
         for sidx, index_var in enumerate(index_vars):
-            condition |= (instance_table[sidx, index_var] == template_table[next])
+            condition |= instance_table[sidx, index_var] == template_table[next]
 
         # テンプレート文字列の next 文字目を採用する
         use = didppy.Transition(
@@ -164,7 +164,7 @@ class ModelReduction:
             self.best_bound = 0.0
 
         if not didpsolution.is_infeasible and len(didpsolution.transitions) > 0:
-            use_list = "".join([trans.name for trans in didpsolution.transitions]) 
+            use_list = "".join([trans.name for trans in didpsolution.transitions])
             self.solution = "".join(
                 [self.template[idx] for idx, flag in enumerate(use_list) if flag == "1"]
             )
@@ -217,7 +217,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n002k015-025.txt", log=False
 > best objective: 40
 > best bound: 0.0
 > best submodel bound: 40.0
-> wall time: 0.002416s
+> wall time: 0.033364s
 > ```
 
 In [ ]:
@@ -238,7 +238,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt", log=False
 > best objective: None
 > best bound: 0.0
 > best submodel bound: 48.0
-> wall time: 60.027892s
+> wall time: 60.167341s
 > ```
 
 なんかダメだな... 定式化が間違っている?
@@ -260,15 +260,15 @@ scsp.util.bench(
 > str2: iojiqfolnbxxcvsuqpvissbxf
 > 
 > --- Solution (of length 40) ---
->  Sol: tkgiojiqfolnbkuxhmpxcnvhstuqgxzpvxissbxf
-> str1: tkg--------n-ku-hmpx-n-h-t-qgxz-vxis----
-> str2: ---iojiqfolnb--x---xc-v-s-uq---pv-issbxf
+>  Sol: tikogjiqfolnbkuxhmpxcnvhstuqgxzpvxissbxf
+> str1: t-k-g------n-ku-hmpx-n-h-t-qgxz-vxis----
+> str2: -i-o-jiqfolnb--x---xc-v-s-uq---pv-issbxf
 > 
 > example file name: 'uniform_q26n002k015-025.txt'
 > best objective: 40
 > best bound: 0.0
 > best submodel bound: 40.0
-> wall time: 0.393012s
+> wall time: 0.487266s
 > ```
 
 In [ ]:
@@ -287,15 +287,15 @@ scsp.util.bench(
 > str4: igevazgbrddbcsvrvnngf
 > 
 > --- Solution (of length 62) ---
->  Sol: tuklcignyckosuhjmoeiqvafozppglnbrxddxbcsvrsvnhtunqgpxzvxissbxf
-> str1: t-k---gn--k--uh-m---------p------x----------nht--qg-xzvxis----
-> str2: -----i-----o---j---iq--fo----lnb-x--x-c-v-s----u-q-p--v-issbxf
-> str3: -u-lci-nyc-os----o---v--ozpp-l---------------------p----------
-> str4: -----ig-----------e--va--z--g--br-dd-bcsvr-vn---n-g----------f
+>  Sol: tuklcignycoejsikoquvafozphmpxlnhtqgbrxdxdbcvzsuvqxprvinsnsbgxf
+> str1: t-k---gn-------k--u------hmpx-nhtqg--x------z--v-x---i-s------
+> str2: -----i----o-j-i--q---fo------ln----b-x-x--cv-su-q-p-vi-s-sb-xf
+> str3: -u-lci-nyco--s--o--v--ozp--p-l--------------------p-----------
+> str4: -----ig----e-------va--z----------gbr-d-dbc--s-v---rv-n-n--g-f
 > 
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: 62
 > best bound: 0.0
 > best submodel bound: 62.0
-> wall time: 15.068694s
+> wall time: 16.421552s
 > ```

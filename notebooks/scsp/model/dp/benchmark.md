@@ -38,7 +38,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: 62
 > best bound: 62.0
-> wall time: 1.14807s
+> wall time: 1.151772s
 > ```
 
 In [ ]:
@@ -87,7 +87,7 @@ In [ ]:
 ```python
 # 問題が大きすぎるためスキップ
 
-#scsp.util.bench(Model, example_filename="protein_n010k010.txt")
+# scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 ```
 
 In [ ]:

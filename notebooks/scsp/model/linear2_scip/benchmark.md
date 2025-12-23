@@ -38,7 +38,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: 76
 > best bound: 50.38414212850001
-> wall time: 60.216345s
+> wall time: 60.238753s
 > ```
 
 In [ ]:
@@ -71,7 +71,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n008k015-025.txt")
 > example file name: 'uniform_q26n008k015-025.txt'
 > best objective: 154
 > best bound: 0.0
-> wall time: 60.880417s
+> wall time: 60.914501s
 > ```
 
 In [ ]:
@@ -103,7 +103,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n016k015-025.txt")
 > example file name: 'uniform_q26n016k015-025.txt'
 > best objective: None
 > best bound: 0.0
-> wall time: 63.357299s
+> wall time: 63.473953s
 > ```
 
 In [ ]:
@@ -140,7 +140,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n010k010-010.txt")
 > example file name: 'uniform_q05n010k010-010.txt'
 > best objective: 59
 > best bound: 26.000000000000004
-> wall time: 60.218254s
+> wall time: 60.212689s
 > ```
 
 In [ ]:
@@ -206,7 +206,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n050k010-010.txt")
 > example file name: 'uniform_q05n050k010-010.txt'
 > best objective: None
 > best bound: 0.0
-> wall time: 66.153779s
+> wall time: 66.416335s
 > ```
 
 In [ ]:
@@ -242,8 +242,8 @@ scsp.util.bench(Model, example_filename="nucleotide_n010k010.txt")
 > 
 > example file name: 'nucleotide_n010k010.txt'
 > best objective: 49
-> best bound: 20.000000000000018
-> wall time: 60.418628s
+> best bound: 20.00000000000002
+> wall time: 60.457352s
 > ```
 
 In [ ]:
@@ -271,23 +271,23 @@ scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 > str09: MSFVAGVTAQ
 > str10: MESLVPGFNE
 > 
-> --- Solution (of length 78) ---
->   Sol: MALSYCPKGQSSLNAIPSYQHFREEHVNELHDAIRAYAHAFGGTRRPYQMRNQNSRNKDYSFVAGVTAQESLVPGFNE
-> str01: MALSYCPKG----------------------------------T----------------------------------
-> str02: M--------QSSLNAIP---------V---------------------------------------------------
-> str03: M-----P-----L----SYQHFR----------------------------------K--------------------
-> str04: M----------------------EEHVNELHD----------------------------------------------
-> str05: M--S---------N-------F---------DAIRA-----------------------------------L------
-> str06: M--------------------FR----N--------------------Q--N--SRN-------G-------------
-> str07: M--------------------F--------------YAHAFGG----Y------------------------------
-> str08: M--S---K-------------F---------------------TRRPYQ-----------------------------
-> str09: M--S-----------------F----V-----A--------G--------------------V---TAQ---------
-> str10: M----------------------E------------------------------S----------------LVPGFNE
+> --- Solution (of length 76) ---
+>   Sol: MALSYCPKQSSLNAIPSYQHFREEHVNELHDAIRAYAHAFGGTRRPYMDRNQNSRNQKYFVAGVTAQESLVPGFNE
+> str01: MALSYCPK--------------------------------G-T---------------------------------
+> str02: M-------QSSLNAIP---------V--------------------------------------------------
+> str03: M-----P----L----SYQHFR-----------------------------------K------------------
+> str04: M---------------------EEHVNELHD---------------------------------------------
+> str05: M--S--------N-------F---------DAIRA----------------------------------L------
+> str06: M-------------------FR----N------------------------QNSRN------G-------------
+> str07: M-------------------F--------------YAHAFGG----Y-----------------------------
+> str08: M--S---K------------F---------------------TRRPY----Q------------------------
+> str09: M--S----------------F----V-----A--------G-------------------V---TAQ---------
+> str10: M---------------------E------------------------------S---------------LVPGFNE
 > 
 > example file name: 'protein_n010k010.txt'
-> best objective: 78
-> best bound: 33.00000000000001
-> wall time: 60.426677s
+> best objective: 76
+> best bound: 33.00000000000002
+> wall time: 60.343476s
 > ```
 
 In [ ]:

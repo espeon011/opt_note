@@ -38,7 +38,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n004k015-025.txt")
 > example file name: 'uniform_q26n004k015-025.txt'
 > best objective: 72
 > best bound: 26.0
-> wall time: 60.192853s
+> wall time: 60.202346s
 > ```
 
 In [ ]:
@@ -71,7 +71,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n008k015-025.txt")
 > example file name: 'uniform_q26n008k015-025.txt'
 > best objective: 175
 > best bound: 26.0
-> wall time: 61.036027s
+> wall time: 61.07581s
 > ```
 
 In [ ]:
@@ -103,7 +103,7 @@ scsp.util.bench(Model, example_filename="uniform_q26n016k015-025.txt")
 > example file name: 'uniform_q26n016k015-025.txt'
 > best objective: None
 > best bound: 25.0
-> wall time: 62.559053s
+> wall time: 62.554445s
 > ```
 
 In [ ]:
@@ -140,7 +140,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n010k010-010.txt")
 > example file name: 'uniform_q05n010k010-010.txt'
 > best objective: 52
 > best bound: 12.0
-> wall time: 60.225939s
+> wall time: 60.288532s
 > ```
 
 In [ ]:
@@ -206,7 +206,7 @@ scsp.util.bench(Model, example_filename="uniform_q05n050k010-010.txt")
 > example file name: 'uniform_q05n050k010-010.txt'
 > best objective: None
 > best bound: -1e+20
-> wall time: 65.374171s
+> wall time: 65.475246s
 > ```
 
 In [ ]:
@@ -243,7 +243,7 @@ scsp.util.bench(Model, example_filename="nucleotide_n010k010.txt")
 > example file name: 'nucleotide_n010k010.txt'
 > best objective: 42
 > best bound: 11.0
-> wall time: 60.213393s
+> wall time: 60.21818s
 > ```
 
 In [ ]:
@@ -287,7 +287,7 @@ scsp.util.bench(Model, example_filename="protein_n010k010.txt")
 > example file name: 'protein_n010k010.txt'
 > best objective: 70
 > best bound: 12.0
-> wall time: 60.292798s
+> wall time: 60.272255s
 > ```
 
 In [ ]:

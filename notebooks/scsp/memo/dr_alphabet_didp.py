@@ -2,23 +2,16 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "didppy==0.10.0",
-#     "highspy==1.12.0",
-#     "hexaly>=14.0.20251112",
 #     "nbformat==5.10.4",
-#     "ortools==9.14.6206",
-#     "pyscipopt==6.0.0",
+#     "opt-note",
 # ]
-# [[tool.uv.index]]
-# name ="hexaly"
-# url = "https://pip.hexaly.com"
-# explict = true
 # [tool.uv.sources]
-# hexaly = { index = "hexaly" }
+# opt-note = { git = "https://github.com/espeon011/opt_note" }
 # ///
 
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.4"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
@@ -127,7 +120,7 @@ class ModelReduction:
 
         condition = didppy.Condition(False)
         for sidx, index_var in enumerate(index_vars):
-            condition |= (instance_table[sidx, index_var] == template_table[next])
+            condition |= instance_table[sidx, index_var] == template_table[next]
 
         # テンプレート文字列の next 文字目を採用する
         use = didppy.Transition(
@@ -196,7 +189,7 @@ class ModelReduction:
             self.best_bound = 0.0
 
         if not didpsolution.is_infeasible and len(didpsolution.transitions) > 0:
-            use_list = "".join([trans.name for trans in didpsolution.transitions]) 
+            use_list = "".join([trans.name for trans in didpsolution.transitions])
             self.solution = "".join(
                 [self.template[idx] for idx, flag in enumerate(use_list) if flag == "1"]
             )

@@ -1,24 +1,17 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "didppy==0.10.0",
-#     "highspy==1.12.0",
-#     "hexaly>=14.0.20251112",
 #     "nbformat==5.10.4",
-#     "ortools==9.14.6206",
-#     "pyscipopt==6.0.0",
+#     "opt-note",
 # ]
-# [[tool.uv.index]]
-# name ="hexaly"
-# url = "https://pip.hexaly.com"
-# explict = true
+#
 # [tool.uv.sources]
-# hexaly = { index = "hexaly" }
+# opt-note = { git = "https://github.com/espeon011/opt_note" }
 # ///
 
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.4"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
@@ -75,7 +68,6 @@ class Model:
     def priorities_1d_to_2d[T](self, priorities1d: list[T]) -> list[list[T]]:
         return [priorities1d[start:end] for start, end in self.indices_1d_to_2d]
 
-    
     def wmm(self, priorities2d: list[list[int]]) -> str:
         max_len = len(self.instance) * max(len(s) for s in self.instance)
         indices = tuple(0 for _ in self.instance)
@@ -120,12 +112,16 @@ class Model:
         log: bool = False,
         initial_weights: list[list[int]] | None = None,
         *args,
-        **kwargs
+        **kwargs,
     ) -> str | None:
         # 重みの最大値は初期重みが与えられた場合は初期重みの最大値の 2 倍,
         # 初期重みが与えられなかった場合は文字種数とする.
         max_weight = (
-            max(max(w, len(s)) for s, ws in zip(self.instance, initial_weights) for w in ws)
+            max(
+                max(w, len(s))
+                for s, ws in zip(self.instance, initial_weights)
+                for w in ws
+            )
             if initial_weights
             else len(self.chars)
         )
@@ -135,33 +131,35 @@ class Model:
             hxparam = hxoptimizer.param
 
             priorities1d = [
-                hxmodel.int(1, max_weight) for s in self.instance for cidx, _ in enumerate(s)
+                hxmodel.int(1, max_weight)
+                for s in self.instance
+                for cidx, _ in enumerate(s)
             ]
-            
+
             func = hxmodel.create_int_external_function(self.objective)
             func.external_context.lower_bound = 0
             func.external_context.upper_bound = sum(len(s) for s in self.instance)
-    
+
             indices_1d_to_2d: list[tuple[int, int]] = []
             counter = 0
             for s in self.instance:
                 indices_1d_to_2d.append((counter, counter + len(s)))
                 counter += len(s)
-                
+
             hxmodel.minimize(func(*priorities1d))
             hxmodel.close()
-    
+
             if initial_weights:
                 priorities2d = self.priorities_1d_to_2d(priorities1d)
                 for ps, ws in zip(priorities2d, initial_weights):
                     for p, w in zip(ps, ws):
                         p.set_value(w)
-                        
+
             if time_limit is not None:
                 hxparam.time_limit = time_limit
             hxparam.verbosity = 1 if log else 0
             hxoptimizer.solve()
-    
+
             solution = hxoptimizer.solution
             status = solution.status
             if status in {
@@ -171,7 +169,7 @@ class Model:
                 priorities1d_value: list[int] = [p.value for p in priorities1d]
                 priorities2d_value = self.priorities_1d_to_2d(priorities1d_value)
                 self.solution = self.wmm(priorities2d_value)
-    
+
         return self.solution
 
 

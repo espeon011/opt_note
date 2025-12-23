@@ -1,19 +1,12 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "didppy==0.10.0",
-#     "highspy==1.12.0",
 #     "nbformat==5.10.4",
-#     "ortools==9.14.6206",
-#     "pyscipopt==5.7.1",
-#     "hexaly>=14.0.20251112",
+#     "opt-note",
 # ]
-# [[tool.uv.index]]
-# name ="hexaly"
-# url = "https://pip.hexaly.com"
-# explict = true
+#
 # [tool.uv.sources]
-# hexaly = { index = "hexaly" }
+# opt-note = { git = "https://github.com/espeon011/opt_note" }
 # ///
 
 import marimo
@@ -29,6 +22,7 @@ with app.setup:
 def _():
     import marimo as mo
     import nbformat
+
     return (mo,)
 
 

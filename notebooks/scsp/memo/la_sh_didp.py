@@ -1,19 +1,12 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "didppy==0.10.0",
-#     "highspy==1.12.0",
-#     "hexaly>=14.0.20251112",
 #     "nbformat==5.10.4",
-#     "ortools==9.14.6206",
-#     "pyscipopt==5.7.1",
+#     "opt-note",
 # ]
-# [[tool.uv.index]]
-# name ="hexaly"
-# url = "https://pip.hexaly.com"
-# explict = true
+#
 # [tool.uv.sources]
-# hexaly = { index = "hexaly" }
+# opt-note = { git = "https://github.com/espeon011/opt_note" }
 # ///
 
 import marimo
@@ -32,6 +25,7 @@ with app.setup:
 def _():
     import marimo as mo
     import nbformat
+
     return (mo,)
 
 
@@ -153,13 +147,15 @@ class Model:
                     for idx, s in zip(state, self.instance)
                 )
 
-        self.solution =  solution
+        self.solution = solution
         return self.solution
 
 
 @app.cell
 def _():
-    scsp.util.bench(scsp.model.la_sh.Model, example_filename="uniform_q26n004k015-025.txt")
+    scsp.util.bench(
+        scsp.model.la_sh.Model, example_filename="uniform_q26n004k015-025.txt"
+    )
     return
 
 
@@ -171,7 +167,9 @@ def _():
 
 @app.cell
 def _():
-    scsp.util.bench(scsp.model.la_sh.Model, example_filename="uniform_q26n008k015-025.txt")
+    scsp.util.bench(
+        scsp.model.la_sh.Model, example_filename="uniform_q26n008k015-025.txt"
+    )
     return
 
 
@@ -183,7 +181,9 @@ def _():
 
 @app.cell
 def _():
-    scsp.util.bench(scsp.model.la_sh.Model, example_filename="uniform_q26n016k015-025.txt")
+    scsp.util.bench(
+        scsp.model.la_sh.Model, example_filename="uniform_q26n016k015-025.txt"
+    )
     return
 
 
@@ -195,7 +195,9 @@ def _():
 
 @app.cell
 def _():
-    scsp.util.bench(scsp.model.la_sh.Model, example_filename="uniform_q05n010k010-010.txt")
+    scsp.util.bench(
+        scsp.model.la_sh.Model, example_filename="uniform_q05n010k010-010.txt"
+    )
     return
 
 
@@ -207,7 +209,9 @@ def _():
 
 @app.cell
 def _():
-    scsp.util.bench(scsp.model.la_sh.Model, example_filename="uniform_q05n050k010-010.txt")
+    scsp.util.bench(
+        scsp.model.la_sh.Model, example_filename="uniform_q05n050k010-010.txt"
+    )
     return
 
 
