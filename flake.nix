@@ -4,17 +4,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    pyrefly-flake = {
-      url = "github:espeon011/pyrefly-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
-    pyrefly-flake,
   }:
     flake-utils.lib.eachDefaultSystem
     (system: let
@@ -28,10 +23,9 @@
         BuildInputs = [];
 
         packages = [
-          pkgs.python313
+          pkgs.python314
           pkgs.uv
-          # pkgs.pyrefly
-          pyrefly-flake.packages.${system}.default
+          pkgs.pyrefly
           pkgs.ruff
         ];
 
