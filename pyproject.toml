@@ -7,14 +7,14 @@ requires-python = ">=3.13"
 dependencies = [
     "didppy>=0.10.0",
     "hexaly>=14.5.20260326",
-    "highspy>=1.13.1",
+    "highspy>=1.14.0",
     "ortools>=9.15.6755",
     "pyscipopt>=6.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "marimo[lsp]>=0.22.4",
+    "marimo[lsp]>=0.23.0",
     "pdoc>=16.0.0",
     "taskipy>=1.14.1",
 ]
