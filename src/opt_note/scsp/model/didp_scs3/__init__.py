@@ -59,9 +59,9 @@ def boundtable_scs3(s1: str, s2: str, s3: str) -> list[list[list[int]]]:
 
 def boundexpr_scs3len(
     instance: list[str],
-    dpmodel: didppy.Model,  # pyrefly: ignore
-    index_vars: list[didppy.ElementVar],  # pyrefly: ignore
-) -> didppy.IntExpr:  # pyrefly: ignore
+    dpmodel: didppy.Model,  # pyrefly: ignore # ty:ignore
+    index_vars: list[didppy.ElementVar],  # pyrefly: ignore # ty:ignore
+) -> didppy.IntExpr:  # pyrefly: ignore # ty: ignore
     exprs = []
     for idx1 in range(len(instance)):
         for idx2 in range(idx1 + 1, len(instance)):
@@ -75,9 +75,9 @@ def boundexpr_scs3len(
                 table_s1s2s3 = dpmodel.add_int_table(boundtable_scs3(s1, s2, s3))
                 exprs.append(table_s1s2s3[index_var1, index_var2, index_var3])
 
-    bound = didppy.IntExpr(0)  # pyrefly: ignore
+    bound = didppy.IntExpr(0)  # pyrefly: ignore # ty: ignore
     for expr in exprs:
-        bound = didppy.max(bound, expr)  # pyrefly: ignore
+        bound = didppy.max(bound, expr)  # pyrefly: ignore # ty: ignore
 
     return bound
 
