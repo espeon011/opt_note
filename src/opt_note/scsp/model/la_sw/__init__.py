@@ -52,7 +52,7 @@ class Model:
     best_bound: float = 0.0
 
     def solve(self, m: int = 3, ll: int = 1, *args, **kwargs) -> str:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         state = tuple(0 for _ in self.instance)
         solution = ""
 

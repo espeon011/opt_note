@@ -17,7 +17,7 @@ class Model:
     def solve(
         self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
     ) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         max_len = sum(len(s) for s in self.instance)
 
         highs = highspy.Highs()

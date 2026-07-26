@@ -16,7 +16,7 @@ class Model:
     def solve(
         self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
     ) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         max_len = sum(len(s) for s in self.instance)
 
         scip: pyscipopt.Model = pyscipopt.Model()
@@ -87,9 +87,9 @@ class Model:
         if scip.getNLimSolsFound() > 0:
             solution = ""
             for valid, ssqc in zip(sseq_valid, sseq_char):
-                if int(round(scip.getVal(valid))) == 1:
+                if round(scip.getVal(valid)) == 1:
                     for c, sqc in zip(chars, ssqc):
-                        if int(round(scip.getVal(sqc))) == 1:
+                        if round(scip.getVal(sqc)) == 1:
                             solution += c
                             break
             self.solution = solution

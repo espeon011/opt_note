@@ -58,14 +58,14 @@ class Model:
         self.best_bound = scip.getDualbound()
 
         if scip.getNLimSolsFound() > 0:
-            objval = int(round(scip.getObjVal()))
+            objval = round(scip.getObjVal())
             sol_char_idx = 0
             solution = ""
             while sol_char_idx <= objval:
                 found = False
                 for idx, (s, seq) in enumerate(zip(self.instance, seqs)):
                     for c_idx, cvar in enumerate(seq):
-                        if int(round(scip.getVal(cvar))) == sol_char_idx:
+                        if round(scip.getVal(cvar)) == sol_char_idx:
                             solution += s[c_idx]
                             found = True
                             sol_char_idx += 1

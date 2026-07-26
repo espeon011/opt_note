@@ -74,7 +74,7 @@ class Model:
     best_bound: float = 0.0
 
     def solve(self, beta: int = 100, kappa: int = 7, *args, **kwargs) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         prob_table = make_prob_table(len(chars), max(len(s) for s in self.instance))
         states: list[State] = [State(self.instance)]
 

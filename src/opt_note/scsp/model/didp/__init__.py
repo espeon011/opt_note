@@ -68,7 +68,7 @@ class Model:
         *args,
         **kwargs,
     ) -> str | None:
-        chars = sorted(list(set("".join(self.instance))))
+        chars = sorted(set("".join(self.instance)))
 
         # pyrefly: ignore
         dpmodel = didppy.Model(maximize=False, float_cost=False)

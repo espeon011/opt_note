@@ -2,8 +2,8 @@
 SCSP インスタンスの読み込み・書き込みや表示を行うユーティリティ.
 """
 
-import datetime
 import os
+import time
 from typing import Protocol
 
 from .. import example
@@ -161,9 +161,9 @@ def bench(
 
     model = Model(instance_inner)
 
-    start = datetime.datetime.now()
+    start = time.monotonic()
     solution = model.solve(time_limit=time_limit, log=log)
-    end = datetime.datetime.now()
+    end = time.monotonic()
 
     show(instance_inner)
     if solution is not None:
@@ -179,4 +179,4 @@ def bench(
     print(f"best bound: {model.best_bound}")
     if hasattr(model, "inner_bound"):
         print(f"best submodel bound: {model.inner_bound}")
-    print(f"wall time: {(end - start).total_seconds()}s")
+    print(f"wall time: {end - start:.2f}s")

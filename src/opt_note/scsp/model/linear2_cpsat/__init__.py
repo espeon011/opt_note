@@ -15,7 +15,7 @@ class Model:
         cpmodel = cp_model.CpModel()
         cpsolver = cp_model.CpSolver()
 
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         max_len = sum(len(s) for s in self.instance)
 
         # sseq_valid[i]: 共通超配列の i 文字目を使用するか否か.

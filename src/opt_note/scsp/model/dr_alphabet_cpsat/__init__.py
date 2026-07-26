@@ -19,7 +19,7 @@ class ModelReduction:
     def solve(
         self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
     ) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance + [self.template])))))
+        chars = "".join(sorted(set("".join(self.instance + [self.template]))))
 
         cpmodel = cp_model.CpModel()
         cpsolver = cp_model.CpSolver()

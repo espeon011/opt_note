@@ -17,7 +17,7 @@ class Model:
         self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
     ) -> str | None:
         max_len = sum(len(s) for s in self.instance)
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
 
         cpmodel = cp_model.CpModel()
         cpsolver = cp_model.CpSolver()

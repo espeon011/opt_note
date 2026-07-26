@@ -30,7 +30,7 @@ class Model:
         order.append(cpmodel.new_constant(0))
 
         arcs = []
-        costs = dict()
+        costs = {}
 
         for nidx, (sidx, cidx) in enumerate(nodes):
             if cidx == 0:

@@ -16,7 +16,7 @@ class Model:
 
     @cached_property
     def chars(self) -> str:
-        return "".join(sorted(list(set("".join(self.instance)))))
+        return "".join(sorted(set("".join(self.instance))))
 
     @cached_property
     def indices_1d_to_2d(self) -> list[tuple[int, int]]:

@@ -3,6 +3,7 @@
 """
 
 from dataclasses import dataclass
+from itertools import chain
 
 import hexaly.optimizer
 
@@ -15,7 +16,7 @@ class Model:
     inner_bound: float = 0.0
 
     def solve(
-        self, time_limit: int | None = 60, log: bool = False, *args, **kwargs
+        self, time_limit: int | None = 60, log: bool = False, *_args, **_kwargs
     ) -> str | None:
         with hexaly.optimizer.HexalyOptimizer() as hxoptimizer:
             assert isinstance(hxoptimizer.model, hexaly.optimizer.HxModel)
@@ -23,11 +24,11 @@ class Model:
             hxmodel: hexaly.optimizer.HxModel = hxoptimizer.model
             hxparam: hexaly.optimizer.HxParam = hxoptimizer.param
 
-            chars: str = "".join(sorted(list(set("".join(self.instance)))))
+            chars: str = "".join(sorted(set("".join(self.instance))))
             max_len = len(chars) * max(len(s) for s in self.instance)
 
             cvars = [
-                [hxmodel.int(0, max_len // len(chars) - 1) for c in s]
+                [hxmodel.int(0, max_len // len(chars) - 1) for _c in s]
                 for s in self.instance
             ]
 
@@ -72,7 +73,7 @@ class Model:
                     [x.value * len(chars) + chars.index(c) for x, c in zip(cvar, s)]
                     for cvar, s in zip(cvars, self.instance)
                 ]
-                for idx in sorted(list(set(sum(cvars_val, [])))):
+                for idx in sorted(set(chain.from_iterable(cvars_val))):
                     solution += chars[idx % len(chars)]
                 self.solution = solution
             else:

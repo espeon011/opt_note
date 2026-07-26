@@ -22,9 +22,7 @@ class Model:
             if transversal in dp:
                 continue
 
-            end_chars = set(
-                s[t - 1] for s, t in zip(self.instance, transversal) if t > 0
-            )
+            end_chars = {s[t - 1] for s, t in zip(self.instance, transversal) if t > 0}
             pretransversals = [
                 tuple(
                     t - 1 if t > 0 and s[t - 1] == c else t

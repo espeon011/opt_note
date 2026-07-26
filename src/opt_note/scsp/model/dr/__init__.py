@@ -2,7 +2,7 @@
 .. include:: ./README.md
 """
 
-import datetime
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Protocol
@@ -42,18 +42,14 @@ def original_reduction(
     solve_func: Callable[[list[str]], str | None] = solve_func_default,
     **kwargs,
 ) -> str | None:
-    start = datetime.datetime.now()
-    if time_limit is not None:
-        limit = start + datetime.timedelta(seconds=time_limit)
-    else:
-        limit = None
+    start = time.monotonic()
+    limit = start + (time_limit if time_limit is not None else float("inf"))
 
     update = True
     while update:
         update = False
         for i in range(len(template)):
-            now = datetime.datetime.now()
-            if limit is not None and now >= limit:
+            if time.monotonic() >= limit:
                 break
 
             right = template[i + 1 :]
