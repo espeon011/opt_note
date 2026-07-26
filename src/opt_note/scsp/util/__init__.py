@@ -2,9 +2,10 @@
 SCSP インスタンスの読み込み・書き込みや表示を行うユーティリティ.
 """
 
-import os
 import datetime
+import os
 from typing import Protocol
+
 from .. import example
 
 
@@ -20,7 +21,7 @@ def parse(filename: str | os.PathLike) -> list[str]:
     """
 
     with open(filename, mode="r", encoding="UTF-8") as file:
-        instance = [s.strip() for s in file.readlines()]
+        instance = [s.strip() for s in file]
     return instance
 
 
@@ -78,7 +79,7 @@ def show(instance: list[str], solution: str | None = None) -> None:
     """
 
     instance_len = len(instance)
-    tag_width = int(len(str(instance_len))) + 3
+    tag_width = len(str(instance_len)) + 3
 
     if solution is None:
         # 問題インスタンスを出力する

@@ -3,7 +3,9 @@
 """
 
 from dataclasses import dataclass
+
 import didppy
+
 from ..didp import Model as ModelDidp
 
 

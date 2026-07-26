@@ -3,7 +3,9 @@
 """
 
 from dataclasses import dataclass
+
 from ortools.sat.python import cp_model
+
 from ..alphabet import Model as ModelAlphabet
 
 

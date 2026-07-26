@@ -2,10 +2,10 @@
 .. include:: ./README.md
 """
 
-from dataclasses import dataclass
 from collections.abc import Callable
-import didppy
+from dataclasses import dataclass
 
+import didppy
 
 type TypeBoundExprFunc = Callable[
     # pyrefly: ignore

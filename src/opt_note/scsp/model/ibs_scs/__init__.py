@@ -2,8 +2,8 @@
 .. include:: ./README.md
 """
 
-import math
 import copy
+import math
 from dataclasses import dataclass
 
 

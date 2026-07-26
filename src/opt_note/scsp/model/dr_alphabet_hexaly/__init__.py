@@ -3,6 +3,7 @@
 """
 
 from dataclasses import dataclass
+
 import hexaly.optimizer
 
 

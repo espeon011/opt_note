@@ -3,6 +3,7 @@
 """
 
 from dataclasses import dataclass
+
 from .. import wmm_hexaly
 
 

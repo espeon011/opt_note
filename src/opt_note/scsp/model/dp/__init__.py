@@ -2,8 +2,8 @@
 .. include:: ./README.md
 """
 
-from dataclasses import dataclass
 import itertools
+from dataclasses import dataclass
 
 
 @dataclass

@@ -2,8 +2,9 @@
 .. include:: ./README.md
 """
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+
 import highspy
 
 

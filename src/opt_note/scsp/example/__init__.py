@@ -2,8 +2,9 @@
 .. include:: ./README.md
 """
 
-from typing import Literal
 import pathlib
+from typing import Literal
+
 from .. import util
 
 ExampleFileName = Literal[
