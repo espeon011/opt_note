@@ -26,6 +26,7 @@
           pkgs.python314
           pkgs.uv
           pkgs.pyrefly
+          pkgs.ty
           pkgs.ruff
         ];
 
