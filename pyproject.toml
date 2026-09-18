@@ -12,6 +12,12 @@ dependencies = [
     "pyscipopt>=6.2.1",
 ]
 
+[project.optional-dependencies]
+patchelf = ["patchelf>=0.17"] # for opt-note-fix-highspy
+
+[project.scripts]
+opt-note-fix-highspy = "opt_note.fix_highspy_soname:main"
+
 [dependency-groups]
 dev = [
     "marimo[recommended]>=0.24.2",
@@ -35,6 +41,7 @@ build-backend = "uv_build"
 pythonpath = ["src"]
 
 [tool.taskipy.tasks]
+fix-highspy = "opt-note-fix-highspy"
 doc = "rm -rf docs && pdoc opt_note --output-directory docs --math --docformat google"
 doc-serve = "pdoc opt_note --math --docformat google --host 0.0.0.0"
 

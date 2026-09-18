@@ -32,6 +32,27 @@ str7: -----------e------n----bc-----------z-f----------j-----tvx--------------e-
 str8: ---------r----x----w-x-----------qk-----r--d-------r--------lc--t------o--------dt--------------mpr----p---x-----------w--d-----
 ```
 
+## HiGHS モデルを使う場合 (Linux)
+
+`highspy` と `ortools` が同じ SONAME `libhighs.so.1` で別バージョンの HiGHS を同梱しているため,
+1 つのプロセス内で HiGHS モデル (`scsp.model.linear1_highs` など) と
+OR-Tools モデル (`scsp.model.linear1_cpsat` など) を混ぜると後から読み込んだ方が壊れます.
+
+```
+ImportError: .../highspy/_core...so: undefined symbol: _ZN5Highs13releaseMemoryEv
+```
+
+モデルは遅延 import されるので混ぜなければそのまま動きます. 混ぜたい場合はパッチを当ててください.
+
+```shell
+uv add "opt_note[patchelf] @ git+https://github.com/espeon011/opt_note"
+uv run opt-note-fix-highspy
+```
+
+`patchelf` extra は patchelf コマンドを入れるだけなので, 既に導入済みなら不要です.
+`highspy` を再インストールすると元に戻るので, その都度実行してください (何度実行しても安全).
+仕組みは `src/opt_note/fix_highspy_soname.py` を参照.
+
 ## Marimo 起動
 
 ```shell

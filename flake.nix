@@ -28,6 +28,7 @@
           pkgs.pyrefly
           pkgs.ty
           pkgs.ruff
+          pkgs.patchelf # opt-note-fix-highspy 用
         ];
 
         # numpy 依存ライブラリへの PATH
@@ -35,13 +36,8 @@
         # ここにライブラリを書けば解決するかもしれない
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
           libgcc.lib
-          libz
+          zlib
         ]);
-
-        # shellHook = ''
-        #   uv sync
-        #   source .venv/bin/activate
-        # '';
       };
     });
 }
