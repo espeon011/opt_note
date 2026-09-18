@@ -11,7 +11,7 @@
 
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.24.2"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
@@ -22,6 +22,7 @@ with app.setup:
 def _():
     import marimo as mo
     import nbformat
+
     return (mo,)
 
 
