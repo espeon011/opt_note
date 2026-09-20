@@ -1,6 +1,7 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
+#     "marimo>=0.24.2",
 #     "nbformat==5.10.4",
 #     "opt-note",
 # ]
@@ -11,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.24.2"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 with app.setup:
