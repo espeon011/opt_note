@@ -12,13 +12,13 @@ Dual bound には 2 文字の文字列の最短共通超配列の長さを全て
 ## Python Code
 
 ```python
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
+
 import didppy
 
-
 type TypeBoundExprFunc = Callable[
-    # pyrefly: ignore
+    # pyrefly: ignore # ty: ignore
     [list[str], didppy.Model, list[didppy.ElementVar]], didppy.IntExpr
 ]
 
@@ -45,9 +45,9 @@ def boundtable_scs2(s1: str, s2: str) -> list[list[int]]:
 
 def boundexpr_scs2len(
     instance: list[str],
-    dpmodel: didppy.Model,  # pyrefly: ignore
-    index_vars: list[didppy.ElementVar],  # pyrefly: ignore
-) -> didppy.IntExpr:  # pyrefly: ignore
+    dpmodel: didppy.Model,  # pyrefly: ignore # ty:ignore
+    index_vars: list[didppy.ElementVar],  # pyrefly: ignore # ty:ignore
+) -> didppy.IntExpr:  # pyrefly: ignore # ty: ignore
     exprs = []
     for idx1, (s1, index_var1) in enumerate(zip(instance, index_vars)):
         for idx2, (s2, index_var2) in enumerate(zip(instance, index_vars)):
@@ -56,9 +56,9 @@ def boundexpr_scs2len(
             table_idx1_idx2 = dpmodel.add_int_table(boundtable_scs2(s1, s2))
             exprs.append(table_idx1_idx2[index_var1, index_var2])
 
-    bound = didppy.IntExpr(0)  # pyrefly: ignore
+    bound = didppy.IntExpr(0)  # pyrefly: ignore # ty: ignore
     for expr in exprs:
-        bound = didppy.max(bound, expr)  # pyrefly: ignore
+        bound = didppy.max(bound, expr)  # pyrefly: ignore # ty: ignore
 
     return bound
 
@@ -78,9 +78,9 @@ class Model:
         *args,
         **kwargs,
     ) -> str | None:
-        chars = sorted(list(set("".join(self.instance))))
+        chars = sorted(set("".join(self.instance)))
 
-        # pyrefly: ignore
+        # pyrefly: ignore # ty:ignore
         dpmodel = didppy.Model(maximize=False, float_cost=False)
 
         index_types = [
@@ -101,12 +101,12 @@ class Model:
 
         # 文字 char に従って進む
         for id_char, char in enumerate(chars):
-            condition = didppy.Condition(False)  # pyrefly: ignore
+            condition = didppy.Condition(False)  # pyrefly: ignore # ty: ignore
             for sidx, index_var in enumerate(index_vars):
                 condition |= instance_table[sidx, index_var] == id_char
-            trans = didppy.Transition(  # pyrefly: ignore
+            trans = didppy.Transition(  # pyrefly: ignore # ty: ignore
                 name=f"{char}",
-                cost=1 + didppy.IntExpr.state_cost(),  # pyrefly: ignore
+                cost=1 + didppy.IntExpr.state_cost(),  # pyrefly: ignore # ty: ignore
                 effects=[
                     (
                         index_var,
@@ -132,7 +132,7 @@ class Model:
             for bound_func in extra_bounds:
                 dpmodel.add_dual_bound(bound_func(self.instance, dpmodel, index_vars))
 
-        dpsolver = didppy.CABS(  # pyrefly: ignore
+        dpsolver = didppy.CABS(  # pyrefly: ignore # ty: ignore
             dpmodel, threads=12, time_limit=time_limit, quiet=(not log)
         )
         didpsolution = dpsolver.search()

@@ -9,6 +9,7 @@
 
 ```python
 from dataclasses import dataclass
+
 from ortools.sat.python import cp_model
 
 

@@ -32,7 +32,7 @@ class Model:
     best_bound: float = 0.0
 
     def solve(self, *args, **kwargs) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         self.solution = chars * max([len(s) for s in self.instance])
         return self.solution
 ```

@@ -28,6 +28,7 @@ Weighted Majority Merge アルゴリズムにおいて次の文字を選択す�
 ```python
 from dataclasses import dataclass
 from functools import cached_property
+
 import hexaly.optimizer
 
 
@@ -39,7 +40,7 @@ class Model:
 
     @cached_property
     def chars(self) -> str:
-        return "".join(sorted(list(set("".join(self.instance)))))
+        return "".join(sorted(set("".join(self.instance))))
 
     @cached_property
     def indices_1d_to_2d(self) -> list[tuple[int, int]]:

@@ -10,6 +10,7 @@
 ```python
 from dataclasses import dataclass
 from functools import cached_property
+
 import hexaly.optimizer
 
 

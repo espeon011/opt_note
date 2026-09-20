@@ -39,6 +39,7 @@ def scs2(s1: str, s2: str) -> str:
     len1, len2 = len(s1), len(s2)
 
     dp = [["" for _ in range(len2 + 1)] for _ in range(len1 + 1)]
+    """dp[idx1][idx2] が s1[:idx1] と s2[:idx2] の最短共通超配列"""
 
     for idx1 in range(len1 + 1):
         for idx2 in range(len2 + 1):
@@ -49,7 +50,7 @@ def scs2(s1: str, s2: str) -> str:
             elif s1[idx1 - 1] == s2[idx2 - 1]:
                 dp[idx1][idx2] = dp[idx1 - 1][idx2 - 1] + s1[idx1 - 1]
             else:
-                if len(dp[idx1 - 1][idx2]) <= len(dp[idx1][idx2 - 2]):
+                if len(dp[idx1 - 1][idx2]) <= len(dp[idx1][idx2 - 1]):
                     dp[idx1][idx2] = dp[idx1 - 1][idx2] + s1[idx1 - 1]
                 else:
                     dp[idx1][idx2] = dp[idx1][idx2 - 1] + s2[idx2 - 1]

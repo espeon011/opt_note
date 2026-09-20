@@ -32,8 +32,8 @@ IBS_SCS は基本的には残された文字列の先頭の文字の中から 1 
 ## Python Code
 
 ```python
-import math
 import copy
+import math
 from dataclasses import dataclass
 
 
@@ -46,7 +46,7 @@ def make_prob_table(num_chars: int, max_len: int) -> list[list[float]]:
     nrow = max_len + 1
     ncol = math.ceil(max_len * math.log2(num_chars)) + 1
 
-    ret = [[0.0 for k in range(ncol)] for q in range(nrow)]
+    ret = [[0.0 for _k in range(ncol)] for _q in range(nrow)]
     for q in range(nrow):
         for k in range(ncol):
             if q == 0:
@@ -91,10 +91,12 @@ class State:
         return geq and neq
 
     def heuristic(self, prob_table: list[list[float]], k: int) -> float:
-        ret = 1.0
-        for s, pos in zip(self.instance, self.positions):
-            ret *= prob_table[len(s) - pos][k]
-        return ret
+        return sum(
+            math.log(prob_table[len(s) - pos][k])
+            if prob_table[len(s) - pos][k] > 0.0
+            else -math.inf
+            for s, pos in zip(self.instance, self.positions)
+        )
 
 
 @dataclass
@@ -104,7 +106,7 @@ class Model:
     best_bound: float = 0.0
 
     def solve(self, beta: int = 100, kappa: int = 7, *args, **kwargs) -> str | None:
-        chars = "".join(sorted(list(set("".join(self.instance)))))
+        chars = "".join(sorted(set("".join(self.instance))))
         prob_table = make_prob_table(len(chars), max(len(s) for s in self.instance))
         states: list[State] = [State(self.instance)]
 
