@@ -16,7 +16,7 @@ def make_prob_table(num_chars: int, max_len: int) -> list[list[float]]:
     nrow = max_len + 1
     ncol = math.ceil(max_len * math.log2(num_chars)) + 1
 
-    ret = [[0.0 for k in range(ncol)] for q in range(nrow)]
+    ret = [[0.0 for _k in range(ncol)] for _q in range(nrow)]
     for q in range(nrow):
         for k in range(ncol):
             if q == 0:
@@ -61,10 +61,12 @@ class State:
         return geq and neq
 
     def heuristic(self, prob_table: list[list[float]], k: int) -> float:
-        ret = 1.0
-        for s, pos in zip(self.instance, self.positions):
-            ret *= prob_table[len(s) - pos][k]
-        return ret
+        return sum(
+            math.log(prob_table[len(s) - pos][k])
+            if prob_table[len(s) - pos][k] > 0.0
+            else -math.inf
+            for s, pos in zip(self.instance, self.positions)
+        )
 
 
 @dataclass
