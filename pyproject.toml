@@ -5,7 +5,7 @@ description = "Mathematical optimization study note"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "didppy>=0.10.1",
+    "didppy>=0.11.1",
     "hexaly>=15.0.20260731",
     "highspy>=1.15.1",
     "ortools>=9.15.6755",

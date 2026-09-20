@@ -31,8 +31,7 @@
           pkgs.patchelf # opt-note-fix-highspy 用
         ];
 
-        # numpy 依存ライブラリへの PATH
-        # 他にも uv add <パッケージ名> をした後に実行してランタイムエラーになる場合,
+        # uv add <パッケージ名> をした後に実行してランタイムエラーになる場合,
         # ここにライブラリを書けば解決するかもしれない
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
           libgcc.lib
