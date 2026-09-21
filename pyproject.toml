@@ -9,6 +9,7 @@ dependencies = [
     "hexaly>=15.0.20260731",
     "highspy>=1.15.1",
     "ortools>=9.15.6755",
+    "pychoco>=0.3.0",
     "pyscipopt>=6.2.1",
 ]
 

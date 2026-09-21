@@ -29,11 +29,14 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 - `LINEAR1_SCIP` 整数線形計画モデル(SCIP) ([概要](./model/linear1_scip))
 - `LINEAR1_HIGHS` 整数線形計画モデル(HiGHS) ([概要](./model/linear1_highs))
 - `LINEAR1_CPSAT` 整数線形計画モデル(CP-SAT) ([概要](./model/linear1_cpsat))
+- `LINEAR1_CHOCO` 整数線形計画モデル(Choco) ([概要](./model/linear1_choco))
+- `LINEAR1_HEXALY` 整数線形計画モデル(Hexaly) ([概要](./model/linear1_hexaly))
 - `AUTOMATON_CPSAT` オートマトン制約を用いた数理計画モデル(CP-SAT) ([概要](./model/automaton_cpsat))
 - `WMM_HEXALY` Weighted Majority Merge アルゴリズムの重みの部分を Hexaly の決定変数で置き換えたもの ([概要](./model/wmm_hexaly))
 - `WMM_HEXALY_INIT` 上記モデルにおいて初期重みを `WMM` と同じになるよう設定したもの ([概要](./model/wmm_hexaly_init))
 - `DIDP` DIDP ソルバーを用いた定式化[^8][^6] ([概要](./model/didp))
 - `DR_ALPHABET_CPSAT` アルファベットアルゴリズムで構築した解の部分配列の中を探索(CP-SAT) ([概要](./model/dr_alphabet_cpsat))
+- `DR_ALPHABET_CHOCO` アルファベットアルゴリズムで構築した解の部分配列の中を探索(Choco) ([概要](./model/dr_alphabet_choco))
 - `DR_ALPHABET_HEXALY` アルファベットアルゴリズムで構築した解の部分配列の中を探索(Hexaly) ([概要](./model/dr_alphabet_hexaly))
 
 ## ベンチマーク
@@ -55,11 +58,14 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | `LINEAR1_SCIP`       | 72         | 175       | -          | 52         | -         | 42         | -          | 70        | -          |
 | `LINEAR1_HIGHS`      | 75         | 148       | -          | 49         | -         | 30         | -          | 63        | -          |
 | `LINEAR1_CPSAT`      | 64         | 130       | 287        | 28         | 240       | **24** 🥇  | -          | 48        | -          |
+| `LINEAR1_CHOCO`      | 67         | 116       | 170        | **27** 🥇  | 37        | 25         | 176        | 46        | 678        |
+| `LINEAR1_HEXALY`     | 64         | 154       | 280        | 34         | 358       | 29         | -          | 52        | -          |
 | `AUTOMATON_CPSAT`    | 69         | 134       | 243        | 28         | 39        | 24         | -          | 48        | -          |
 | `WMM_HEXALY`         | **62** 🥇  | 102       | 160        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 138        | **44** 🥇 | 499        |
 | `WMM_HEXALY_INIT`    | 64         | 105       | 150        | **27** 🥇  | **34** 🥇 | **24** 🥇  | 138        | 45        | 454        |
 | `DIDP`               | **62*** 🥇 | **99** 🥇 | 149        | **27*** 🥇 | **34** 🥇 | **24*** 🥇 | 133        | **44** 🥇 | 489        |
 | `DR_ALPHABET_CPSAT`  | **62** 🥇  | 102       | 141        | 29         | **34** 🥇 | **24** 🥇  | 136        | 46        | 444        |
+| `DR_ALPHABET_CHOCO`  | 64         | 109       | 152        | 29         | **34** 🥇 | **24** 🥇  | 138        | 47        | 457        |
 | `DR_ALPHABET_HEXALY` | **62** 🥇  | 100       | **137** 🥇 | 29         | 38        | **24** 🥇  | 144        | 46        | 457        |
 | | | | | | | | | | |
 
@@ -72,6 +78,9 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
   - `LA_SH` $m = 3$, $l = 1$.
   - `LA_SW` $m = 3$, $l = 1$.
   - `DR` Deposition プロセス, Reduction プロセスは両方とも $(3, 1)$-LA-SH を採用. 
+  - `LINEAR1_CHOCO` は `ParallelPortfolio` でスレッド数 4. 
+    モデルの複製 1 つごとにメモリを消費するため, 最大のインスタンスに合わせて抑えている. 
+  - `DR_ALPHABET_CHOCO` は `ParallelPortfolio` でスレッド数 8. 
 
 ## 解法の分類
 
@@ -79,14 +88,14 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 | --- | --- | --- | --- |
 | 貪欲 | `MM` <br> `WMM` <br> `LA_SH` <br> `LA_SW` | `ALPHABET_REDUCTION` <br> `DR`| `ALPHABET` <br> `DESCENDING` |
 | ビームサーチ | `IBS_SCS` <br> `DIDP` | | |
-| 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` | `LINEAR1_SCIP` <br> `LINEAR1_HIGHS` <br> `LINEAR1_CPSAT` <br> `AUTOMATON_CPSAT` |
-| アニーリング? | `WMM_HEXALY` <br> `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | |
+| 全探索 | `DP` <br> `DIDP` | `DR_ALPHABET_CPSAT` <br> `DR_ALPHABET_CHOCO` | `LINEAR1_SCIP` <br> `LINEAR1_HIGHS` <br> `LINEAR1_CPSAT` <br> `LINEAR1_CHOCO` <br> `AUTOMATON_CPSAT` |
+| アニーリング? | `WMM_HEXALY` <br> `WMM_HEXALY_INIT` | `DR_ALPHABET_HEXALY` | `LINEAR1_HEXALY` |
 
 ### 解の構成法
 
 - 前から1文字ずつ取ってきて構成する ... `DP`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `IBS_SCS`, `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DIDP`
-- 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION`, `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_HEXALY`
-- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `AUTOMATON_CPSAT`
+- 大きい解から不要なものを削減 ... `ALPHABET_REDUCTION`, `DR`, `DR_ALPHABET_CPSAT`, `DR_ALPHABET_CHOCO`, `DR_ALPHABET_HEXALY`
+- その他 ... `ALPHABET`, `DESCENDING`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `LINEAR1_CHOCO`, `LINEAR1_HEXALY`, `AUTOMATON_CPSAT`
 
 ### 探索法
 
@@ -96,8 +105,8 @@ Shortest Common Supersequence Problem (SCSP) は与えられた複数の配列�
 
 - 貪欲 ... `ALPHABET`, `ALPHABET_REDUCTION`, `MM`, `WMM`, `LA_SH`, `LA_SW`, `DESCENDING`, `DR`
 - ビームサーチ ... `IBS_SCS`, `DIDP`
-- 全探索 ... `DP`, `DIDP`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限)
-- アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`
+- 全探索 ... `DP`, `DIDP`, `LINEAR1_SCIP`, `LINEAR1_HIGHS`, `LINEAR1_CPSAT`, `LINEAR1_CHOCO`, `AUTOMATON_CPSAT`, `DR_ALPHABET_CPSAT` (制限), `DR_ALPHABET_CHOCO` (制限)
+- アニーリング? ... `WMM_HEXALY`, `WMM_HEXALY_INIT`, `DR_ALPHABET_HEXALY`, `LINEAR1_HEXALY`
 
 [^1]: Tao Jiang and Ming Li. 1995. On the Approximation of Shortest Common Supersequences and Longest Common Subsequences. SIAM J. Comput. 24, 5 (Oct. 1995), 1122–1139. https://doi.org/10.1137/S009753979223842X. 
 [^2]: Sayyed Rasoul Mousavi, Fateme Bahri, Farzaneh Sadat Tabataba, An enhanced beam search algorithm for the Shortest Common Supersequence Problem, Engineering Applications of Artificial Intelligence, Volume 25, Issue 3, 2012, Pages 457-467, ISSN 0952-1976, https://doi.org/10.1016/j.engappai.2011.08.006.

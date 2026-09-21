@@ -1008,6 +1008,7 @@ dependencies = [
     { name = "hexaly" },
     { name = "highspy" },
     { name = "ortools" },
+    { name = "pychoco" },
     { name = "pyscipopt" },
 ]
 
@@ -1030,6 +1031,7 @@ requires-dist = [
     { name = "highspy", specifier = ">=1.15.1" },
     { name = "ortools", specifier = ">=9.15.6755" },
     { name = "patchelf", marker = "extra == 'patchelf'", specifier = ">=0.17" },
+    { name = "pychoco", specifier = ">=0.3.0" },
     { name = "pyscipopt", specifier = ">=6.2.1" },
 ]
 provides-extras = ["patchelf"]
@@ -1271,6 +1273,22 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/72/13/66e1402dcc860e1dc2760b1e0292c9a569b62b3bccab69def1b3e907d006/pyarrow-25.0.1-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:169d3429d5be7c752125890620f75a60776d38b0035eddae939651640822332e", size = 50040226, upload-time = "2026-08-10T12:40:35.186Z" },
     { url = "https://files.pythonhosted.org/packages/78/10/3f1a5497a7ef732ab0f03ecca3e66d89d9c0f57fdc61b4794c456b781f01/pyarrow-25.0.1-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:119297a6dc197e45d9c6d4415f7814a67ffa36c180d26f68c154c58067ae782d", size = 53149035, upload-time = "2026-08-10T12:40:41.454Z" },
     { url = "https://files.pythonhosted.org/packages/93/c0/37d4a7e8e2f7a6076283673d5298018ca26478b934c6ee369e10505ab32c/pyarrow-25.0.1-cp314-cp314t-win_amd64.whl", hash = "sha256:4288f27577352d608ca08553b0865e4a9b3aa14820c5d95b53337218d609835b", size = 28753071, upload-time = "2026-08-10T12:40:46.623Z" },
+]
+
+[[package]]
+name = "pychoco"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2b/63/af4ceac95f8db6d4744a68ab1a8f864ce470eb04ff43edd8e0cab0df06e2/pychoco-0.3.0-cp313-cp313-macosx_15_0_arm64.whl", hash = "sha256:6a127862743e13ac9c31045225c5c071cd3d96ec47219073169502b06b72c957", size = 19052068, upload-time = "2026-06-09T14:29:16.695Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/20/1b57d93d16b8d6e6fc3a18eb5082a07fff47c4007e6cf848c1ff477c999d/pychoco-0.3.0-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:24f3a4248d6e079c41b8fbc1abd7851a838f0615d0625dd49a3470bb05648181", size = 17340033, upload-time = "2026-06-09T14:19:00.504Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/cb/520a0144f7a255ea63aaf17216d3e686b3ebaac55e5296ce226b4368bfd7/pychoco-0.3.0-cp313-cp313-win_amd64.whl", hash = "sha256:7ae5b3a31a8bf46960abaf7b09d2d86bd696ddb4897abed74129346a8818f2a0", size = 20782942, upload-time = "2026-06-09T14:18:13.505Z" },
+    { url = "https://files.pythonhosted.org/packages/16/26/df1d93dcba0cdf5448734bd8fd65123ed8b7523f67c7cbe16f833d93e9c0/pychoco-0.3.0-cp314-cp314-macosx_15_0_arm64.whl", hash = "sha256:67d4113b46fedf284a8fb796df6e17502837171d9f00008fdfa073ddebccb6a4", size = 19052135, upload-time = "2026-06-09T14:29:19.014Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/80/29484ae0135df9c2770d13aaa66cb16eed74c0e781be19e72e7b3c3dbf84/pychoco-0.3.0-cp314-cp314-manylinux_2_34_x86_64.whl", hash = "sha256:ea3b5fb875bfcd671e6e49dad0ebf47ef818dbe71316799108cce0303a8c1afa", size = 17338913, upload-time = "2026-06-09T14:19:02.862Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/bd/cf2cb6d692a20f744de7d5b86b2c2e459196b9cef6cc2c23804c2288742a/pychoco-0.3.0-cp314-cp314-win_amd64.whl", hash = "sha256:3ff76cf46ef0145583113b4a8103406621dc2327fb31d9375ac0fa3ca0994db8", size = 21259889, upload-time = "2026-06-09T14:18:15.635Z" },
+    { url = "https://files.pythonhosted.org/packages/56/27/a400f3767d936a69a1fdc3ca492f4cedf896d2a65de706f3114ab0f7b99c/pychoco-0.3.0-cp314-cp314t-macosx_15_0_arm64.whl", hash = "sha256:33bc410b665d08bb44cfa58b897554212218624a919f1a44cb98b505e4f0fe73", size = 19053106, upload-time = "2026-06-09T14:29:21.851Z" },
+    { url = "https://files.pythonhosted.org/packages/44/38/01e301eaacd45f05bfd1cda9af71a262dcf5922f5c3cfe46e78da1631afd/pychoco-0.3.0-cp314-cp314t-manylinux_2_34_x86_64.whl", hash = "sha256:a872f5965a2d4897f2dae26bdbb5ca3666a3fc7f42b422b808a20e9e13a8840a", size = 17339407, upload-time = "2026-06-09T14:19:05.524Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/98/8aace5e918880301939735b21ff10c8e864e3017d0f93bf8ddaeef06490a/pychoco-0.3.0-cp314-cp314t-win_amd64.whl", hash = "sha256:85314727aeeb15fd50bd1d1f2e81cdf81d16373c6b5cd8ff326802074d256a3f", size = 21263434, upload-time = "2026-06-09T14:18:18.236Z" },
 ]
 
 [[package]]
