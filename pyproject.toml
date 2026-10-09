@@ -6,10 +6,10 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "didppy>=0.11.1",
-    "hexaly>=15.0.20260731",
+    "hexaly>=15.0.20260914",
     "highspy>=1.15.1",
     "ortools>=9.15.6755",
-    "pychoco>=0.3.0",
+    "pychoco>=0.4.0",
     "pyscipopt>=6.2.1",
 ]
 
@@ -21,21 +21,13 @@ opt-note-fix-highspy = "opt_note.fix_highspy_soname:main"
 
 [dependency-groups]
 dev = [
-    "marimo[recommended]>=0.24.2",
+    "marimo[recommended]>=0.25.1",
     "pdoc>=16.0.0",
     "taskipy>=1.14.1",
 ]
 
-[[tool.uv.index]]
-name = "hexaly"
-url = "https://pip.hexaly.com"
-explicit = true
-
-[tool.uv.sources]
-hexaly = { index = "hexaly" }
-
 [build-system]
-requires = ["uv_build>=0.11.0,<0.12.0"]
+requires = ["uv_build>=0.12.0,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.marimo.runtime]
